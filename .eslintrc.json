@@ -1,3 +1,16 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": ["next/core-web-vitals", "airbnb", "prettier"],
+  "rules": {
+    "import/prefer-default-export": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-filename-extension": "off",
+    "import/extensions": "off",
+    "react/jsx-props-no-spreading": "off",
+    "global-require": "off",
+    "react/function-component-definition": "off",
+    "react/require-default-props": "off",
+    "react/no-array-index-key": "off",
+    "react/prop-types": "off",
+    "prefer-destructuring": "off"
+  }
 }
