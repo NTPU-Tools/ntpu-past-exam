@@ -1,9 +1,13 @@
-import { cn } from "@/utils";
+import instance from "@/api/instance";
+import { cn } from "@/utils/cn";
+import { groupBy, map } from "lodash-es";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import useSWR from "swr";
 
 interface SidebarNavItem {
-  title: string;
+  title?: string;
+  name?: string;
   href?: string;
   external?: boolean;
   label?: string;
@@ -20,10 +24,7 @@ interface DocsSidebarNavItemsProps {
   pathname: string | null;
 }
 
-export function DocsSidebarNavItems({
-  items,
-  pathname,
-}: DocsSidebarNavItemsProps) {
+export function SidebarNavItems({ items, pathname }: DocsSidebarNavItemsProps) {
   return items?.length ? (
     <div className="grid grid-flow-row auto-rows-max text-sm">
       {items.map((item, index) =>
@@ -34,7 +35,7 @@ export function DocsSidebarNavItems({
             className={cn(
               "group flex w-full items-center rounded-md border border-transparent px-2 py-1 hover:underline",
               item.disabled && "cursor-not-allowed opacity-60",
-              pathname === item.href
+              pathname?.includes(item.href)
                 ? "font-medium text-foreground"
                 : "text-muted-foreground",
             )}
@@ -69,18 +70,30 @@ export function DocsSidebarNavItems({
   ) : null;
 }
 
-export function DocsSidebarNav({ items }: DocsSidebarNavProps) {
+export function SidebarNav() {
   const pathname = usePathname();
 
-  return items.length ? (
+  const { data } = useSWR(pathname !== "/login" ? "courseData" : null, () =>
+    instance.get("/courses"),
+  );
+
+  const items = groupBy(data?.data, "category");
+
+  return data?.data.length ? (
     <div className="w-full">
-      {items.map((item, index) => (
-        <div key={index} className={cn("pb-4")}>
+      {map(items, (courses, key) => (
+        <div key={key} className={cn("pb-4")}>
           <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
-            {item.title}
+            {key}
           </h4>
-          {item?.items?.length && (
-            <DocsSidebarNavItems items={item.items} pathname={pathname} />
+          {courses?.length && (
+            <SidebarNavItems
+              items={map(courses, (course) => ({
+                title: course.name,
+                href: `/${course.id}`,
+              }))}
+              pathname={pathname}
+            />
           )}
         </div>
       ))}

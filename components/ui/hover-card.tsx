@@ -1,4 +1,4 @@
-import { cn } from "@/utils";
+import { cn } from "@/utils/cn";
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
 import * as React from "react";
 
