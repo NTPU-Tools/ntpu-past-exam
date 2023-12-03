@@ -14,6 +14,9 @@ export function SiteFooter() {
           </a>
           . Made with ❤️
         </p>
+        <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
+          version: {process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "dev"}
+        </p>
       </div>
     </footer>
   );
