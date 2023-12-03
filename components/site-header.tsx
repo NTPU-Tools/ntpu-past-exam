@@ -22,7 +22,6 @@ import useSWRImmutable from "swr/immutable";
 export function SiteHeader() {
   const { toast } = useToast();
   const router = useRouter();
-  const query = router.query;
   const accessToken = getCookie("ntpu-past-exam-access-token");
   const { data } = useSWRImmutable(
     accessToken ? `me-${accessToken}` : null,
