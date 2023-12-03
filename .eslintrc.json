@@ -11,6 +11,7 @@
     "react/require-default-props": "off",
     "react/no-array-index-key": "off",
     "react/prop-types": "off",
-    "prefer-destructuring": "off"
+    "prefer-destructuring": "off",
+    "react/no-unstable-nested-components": "off"
   }
 }

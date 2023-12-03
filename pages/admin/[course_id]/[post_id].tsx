@@ -12,11 +12,16 @@ const PostPage = () => {
     instance.get(`/posts/${postId}`),
   );
   const post = data?.data;
+  const isAdmin = router.pathname.includes("admin");
   return (
     <div className="min-h-[inherit] flex flex-col relative top-0 ">
       <PageHeader>
-        <TypographyH1>{post?.title}</TypographyH1>
+        <TypographyH1>
+          {isAdmin ? "Admin - " : ""}
+          {post?.title}
+        </TypographyH1>
       </PageHeader>
+
       <TypographyP>{post?.content}</TypographyP>
 
       <PDFViewer src={post?.file} className="w-full h-96 grow" />

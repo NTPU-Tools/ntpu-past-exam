@@ -6,7 +6,7 @@ import { cn } from "@/utils/cn";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";
 import { groupBy, map } from "lodash-es";
 import Link, { LinkProps } from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import * as React from "react";
 import useSWR from "swr";
 
@@ -46,7 +46,9 @@ export function MobileNav() {
     instance.get("/courses"),
   );
 
+  const { pathname } = useRouter();
   const items = groupBy(data?.data, "category");
+  const isAdmin = pathname.includes("admin");
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -61,28 +63,35 @@ export function MobileNav() {
       </SheetTrigger>
       <SheetContent side="left" className="pr-0">
         <MobileLink
-          href="/"
+          href={isAdmin ? "/admin" : "/"}
           className="flex items-center"
           onOpenChange={setOpen}
         >
-          <span className="font-bold">NTPU 考古題</span>
+          <span className="font-bold">
+            NTPU 考古題 {isAdmin ? "- Admin" : ""}
+          </span>
         </MobileLink>
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
           <div className="flex flex-col space-y-2">
             {map(items, (courses, key) => (
               <div key={key} className="flex flex-col space-y-3 pt-6">
                 <h4 className="font-medium">{key}</h4>
-                {map(courses, (course) => (
-                  <React.Fragment key={course.id}>
-                    <MobileLink
-                      href={`/${course.id}`}
-                      onOpenChange={setOpen}
-                      className="text-muted-foreground"
-                    >
-                      {course.name}
-                    </MobileLink>
-                  </React.Fragment>
-                ))}
+                {map(courses, (course) => {
+                  const path = pathname.includes("admin")
+                    ? `/admin/${course.id}`
+                    : `/${course.id}`;
+                  return (
+                    <React.Fragment key={course.id}>
+                      <MobileLink
+                        href={path}
+                        onOpenChange={setOpen}
+                        className="text-muted-foreground"
+                      >
+                        {course.name}
+                      </MobileLink>
+                    </React.Fragment>
+                  );
+                })}
               </div>
             ))}
           </div>

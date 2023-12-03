@@ -15,14 +15,18 @@ const CoursePage = () => {
   );
 
   const courseData = data?.data;
+  const isAdmin = router.pathname.includes("admin");
   return (
     <div className="relative">
       <PageHeader>
-        <TypographyH1>{courseData?.course.name}</TypographyH1>
+        <TypographyH1>
+          {isAdmin ? "Admin - " : ""}
+          {courseData?.course.name}
+        </TypographyH1>
       </PageHeader>
       <div className="grid grid-cols-1 gap-4 my-4">
         {courseData?.posts?.map((post: any) => (
-          <Link href={`/${courseId}/${post.id}`}>
+          <Link href={`/admin/${courseId}/${post.id}`}>
             <Card key={post.id} className="hover:bg-muted">
               <CardHeader className="flex flex-row hover:underline">
                 <ChevronRight />

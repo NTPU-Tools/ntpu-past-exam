@@ -1,12 +1,17 @@
-import { TypographyH1 } from "@/components/ui/typography";
-import Balance from "react-wrap-balancer";
+import { PageHeader } from "@/components/PageHeader";
+import { TypographyBlockquote, TypographyH1 } from "@/components/ui/typography";
 
 export default function Page() {
   return (
     <div>
-      <Balance>
+      <PageHeader>
         <TypographyH1>公告</TypographyH1>
-      </Balance>
+      </PageHeader>
+      <div>
+        <TypographyBlockquote>
+          暫無公告，感謝大家的測試～！
+        </TypographyBlockquote>
+      </div>
     </div>
   );
 }

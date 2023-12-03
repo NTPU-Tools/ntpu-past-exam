@@ -2,7 +2,7 @@ import instance from "@/api/instance";
 import { cn } from "@/utils/cn";
 import { groupBy, map } from "lodash-es";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
 import useSWR from "swr";
 
 interface SidebarNavItem {
@@ -71,7 +71,7 @@ export function SidebarNavItems({ items, pathname }: DocsSidebarNavItemsProps) {
 }
 
 export function SidebarNav() {
-  const pathname = usePathname();
+  const { pathname, asPath } = useRouter();
 
   const { data } = useSWR(pathname !== "/login" ? "courseData" : null, () =>
     instance.get("/courses"),
@@ -88,11 +88,16 @@ export function SidebarNav() {
           </h4>
           {courses?.length && (
             <SidebarNavItems
-              items={map(courses, (course) => ({
-                title: course.name,
-                href: `/${course.id}`,
-              }))}
-              pathname={pathname}
+              items={map(courses, (course) => {
+                const path = pathname.includes("admin")
+                  ? `/admin/${course.id}`
+                  : `/${course.id}`;
+                return {
+                  title: course.name,
+                  href: path,
+                };
+              })}
+              pathname={asPath}
             />
           )}
         </div>
