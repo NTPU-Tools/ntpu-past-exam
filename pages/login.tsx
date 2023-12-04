@@ -35,10 +35,10 @@ const LoginPage = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
       const data = await instance.postForm("/login", values);
-      setCookie("ntpu-past-exam-access-token", data.data.access_token, 30);
-      setCookie("ntpu-past-exam-refresh-token", data.data.refresh_token, 365);
+      setCookie("ntpu-past-exam-access-token", data.access_token, 30);
+      setCookie("ntpu-past-exam-refresh-token", data.refresh_token, 365);
       router.replace("/");
-      instance.defaults.headers.Authorization = `Bearer ${data.data.access_token}`;
+      instance.defaults.headers.Authorization = `Bearer ${data.access_token}`;
       toast({
         title: "登入成功",
       });

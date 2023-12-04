@@ -47,7 +47,7 @@ export function MobileNav() {
   );
 
   const { pathname } = useRouter();
-  const items = groupBy(data?.data, "category");
+  const items = groupBy(data, "category");
   const isAdmin = pathname.includes("admin");
 
   return (

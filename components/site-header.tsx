@@ -24,11 +24,10 @@ function SiteHeader() {
   const router = useRouter();
   const query = router.query;
   const accessToken = getCookie("ntpu-past-exam-access-token");
-  const { data } = useSWRImmutable(
+  const { data: userData, isLoading } = useSWRImmutable(
     accessToken ? `me-${accessToken}` : null,
     () => instance.get("/users/me"),
   );
-  const userData = data?.data;
 
   const logout = () => {
     eraseCookie("ntpu-past-exam-access-token");
@@ -40,6 +39,21 @@ function SiteHeader() {
   };
 
   const isAdmin = router.pathname.includes("admin");
+
+  if (isLoading) {
+    return (
+      <header className="sticky h-16 top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center space-x-4 justify-between sm:space-x-0">
+          <div className="animate-pulse rounded-md bg-muted h-10 w-10 md:w-[150px]" />
+          <div className="flex gap-2">
+            <div className="animate-pulse bg-muted h-10 w-10 rounded-md" />
+            <div className="animate-pulse bg-muted h-10 w-[102px] rounded-md" />
+            <div className="animate-pulse bg-muted h-10 w-10 rounded-full" />
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

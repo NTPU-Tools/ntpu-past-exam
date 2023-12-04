@@ -8,10 +8,9 @@ import useSWR from "swr";
 const PostPage = () => {
   const router = useRouter();
   const postId = router.query.post_id as string | undefined;
-  const { data } = useSWR(postId ? `post-${postId}` : null, () =>
+  const { data: post } = useSWR(postId ? `post-${postId}` : null, () =>
     instance.get(`/posts/${postId}`),
   );
-  const post = data?.data;
   const isAdmin = router.pathname.includes("admin");
   return (
     <div className="min-h-[inherit] flex flex-col relative top-0 ">

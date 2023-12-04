@@ -31,17 +31,19 @@ import { createPostSchema } from "@/schemas/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { groupBy, map, omit } from "lodash-es";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import * as z from "zod";
 
 const CreatePostDialog = () => {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const query = router.query;
   const { data } = useSWR("courseData", () => instance.get("/courses"));
 
-  const items = groupBy(data?.data, "category");
+  const items = groupBy(data, "category");
 
   const form = useForm<z.infer<typeof createPostSchema>>({
     resolver: zodResolver(createPostSchema),
@@ -60,6 +62,7 @@ const CreatePostDialog = () => {
 
   const onSubmit = async (values: z.infer<typeof createPostSchema>) => {
     try {
+      setIsLoading(true);
       await instance.postForm("/posts", values);
       toast({
         title: "新增成功",
@@ -70,6 +73,8 @@ const CreatePostDialog = () => {
       toast({
         title: "新增失敗",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -172,9 +177,13 @@ const CreatePostDialog = () => {
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">取消</Button>
+            <Button variant="outline" isLoading={isLoading}>
+              取消
+            </Button>
           </DialogClose>
-          <Button onClick={form.handleSubmit(onSubmit)}>上傳</Button>
+          <Button onClick={form.handleSubmit(onSubmit)} isLoading={isLoading}>
+            上傳
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -10,11 +10,11 @@ import useSWR from "swr";
 const CoursePage = () => {
   const router = useRouter();
   const courseId = router.query.course_id as string | undefined;
-  const { data } = useSWR(courseId ? `course-${courseId}` : null, () =>
-    instance.get(`/courses/${courseId}`),
+  const { data: courseData } = useSWR(
+    courseId ? `course-${courseId}` : null,
+    () => instance.get(`/courses/${courseId}`),
   );
 
-  const courseData = data?.data;
   const isAdmin = router.pathname.includes("admin");
   return (
     <div className="relative">

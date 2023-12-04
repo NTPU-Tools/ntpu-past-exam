@@ -1,4 +1,5 @@
 import instance from "@/api/instance";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/utils/cn";
 import { groupBy, map } from "lodash-es";
 import Link from "next/link";
@@ -73,13 +74,43 @@ export function SidebarNavItems({ items, pathname }: DocsSidebarNavItemsProps) {
 function SidebarNav() {
   const { pathname, asPath } = useRouter();
 
-  const { data } = useSWR(pathname !== "/login" ? "courseData" : null, () =>
-    instance.get("/courses"),
+  const { data, isLoading } = useSWR(
+    pathname !== "/login" ? "courseData" : null,
+    () => instance.get("/courses"),
   );
 
-  const items = groupBy(data?.data, "category");
+  if (isLoading) {
+    return (
+      <div className="w-full flex-col flex gap-4">
+        <Skeleton className="h-4 w-[150px]" />
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-[150px]" />
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-[80px]" />
+        <Skeleton className="h-4 w-[120px]" />
+        <Skeleton className="h-4 w-[150px]" />
+        <Skeleton className="h-4 w-[60px]" />
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-[70px]" />
+        <Skeleton className="h-4 w-[150px]" />
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-[150px]" />
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-[80px]" />
+        <Skeleton className="h-4 w-[120px]" />
+        <Skeleton className="h-4 w-[150px]" />
+        <Skeleton className="h-4 w-[60px]" />
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-[70px]" />
+      </div>
+    );
+  }
 
-  return data?.data.length ? (
+  const items = groupBy(data, "category");
+
+  return data?.length ? (
     <div className="w-full">
       {map(items, (courses, key) => (
         <div key={key} className={cn("pb-4")}>
