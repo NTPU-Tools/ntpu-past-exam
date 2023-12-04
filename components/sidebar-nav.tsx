@@ -70,7 +70,7 @@ export function SidebarNavItems({ items, pathname }: DocsSidebarNavItemsProps) {
   ) : null;
 }
 
-export function SidebarNav() {
+function SidebarNav() {
   const { pathname, asPath } = useRouter();
 
   const { data } = useSWR(pathname !== "/login" ? "courseData" : null, () =>
@@ -105,3 +105,5 @@ export function SidebarNav() {
     </div>
   ) : null;
 }
+
+export default SidebarNav;

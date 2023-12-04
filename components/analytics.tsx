@@ -1,7 +1,7 @@
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import Script from "next/script";
 
-export function Analytics() {
+function Analytics() {
   return (
     <>
       <VercelAnalytics />
@@ -20,3 +20,5 @@ export function Analytics() {
     </>
   );
 }
+
+export default Analytics;

@@ -1,6 +1,6 @@
 import instance from "@/api/instance";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import ScrollArea from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/utils/cn";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";

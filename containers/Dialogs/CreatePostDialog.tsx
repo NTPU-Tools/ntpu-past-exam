@@ -49,9 +49,13 @@ const CreatePostDialog = () => {
 
   function closeCreatePostDialog() {
     form.reset();
-    router.replace({ query: omit(query, "openCreatePostDialog") }, undefined, {
-      shallow: true,
-    });
+    router.replace(
+      { query: omit(query, "open_create_post_dialog") },
+      undefined,
+      {
+        shallow: true,
+      },
+    );
   }
 
   const onSubmit = async (values: z.infer<typeof createPostSchema>) => {
@@ -71,7 +75,7 @@ const CreatePostDialog = () => {
 
   return (
     <Dialog
-      open={query?.openCreatePostDialog === "true"}
+      open={query?.open_create_post_dialog === "true"}
       onOpenChange={(open) => {
         if (!open) {
           closeCreatePostDialog();

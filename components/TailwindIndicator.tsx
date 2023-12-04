@@ -1,4 +1,4 @@
-export function TailwindIndicator() {
+function TailwindIndicator() {
   if (process.env.NODE_ENV === "production") return null;
 
   return (
@@ -12,3 +12,5 @@ export function TailwindIndicator() {
     </div>
   );
 }
+
+export default TailwindIndicator;

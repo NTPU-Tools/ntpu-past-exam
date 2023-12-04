@@ -19,7 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import useSWRImmutable from "swr/immutable";
 
-export function SiteHeader() {
+function SiteHeader() {
   const { toast } = useToast();
   const router = useRouter();
   const query = router.query;
@@ -59,7 +59,9 @@ export function SiteHeader() {
                   <Button
                     onClick={() => {
                       router.replace(
-                        { query: { ...query, openCreatePostDialog: "true" } },
+                        {
+                          query: { ...query, open_create_post_dialog: "true" },
+                        },
                         undefined,
                         { shallow: true },
                       );
@@ -105,3 +107,5 @@ export function SiteHeader() {
     </header>
   );
 }
+
+export default SiteHeader;

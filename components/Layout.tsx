@@ -1,9 +1,5 @@
-import { TailwindIndicator } from "@/components/TailwindIndicator";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { SidebarNav } from "@/components/sidebar-nav";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import Dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { FC, ReactNode } from "react";
 
@@ -11,6 +7,26 @@ interface pageProps {
   children: ReactNode;
 }
 
+const TailwindIndicator = Dynamic(
+  () => import("@/components/TailwindIndicator"),
+  {
+    ssr: false,
+  },
+);
+const TailwindIndicatorDynamic =
+  process.env.NODE_ENV === "production" ? () => null : TailwindIndicator;
+const ScrollArea = Dynamic(() => import("@/components/ui/scroll-area"), {
+  ssr: false,
+});
+const SiteHeader = Dynamic(() => import("@/components/site-header"), {
+  ssr: false,
+});
+const SidebarNav = Dynamic(() => import("@/components/sidebar-nav"), {
+  ssr: false,
+});
+const SiteFooter = Dynamic(() => import("@/components/site-footer"), {
+  ssr: false,
+});
 const Layout: FC<pageProps> = ({ children }: pageProps) => {
   const { pathname } = useRouter();
 
@@ -24,7 +40,7 @@ const Layout: FC<pageProps> = ({ children }: pageProps) => {
           </div>
           <SiteFooter />
         </div>
-        <TailwindIndicator />
+        <TailwindIndicatorDynamic />
       </ThemeProvider>
     );
   }
@@ -48,7 +64,7 @@ const Layout: FC<pageProps> = ({ children }: pageProps) => {
         </div>
         <SiteFooter />
       </div>
-      <TailwindIndicator />
+      <TailwindIndicatorDynamic />
     </ThemeProvider>
   );
 };
