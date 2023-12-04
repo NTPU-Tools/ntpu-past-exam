@@ -3,7 +3,10 @@ import Layout from "@/components/Layout";
 import type { AppProps } from "next/app";
 import Dynamic from "next/dynamic";
 
-const Dialogs = Dynamic(() => import("@/containers/Dialogs"), { ssr: false });
+const Dialogs = Dynamic(() => import("@/containers/Dialogs"), {
+  ssr: false,
+  loading: () => <>123123</>,
+});
 const Toaster = Dynamic(() => import("@/components/ui/toaster"), {
   ssr: false,
 });
