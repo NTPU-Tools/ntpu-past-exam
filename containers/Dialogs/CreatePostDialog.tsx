@@ -78,7 +78,7 @@ const CreatePostDialog = () => {
     } catch (e) {
       toast({
         title: "新增失敗",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsLoading(false);

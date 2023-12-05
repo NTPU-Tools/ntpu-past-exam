@@ -135,7 +135,7 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
     } catch (e) {
       toast({
         title: "操作失敗",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsLoading(false);
