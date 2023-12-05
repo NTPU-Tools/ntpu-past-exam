@@ -42,7 +42,9 @@ const LoginPage = () => {
       toast({
         title: "登入成功",
       });
-      window.location.href = "/";
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1200);
     } catch (e) {
       form.setError("root", { message: "帳號或密碼錯誤" });
     }
