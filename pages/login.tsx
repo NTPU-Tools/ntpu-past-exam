@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { loginSchema } from "@/schemas/login";
+import userStore from "@/store/userStore";
 import { setCookie } from "@/utils/cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
@@ -28,6 +29,7 @@ import * as z from "zod";
 const LoginPage = () => {
   const { toast } = useToast();
   const router = useRouter();
+  const { setUserData } = userStore();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
   });
@@ -35,15 +37,14 @@ const LoginPage = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
       const data = await instance.postForm("/login", values);
+      setUserData(data);
       setCookie("ntpu-past-exam-access-token", data.access_token, 30);
       setCookie("ntpu-past-exam-refresh-token", data.refresh_token, 365);
       instance.defaults.headers.Authorization = `Bearer ${data.access_token}`;
-      setTimeout(() => {
-        router.push("/");
-        toast({
-          title: "登入成功",
-        });
-      }, 1500);
+      toast({
+        title: "登入成功",
+      });
+      router.push("/");
     } catch (e) {
       form.setError("root", { message: "帳號或密碼錯誤" });
     }
