@@ -22,13 +22,11 @@ import { loginSchema } from "@/schemas/login";
 import userStore from "@/store/userStore";
 import { setCookie } from "@/utils/cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 const LoginPage = () => {
   const { toast } = useToast();
-  const router = useRouter();
   const { setUserData } = userStore();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
