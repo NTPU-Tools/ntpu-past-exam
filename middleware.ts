@@ -3,39 +3,32 @@ import type { NextRequest } from "next/server";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
-  try {
-    const path = request.nextUrl.pathname;
-    const accessToken = request.cookies.get("ntpu-past-exam-access-token")
-      ?.value;
+  const path = request.nextUrl.pathname;
+  const accessToken = request.cookies.get("ntpu-past-exam-access-token")?.value;
 
-    if (!accessToken) {
-      if (path === "/login") return NextResponse.next();
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    const response = await fetch(`${process.env.API_ORIGIN}/users/me`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    const data = await response.json();
-
-    if (!data?.is_active) {
-      if (path === "/inactive") return NextResponse.next();
-      return NextResponse.redirect(new URL("/inactive", request.url));
-    }
-
-    if (!data?.is_admin && path.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    return NextResponse.next();
-  } catch (e) {
-    console.log(e);
-
+  if (!accessToken) {
+    if (path === "/login") return NextResponse.next();
     return NextResponse.redirect(new URL("/login", request.url));
   }
+
+  const response = await fetch(`${process.env.API_ORIGIN}/users/me`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!data?.is_active) {
+    if (path === "/inactive") return NextResponse.next();
+    return NextResponse.redirect(new URL("/inactive", request.url));
+  }
+
+  if (!data?.is_admin && path.startsWith("/admin")) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 // See "Matching Paths" below to learn more
