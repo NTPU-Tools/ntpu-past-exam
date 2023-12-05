@@ -113,7 +113,7 @@ function SiteHeader() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-[300px]">
                     <DropdownMenuLabel>
-                      Hi, {userData?.username}
+                      Hi, {userData?.readable_name ?? userData?.username}
                     </DropdownMenuLabel>
                     {userData?.is_admin && (
                       <>
