@@ -44,7 +44,7 @@ const LoginPage = () => {
       toast({
         title: "登入成功",
       });
-      router.push("/");
+      window.location.href = "/";
     } catch (e) {
       form.setError("root", { message: "帳號或密碼錯誤" });
     }
