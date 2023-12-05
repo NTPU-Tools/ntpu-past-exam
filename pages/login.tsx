@@ -37,13 +37,13 @@ const LoginPage = () => {
       const data = await instance.postForm("/login", values);
       setCookie("ntpu-past-exam-access-token", data.access_token, 30);
       setCookie("ntpu-past-exam-refresh-token", data.refresh_token, 365);
-      setTimeout(() => {
-        router.replace("/");
-      }, 1000);
       instance.defaults.headers.Authorization = `Bearer ${data.access_token}`;
-      toast({
-        title: "登入成功",
-      });
+      setTimeout(() => {
+        router.push("/");
+        toast({
+          title: "登入成功",
+        });
+      }, 1500);
     } catch (e) {
       form.setError("root", { message: "帳號或密碼錯誤" });
     }
