@@ -5,6 +5,7 @@ import {
   DialogClose,
   DialogContent,
   DialogFooter,
+  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
@@ -28,6 +29,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { createPostSchema } from "@/schemas/post";
+import userStore from "@/store/userStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { groupBy, map, omit } from "lodash-es";
 import { useRouter } from "next/router";
@@ -41,7 +43,11 @@ const CreatePostDialog = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const query = router.query;
-  const { data } = useSWR("courseData", () => instance.get("/courses"));
+
+  const { userData } = userStore();
+  const { data } = useSWR(userData?.is_active ? "courseData" : null, () =>
+    instance.get("/courses"),
+  );
 
   const items = groupBy(data, "category");
 
@@ -72,6 +78,7 @@ const CreatePostDialog = () => {
     } catch (e) {
       toast({
         title: "新增失敗",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -88,7 +95,9 @@ const CreatePostDialog = () => {
       }}
     >
       <DialogContent>
-        <DialogTitle>上傳考古題</DialogTitle>
+        <DialogHeader>
+          <DialogTitle>上傳考古題</DialogTitle>
+        </DialogHeader>
         <Form {...form}>
           <form>
             <div className="grid gap-2">

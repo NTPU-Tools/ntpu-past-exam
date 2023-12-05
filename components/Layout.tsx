@@ -68,7 +68,7 @@ const SiteFooter = Dynamic(() => import("@/components/site-footer"), {
 const Layout: FC<pageProps> = ({ children }: pageProps) => {
   const { pathname } = useRouter();
 
-  if (pathname === "/login") {
+  if (pathname === "/login" || pathname === "/inactive") {
     return (
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <div className="relative flex min-h-screen flex-col">

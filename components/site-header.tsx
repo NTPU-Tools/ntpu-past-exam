@@ -13,21 +13,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
+import userStore from "@/store/userStore";
 import { eraseCookie, getCookie } from "@/utils/cookie";
 import { UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import useSWRImmutable from "swr/immutable";
+import { useEffect } from "react";
+import useSWR from "swr";
 
 function SiteHeader() {
+  const { setUserData, userData } = userStore();
   const { toast } = useToast();
   const router = useRouter();
   const query = router.query;
   const accessToken = getCookie("ntpu-past-exam-access-token");
-  const { data: userData, isLoading } = useSWRImmutable(
+  const { data, isLoading } = useSWR(
     accessToken ? `me-${accessToken}` : null,
     () => instance.get("/users/me"),
+    {
+      refreshInterval: 1000 * 60,
+    },
   );
+
+  useEffect(() => {
+    setUserData(data);
+  }, [setUserData, data]);
 
   const logout = () => {
     eraseCookie("ntpu-past-exam-access-token");
@@ -70,19 +80,24 @@ function SiteHeader() {
                     <Button variant="outline">回首頁</Button>
                   </Link>
                 ) : (
-                  <Button
-                    onClick={() => {
-                      router.replace(
-                        {
-                          query: { ...query, open_create_post_dialog: "true" },
-                        },
-                        undefined,
-                        { shallow: true },
-                      );
-                    }}
-                  >
-                    上傳考古題
-                  </Button>
+                  userData?.is_active && (
+                    <Button
+                      onClick={() => {
+                        router.replace(
+                          {
+                            query: {
+                              ...query,
+                              open_create_post_dialog: "true",
+                            },
+                          },
+                          undefined,
+                          { shallow: true },
+                        );
+                      }}
+                    >
+                      上傳考古題
+                    </Button>
+                  )
                 )}
 
                 <DropdownMenu>

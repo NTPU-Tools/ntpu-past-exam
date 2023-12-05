@@ -31,6 +31,8 @@
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
+    "@radix-ui/react-tooltip": "^1.0.7",
+    "@tanstack/react-table": "^8.10.7",
     "@vercel/analytics": "^1.1.1",
     "axios": "^1.6.2",
     "class-variance-authority": "^0.7.0",
@@ -45,12 +47,14 @@
     "react-day-picker": "^8.9.1",
     "react-dom": "^18",
     "react-hook-form": "^7.48.2",
+    "react-paginate": "^8.2.0",
     "react-wrap-balancer": "^1.1.0",
     "retry": "^0.13.1",
     "swr": "^2.2.4",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",

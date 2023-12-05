@@ -1,5 +1,6 @@
 import instance from "@/api/instance";
 import { Skeleton } from "@/components/ui/skeleton";
+import userStore from "@/store/userStore";
 import { cn } from "@/utils/cn";
 import { groupBy, map } from "lodash-es";
 import Link from "next/link";
@@ -72,10 +73,11 @@ export function SidebarNavItems({ items, pathname }: DocsSidebarNavItemsProps) {
 }
 
 function SidebarNav() {
+  const { userData } = userStore();
   const { pathname, asPath } = useRouter();
 
   const { data, isLoading } = useSWR(
-    pathname !== "/login" ? "courseData" : null,
+    userData?.is_active ? "courseData" : null,
     () => instance.get("/courses"),
   );
 

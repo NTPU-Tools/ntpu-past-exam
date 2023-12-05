@@ -20,24 +20,24 @@ const PostPage = () => {
           <Skeleton className="h-12 w-[200px]" />
         </PageHeader>
         <div className="grid grid-cols-1 gap-4 my-4">
-          <Skeleton className="h-4 w-[500px]" />
-          <Skeleton className="h-4 w-[300px]" />
-          <Skeleton className="h-4 w-[570px]" />
-          <Skeleton className="h-4 w-[180px]" />
-          <Skeleton className="h-4 w-[500px]" />
-          <Skeleton className="h-4 w-[300px]" />
-          <Skeleton className="h-4 w-[570px]" />
-          <Skeleton className="h-4 w-[880px]" />
-          <Skeleton className="h-4 w-[500px]" />
-          <Skeleton className="h-4 w-[300px]" />
-          <Skeleton className="h-4 w-[770px]" />
-          <Skeleton className="h-4 w-[580px]" />
-          <Skeleton className="h-4 w-[500px]" />
-          <Skeleton className="h-4 w-[300px]" />
-          <Skeleton className="h-4 w-[570px]" />
-          <Skeleton className="h-4 w-[880px]" />
-          <Skeleton className="h-4 w-[500px]" />
-          <Skeleton className="h-4 w-[300px]" />
+          <Skeleton className="h-4 w-[280px] md:w-[500px]" />
+          <Skeleton className="h-4 w-[180px] md:w-[300px]" />
+          <Skeleton className="h-4 w-[80px] md:w-[570px]" />
+          <Skeleton className="h-4 w-[80px] md:w-[180px]" />
+          <Skeleton className="h-4 w-[200px] md:w-[500px]" />
+          <Skeleton className="h-4 w-[80px] md:w-[300px]" />
+          <Skeleton className="h-4 w-[80px] md:w-[570px]" />
+          <Skeleton className="h-4 w-[200px] md:w-[880px]" />
+          <Skeleton className="h-4 w-[100px] md:w-[500px]" />
+          <Skeleton className="h-4 w-[80px] md:w-[300px]" />
+          <Skeleton className="h-4 w-[200px] md:w-[770px]" />
+          <Skeleton className="h-4 w-[180px] md:w-[580px]" />
+          <Skeleton className="h-4 w-[80px] md:w-[500px]" />
+          <Skeleton className="h-4 w-[80px] md:w-[300px]" />
+          <Skeleton className="h-4 w-[280px] md:w-[570px]" />
+          <Skeleton className="h-4 w-[80px] md:w-[880px]" />
+          <Skeleton className="h-4 w-[100px] md:w-[500px]" />
+          <Skeleton className="h-4 w-[80px] md:w-[300px]" />
         </div>
       </div>
     );

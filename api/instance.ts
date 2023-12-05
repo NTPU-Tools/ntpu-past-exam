@@ -27,6 +27,11 @@ declare module "axios" {
       data?: any,
       config?: AxiosRequestConfig,
     ): Promise<T>;
+    putForm<T = any>(
+      url: string,
+      data?: any,
+      config?: AxiosRequestConfig,
+    ): Promise<T>;
 
     get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
     // delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
