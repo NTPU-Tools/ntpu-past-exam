@@ -77,7 +77,7 @@ function SidebarNav() {
   const { pathname, asPath } = useRouter();
 
   const { data, isLoading } = useSWR(
-    userData?.is_active ? "courseData" : null,
+    userData?.is_active ? "all-courses" : null,
     () => instance.get("/courses"),
   );
 

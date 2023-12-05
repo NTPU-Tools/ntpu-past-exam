@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { TypographyBlockquote } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
 import { createPostSchema } from "@/schemas/post";
 import userStore from "@/store/userStore";
@@ -45,7 +46,7 @@ const CreatePostDialog = () => {
   const query = router.query;
 
   const { userData } = userStore();
-  const { data } = useSWR(userData?.is_active ? "courseData" : null, () =>
+  const { data } = useSWR(userData?.is_active ? "all-courses" : null, () =>
     instance.get("/courses"),
   );
 
@@ -183,6 +184,9 @@ const CreatePostDialog = () => {
             </div>
           </form>
         </Form>
+        <TypographyBlockquote>
+          待管理員審核通過後，才會顯示在課程頁面上。
+        </TypographyBlockquote>
 
         <DialogFooter>
           <DialogClose asChild>

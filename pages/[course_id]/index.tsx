@@ -2,7 +2,7 @@ import instance from "@/api/instance";
 import { PageHeader } from "@/components/PageHeader";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TypographyH1 } from "@/components/ui/typography";
+import { TypographyBlockquote, TypographyH1 } from "@/components/ui/typography";
 import { constant, times } from "lodash-es";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -37,16 +37,20 @@ const CoursePage = () => {
         <TypographyH1>{courseData?.course.name}</TypographyH1>
       </PageHeader>
       <div className="grid grid-cols-1 gap-4 my-4">
-        {courseData?.posts?.map((post: any) => (
-          <Link href={`/${courseId}/${post.id}`} key={post.id}>
-            <Card className="hover:bg-muted">
-              <CardHeader className="flex flex-row hover:underline">
-                <ChevronRight />
-                {post.title}
-              </CardHeader>
-            </Card>
-          </Link>
-        ))}
+        {courseData?.posts?.length ? (
+          courseData?.posts?.map((post: any) => (
+            <Link href={`/${courseId}/${post.id}`} key={post.id}>
+              <Card className="hover:bg-muted">
+                <CardHeader className="flex flex-row hover:underline">
+                  <ChevronRight />
+                  {post.title}
+                </CardHeader>
+              </Card>
+            </Link>
+          ))
+        ) : (
+          <TypographyBlockquote>尚無通過審核之考古題</TypographyBlockquote>
+        )}
       </div>
     </div>
   );

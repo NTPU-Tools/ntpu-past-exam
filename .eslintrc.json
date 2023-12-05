@@ -12,6 +12,7 @@
     "react/no-array-index-key": "off",
     "react/prop-types": "off",
     "prefer-destructuring": "off",
-    "react/no-unstable-nested-components": "off"
+    "react/no-unstable-nested-components": "off",
+    "camelcase": "off"
   }
 }

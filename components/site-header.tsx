@@ -37,7 +37,10 @@ function SiteHeader() {
 
   useEffect(() => {
     setUserData(data);
-  }, [setUserData, data]);
+    if (data?.is_active && router.pathname === "/inactive") {
+      router.replace("/");
+    }
+  }, [setUserData, data, router]);
 
   const logout = () => {
     eraseCookie("ntpu-past-exam-access-token");

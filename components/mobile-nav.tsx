@@ -42,7 +42,7 @@ function MobileLink({
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
-  const { data } = useSWR(open ? "courseData" : null, () =>
+  const { data } = useSWR(open ? "all-courses" : null, () =>
     instance.get("/courses"),
   );
 

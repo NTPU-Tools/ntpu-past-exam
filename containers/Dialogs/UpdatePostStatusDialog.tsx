@@ -2,10 +2,8 @@ import instance from "@/api/instance";
 import { DataTable } from "@/components/ClientPaginationDataTable";
 import PDFViewer from "@/components/PDFViewer";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -18,9 +16,9 @@ import {
 } from "@/components/ui/tooltip";
 import { TypographyP } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
+import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { createColumnHelper } from "@tanstack/react-table";
 import { omit } from "lodash-es";
-import { Eye } from "lucide-react";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
 import useSWR, { mutate } from "swr";
@@ -105,10 +103,13 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
           <div>
             <Tooltip>
               <TooltipTrigger>
-                <Eye
-                  className="hover:cursor-pointer"
+                <Button
+                  variant="outline"
+                  size="icon"
                   onClick={() => openPostDetailDialog({ id })}
-                />
+                >
+                  <MixerHorizontalIcon />
+                </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <TypographyP>查看 {title} 的內容</TypographyP>
@@ -152,14 +153,12 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
           }
         }}
       >
-        <DialogContent className="max-w-3xl">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>審核考古題</DialogTitle>
           </DialogHeader>
 
-          <Card>
-            <DataTable columns={columns} data={data} />
-          </Card>
+          <DataTable columns={columns} data={data} />
         </DialogContent>
       </Dialog>
 
@@ -180,17 +179,17 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
 
           <PDFViewer src={postData?.file} className="w-full grow" />
           <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  updatePostStatus({ status: "REJECTED" });
-                }}
-                isLoading={isLoading}
-              >
-                不通過
-              </Button>
-            </DialogClose>
+            {/* <DialogClose asChild> */}
+            {/*  <Button */}
+            {/*    variant="outline" */}
+            {/*    onClick={() => { */}
+            {/*      updatePostStatus({ status: "REJECTED" }); */}
+            {/*    }} */}
+            {/*    isLoading={isLoading} */}
+            {/*  > */}
+            {/*    不通過 */}
+            {/*  </Button> */}
+            {/* </DialogClose> */}
             <Button
               onClick={() => {
                 updatePostStatus({ status: "APPROVED" });

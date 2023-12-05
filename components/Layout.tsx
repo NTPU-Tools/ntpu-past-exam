@@ -35,32 +35,6 @@ const SiteHeader = Dynamic(() => import("@/components/site-header"), {
 });
 const SidebarNav = Dynamic(() => import("@/components/sidebar-nav"), {
   ssr: false,
-  loading: () => (
-    <div className="w-full flex-col flex gap-4">
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[150px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[100px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[100px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[150px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[100px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[80px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[120px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[150px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[60px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[100px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[70px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[150px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[100px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[100px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[150px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[100px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[80px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[120px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[150px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[60px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[100px]" />
-      <div className="animate-pulse rounded-md bg-muted h-4 w-[70px]" />
-    </div>
-  ),
 });
 const SiteFooter = Dynamic(() => import("@/components/site-footer"), {
   ssr: false,

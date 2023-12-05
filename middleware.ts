@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    const response = await fetch(`${process.env.API_ORIGIN}/users/me`, {
+    const response = await fetch(`${process.env.API_ORIGIN}/verify-token`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
-    if (path === "/login") {
+    if (path === "/login" || path === "/inactive") {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
