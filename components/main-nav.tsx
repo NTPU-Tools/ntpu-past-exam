@@ -13,7 +13,7 @@ export function MainNav() {
         className="flex items-center space-x-2"
       >
         <span className="hidden font-bold md:inline-block">
-          NTPU考古題<TypographySmall>Beta</TypographySmall>{" "}
+          NTPU 考古題<TypographySmall>Beta</TypographySmall>{" "}
           {isAdmin ? "- Admin" : ""}
         </span>
       </Link>

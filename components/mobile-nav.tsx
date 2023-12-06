@@ -2,6 +2,7 @@ import instance from "@/api/instance";
 import { Button } from "@/components/ui/button";
 import ScrollArea from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/utils/cn";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";
 import { groupBy, map } from "lodash-es";
@@ -68,7 +69,8 @@ export function MobileNav() {
           onOpenChange={setOpen}
         >
           <span className="font-bold">
-            NTPU 考古題 {isAdmin ? "- Admin" : ""}
+            NTPU 考古題<TypographySmall>Beta</TypographySmall>{" "}
+            {isAdmin ? "- Admin" : ""}
           </span>
         </MobileLink>
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">

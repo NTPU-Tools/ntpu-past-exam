@@ -60,7 +60,12 @@ const LoginPage = () => {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  form.handleSubmit(onSubmit)();
+                }}
+              >
                 <div className="grid w-full items-center gap-4">
                   <div className="flex flex-col space-y-1.5">
                     <FormField
@@ -99,16 +104,12 @@ const LoginPage = () => {
                   <FormMessage>
                     {form.formState.errors.root?.message}
                   </FormMessage>
+
+                  <Button className="w-full my-2">登入</Button>
                 </div>
               </form>
             </Form>
           </CardContent>
-
-          <CardFooter className="flex justify-between">
-            <Button className="w-full" onClick={form.handleSubmit(onSubmit)}>
-              登入
-            </Button>
-          </CardFooter>
         </Card>
       </div>
     </div>
