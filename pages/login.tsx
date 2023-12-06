@@ -35,6 +35,7 @@ const LoginPage = () => {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
+      setIsLoading(true);
       const data = await instance.postForm("/login", values);
       setUserData(data);
       setCookie("ntpu-past-exam-access-token", data.access_token, 30);
@@ -48,6 +49,8 @@ const LoginPage = () => {
       }, 1000);
     } catch (e) {
       form.setError("root", { message: "帳號或密碼錯誤" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,7 +66,6 @@ const LoginPage = () => {
             <Form {...form}>
               <form
                 onSubmit={(event) => {
-                  setIsLoading(true);
                   event.preventDefault();
                   form.handleSubmit(onSubmit)();
                 }}
