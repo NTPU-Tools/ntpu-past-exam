@@ -19,11 +19,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { addCourseSchema } from "@/schemas/course";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
-import { omit } from "lodash-es";
+import { map, omit } from "lodash-es";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -159,7 +168,27 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
                       <FormItem>
                         <FormLabel>課程類別</FormLabel>
                         <FormControl>
-                          <Input placeholder="請輸入課程類別" {...field} />
+                          <Select onValueChange={field.onChange}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="請選擇課程類別" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {map(
+                                [
+                                  "大一課程考古題庫",
+                                  "大二課程考古題庫",
+                                  "大三課程考古題庫",
+                                  "大四課程考古題庫",
+                                  "其他",
+                                ],
+                                (value) => (
+                                  <SelectItem value={value} key={value}>
+                                    {value}
+                                  </SelectItem>
+                                ),
+                              )}
+                            </SelectContent>
+                          </Select>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
