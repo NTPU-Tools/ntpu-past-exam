@@ -56,6 +56,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
   );
 
   function closeEditUserDialog() {
+    form.reset();
     router.replace(
       { query: omit(query, "open_edit_course_dialog") },
       undefined,

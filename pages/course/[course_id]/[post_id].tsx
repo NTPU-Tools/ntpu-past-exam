@@ -9,10 +9,14 @@ import useSWR from "swr";
 const PostPage = () => {
   const router = useRouter();
   const postId = router.query.post_id as string | undefined;
-  const { data: post, isLoading } = useSWR(
-    postId ? `post-${postId}` : null,
-    () => instance.get(`/posts/${postId}`),
+  const {
+    data: post,
+    isLoading,
+    error,
+  } = useSWR(postId ? `post-${postId}` : null, () =>
+    instance.get(`/posts/${postId}`),
   );
+
   if (isLoading) {
     return (
       <div className="relative">
@@ -39,6 +43,16 @@ const PostPage = () => {
           <Skeleton className="h-4 w-[100px] md:w-[500px]" />
           <Skeleton className="h-4 w-[80px] md:w-[300px]" />
         </div>
+      </div>
+    );
+  }
+
+  if (error?.response?.status === 404) {
+    return (
+      <div className="min-h-[inherit] flex flex-col relative top-0 ">
+        <PageHeader>
+          <TypographyH1>找不到考古題</TypographyH1>
+        </PageHeader>
       </div>
     );
   }

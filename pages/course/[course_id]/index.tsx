@@ -12,9 +12,12 @@ import useSWR from "swr";
 const CoursePage = () => {
   const router = useRouter();
   const courseId = router.query.course_id as string | undefined;
-  const { data: courseData, isLoading } = useSWR(
-    courseId ? `course-${courseId}` : null,
-    () => instance.get(`/courses/${courseId}`),
+  const {
+    data: courseData,
+    isLoading,
+    error,
+  } = useSWR(courseId ? `course-${courseId}` : null, () =>
+    instance.get(`/courses/${courseId}`),
   );
 
   if (isLoading) {
@@ -31,6 +34,17 @@ const CoursePage = () => {
       </div>
     );
   }
+
+  if (error?.response?.status === 404) {
+    return (
+      <div className="min-h-[inherit] flex flex-col relative top-0 ">
+        <PageHeader>
+          <TypographyH1>找不到課程</TypographyH1>
+        </PageHeader>
+      </div>
+    );
+  }
+
   return (
     <div className="relative">
       <PageHeader>

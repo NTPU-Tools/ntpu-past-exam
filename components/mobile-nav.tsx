@@ -81,7 +81,7 @@ export function MobileNav() {
                 {map(courses, (course) => {
                   const path = pathname.includes("admin")
                     ? `/admin/${course.id}`
-                    : `/${course.id}`;
+                    : `/course/${course.id}`;
                   return (
                     <React.Fragment key={course.id}>
                       <MobileLink

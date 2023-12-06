@@ -117,7 +117,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
                       updateUserStatus({ is_active: false, id });
                     }}
                   >
-                    <LockClosedIcon />
+                    <LockOpen1Icon />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -137,7 +137,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
                       updateUserStatus({ is_active: true, id });
                     }}
                   >
-                    <LockOpen1Icon />
+                    <LockClosedIcon />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -158,7 +158,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
                       updateUserStatus({ is_admin: false, id, field: "admin" });
                     }}
                   >
-                    <StarIcon />
+                    <StarFilledIcon />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -178,7 +178,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
                       updateUserStatus({ is_admin: true, id, field: "admin" });
                     }}
                   >
-                    <StarFilledIcon />
+                    <StarIcon />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>

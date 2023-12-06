@@ -124,7 +124,7 @@ function SidebarNav() {
               items={map(courses, (course) => {
                 const path = pathname.includes("admin")
                   ? `/admin/${course.id}`
-                  : `/${course.id}`;
+                  : `/course/${course.id}`;
                 return {
                   title: course.name,
                   href: path,
