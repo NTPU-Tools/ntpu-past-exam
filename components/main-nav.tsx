@@ -1,3 +1,4 @@
+import { TypographySmall } from "@/components/ui/typography";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -12,7 +13,8 @@ export function MainNav() {
         className="flex items-center space-x-2"
       >
         <span className="hidden font-bold md:inline-block">
-          NTPU 考古題 {isAdmin ? "- Admin" : ""}
+          NTPU考古題<TypographySmall>Beta</TypographySmall>{" "}
+          {isAdmin ? "- Admin" : ""}
         </span>
       </Link>
     </div>

@@ -168,7 +168,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
                 </div>
 
                 <FormDescription>
-                  課程類別為課程之分類，如：大一上、大二下
+                  課程類別為課程之分類，如：大二課程考古題庫
                 </FormDescription>
                 <FormMessage>{form.formState.errors.root?.message}</FormMessage>
               </div>
