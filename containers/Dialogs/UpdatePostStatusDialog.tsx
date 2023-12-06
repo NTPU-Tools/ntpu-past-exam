@@ -177,7 +177,10 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
 
           <TypographyP>{postData?.content}</TypographyP>
 
-          <PDFViewer src={postData?.file} className="w-full grow" />
+          {postData?.file && (
+            <PDFViewer src={postData?.file} className="w-full grow" />
+          )}
+
           <DialogFooter>
             {/* <DialogClose asChild> */}
             {/*  <Button */}
