@@ -21,10 +21,12 @@ import { loginSchema } from "@/schemas/login";
 import userStore from "@/store/userStore";
 import { setCookie } from "@/utils/cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 const LoginPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { setUserData } = userStore();
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -61,6 +63,7 @@ const LoginPage = () => {
             <Form {...form}>
               <form
                 onSubmit={(event) => {
+                  setIsLoading(true);
                   event.preventDefault();
                   form.handleSubmit(onSubmit)();
                 }}
@@ -104,7 +107,9 @@ const LoginPage = () => {
                     {form.formState.errors.root?.message}
                   </FormMessage>
 
-                  <Button className="w-full my-2">登入</Button>
+                  <Button className="w-full my-2" isLoading={isLoading}>
+                    登入
+                  </Button>
                 </div>
               </form>
             </Form>
