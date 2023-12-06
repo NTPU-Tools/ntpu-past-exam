@@ -12,7 +12,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,9 +21,7 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -195,10 +192,6 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
                     )}
                   />
                 </div>
-
-                <FormDescription>
-                  課程類別為課程之分類，如：大二課程考古題庫
-                </FormDescription>
                 <FormMessage>{form.formState.errors.root?.message}</FormMessage>
               </div>
             </form>
