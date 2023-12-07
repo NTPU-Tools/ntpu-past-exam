@@ -64,9 +64,7 @@ const PostPage = () => {
       </PageHeader>
       <TypographyP>{post?.content}</TypographyP>
 
-      {post?.file && (
-        <PDFViewer src={post?.file} className="w-full h-96 grow" />
-      )}
+      {post?.file && <PDFViewer src={post?.file} className="w-full" />}
     </div>
   );
 };
