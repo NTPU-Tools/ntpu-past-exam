@@ -23,7 +23,7 @@ const PostPage = () => {
 
       <TypographyP>{post?.content}</TypographyP>
 
-      <PDFViewer src={post?.file} className="w-full h-96 grow" />
+      <PDFViewer src={post?.file} className="w-full" />
     </div>
   );
 };

@@ -7,10 +7,7 @@ export const createPostSchema = z.object({
   file: z
     .custom<File>((val) => val instanceof File, "請選擇考古題檔案")
     .refine(
-      (file) =>
-        ["image/jpeg", "image/jpg", "image/png", "application/pdf"].includes(
-          file.type,
-        ),
-      "檔案格式限制上傳 jpg, jpeg, png, pdf",
+      (file) => ["application/pdf"].includes(file.type),
+      "檔案格式限制上傳 pdf",
     ),
 });

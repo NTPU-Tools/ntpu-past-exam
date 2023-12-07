@@ -11,6 +11,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -135,6 +136,7 @@ const CreatePostDialog = () => {
                       />
                     </FormControl>
                     <FormMessage />
+                    <FormDescription>僅接受一份 pdf 格式之檔案</FormDescription>
                   </FormItem>
                 )}
               />
