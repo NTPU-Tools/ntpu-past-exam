@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const LoginPage = () => (
+const InactivePage = () => (
   <div className="h-[calc(100vh-8rem)]">
     <div className="w-full h-full flex justify-center items-center">
       <Card className="w-[350px]">
@@ -22,4 +22,5 @@ const LoginPage = () => (
   </div>
 );
 
-export default LoginPage;
+export default InactivePage;
+InactivePage.title = "帳號未啟用";

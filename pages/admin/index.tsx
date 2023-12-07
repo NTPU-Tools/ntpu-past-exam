@@ -101,3 +101,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+AdminDashboard.title = "Admin Dashboard";

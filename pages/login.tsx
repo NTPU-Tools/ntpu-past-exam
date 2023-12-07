@@ -123,3 +123,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+LoginPage.title = "登入";

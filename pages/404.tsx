@@ -10,3 +10,4 @@ const NotFoundPage = () => (
 );
 
 export default NotFoundPage;
+NotFoundPage.title = "找不到頁面";

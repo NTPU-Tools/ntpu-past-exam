@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/PageHeader";
 import { TypographyBlockquote, TypographyH1 } from "@/components/ui/typography";
 
-export default function Page() {
+function Page() {
   return (
     <div>
       <PageHeader>
@@ -15,3 +15,6 @@ export default function Page() {
     </div>
   );
 }
+
+export default Page;
+Page.title = "公告";

@@ -2,6 +2,7 @@ import instance from "@/api/instance";
 import PDFViewer from "@/components/PDFViewer";
 import { PageHeader } from "@/components/PageHeader";
 import { TypographyH1, TypographyP } from "@/components/ui/typography";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
@@ -18,6 +19,12 @@ const PostPage = () => {
         <TypographyH1>
           {isAdmin ? "Admin - " : ""}
           {post?.title}
+          <Head>
+            <title>
+              {isAdmin ? "Admin - " : ""}
+              {post?.title} - NPTU 考古題
+            </title>
+          </Head>
         </TypographyH1>
       </PageHeader>
 

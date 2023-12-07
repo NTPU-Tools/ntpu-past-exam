@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Card, CardHeader } from "@/components/ui/card";
 import { TypographyH1 } from "@/components/ui/typography";
 import { ChevronRight } from "lucide-react";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -22,6 +23,12 @@ const CoursePage = () => {
         <TypographyH1>
           {isAdmin ? "Admin - " : ""}
           {courseData?.course.name}
+          <Head>
+            <title>
+              {isAdmin ? "Admin - " : ""}
+              {courseData?.course.name} - NPTU 考古題
+            </title>
+          </Head>
         </TypographyH1>
       </PageHeader>
       <div className="grid grid-cols-1 gap-4 my-4">

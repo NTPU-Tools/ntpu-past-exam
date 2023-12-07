@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyBlockquote, TypographyH1 } from "@/components/ui/typography";
 import { constant, times } from "lodash-es";
 import { ChevronRight } from "lucide-react";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -39,7 +40,10 @@ const CoursePage = () => {
     return (
       <div className="min-h-[inherit] flex flex-col relative top-0 ">
         <PageHeader>
-          <TypographyH1>找不到課程</TypographyH1>
+          <TypographyH1>找不到頁面</TypographyH1>
+          <Head>
+            <title>找不到頁面 - NPTU 考古題</title>
+          </Head>
         </PageHeader>
       </div>
     );
@@ -49,6 +53,9 @@ const CoursePage = () => {
     <div className="relative">
       <PageHeader>
         <TypographyH1>{courseData?.course.name}</TypographyH1>
+        <Head>
+          <title>{courseData?.course.name} - NPTU 考古題</title>
+        </Head>
       </PageHeader>
       <div className="grid grid-cols-1 gap-4 my-4">
         {courseData?.posts?.length ? (

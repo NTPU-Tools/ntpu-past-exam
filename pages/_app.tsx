@@ -2,6 +2,7 @@ import "../styles/globals.css";
 import Layout from "@/components/Layout";
 import type { AppProps } from "next/app";
 import Dynamic from "next/dynamic";
+import Head from "next/head";
 
 const Dialogs = Dynamic(() => import("@/containers/Dialogs"), {
   ssr: false,
@@ -21,6 +22,11 @@ export default function App({ Component, pageProps }: AppProps) {
     <TooltipProvider delayDuration={200}>
       <Layout>
         <Component {...pageProps} />
+        <Head>
+          <title>
+            {(Component as unknown as { title: string }).title} - NPTU 考古題
+          </title>
+        </Head>
       </Layout>
       <Toaster />
       <Dialogs />
