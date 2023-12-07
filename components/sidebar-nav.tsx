@@ -2,7 +2,7 @@ import instance from "@/api/instance";
 import { Skeleton } from "@/components/ui/skeleton";
 import userStore from "@/store/userStore";
 import { cn } from "@/utils/cn";
-import { groupBy, map } from "lodash-es";
+import { groupBy, head, map, sortBy } from "lodash-es";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -110,14 +110,16 @@ function SidebarNav() {
     );
   }
 
-  const items = groupBy(data, "category");
+  const items = sortBy(groupBy(data, "category")).sort((a, b) =>
+    a[0].category.localeCompare(b[0].category, "zh-Hant"),
+  );
 
   return data?.length ? (
     <div className="w-full">
-      {map(items, (courses, key) => (
-        <div key={key} className={cn("pb-4")}>
+      {map(items, (courses) => (
+        <div key={head(courses).category} className={cn("pb-4")}>
           <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
-            {key}
+            {head(courses).category}
           </h4>
           {courses?.length && (
             <SidebarNavItems

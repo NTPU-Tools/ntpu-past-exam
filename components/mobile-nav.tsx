@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { TypographySmall } from "@/components/ui/typography";
 import { cn } from "@/utils/cn";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";
-import { groupBy, map } from "lodash-es";
+import { groupBy, map, sortBy } from "lodash-es";
 import Link, { LinkProps } from "next/link";
 import { useRouter } from "next/router";
 import * as React from "react";
@@ -48,7 +48,9 @@ export function MobileNav() {
   );
 
   const { pathname } = useRouter();
-  const items = groupBy(data, "category");
+  const items = sortBy(groupBy(data, "category")).sort((a, b) =>
+    a[0].category.localeCompare(b[0].category, "zh-Hant"),
+  );
   const isAdmin = pathname.includes("admin");
 
   return (
@@ -62,22 +64,25 @@ export function MobileNav() {
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pr-0">
+      <SheetContent side="left">
         <MobileLink
           href={isAdmin ? "/admin" : "/"}
           className="flex items-center"
           onOpenChange={setOpen}
         >
           <span className="font-bold">
-            NTPU 考古題<TypographySmall>Beta</TypographySmall>{" "}
+            NTPU 考古題 <TypographySmall>Beta</TypographySmall>{" "}
             {isAdmin ? "- Admin" : ""}
           </span>
         </MobileLink>
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
           <div className="flex flex-col space-y-2">
-            {map(items, (courses, key) => (
-              <div key={key} className="flex flex-col space-y-3 pt-6">
-                <h4 className="font-medium">{key}</h4>
+            {map(items, (courses) => (
+              <div
+                key={courses[0].category}
+                className="flex flex-col space-y-3 pt-6"
+              >
+                <h4 className="font-medium">{courses[0].category}</h4>
                 {map(courses, (course) => {
                   const path = pathname.includes("admin")
                     ? `/admin/${course.id}`
