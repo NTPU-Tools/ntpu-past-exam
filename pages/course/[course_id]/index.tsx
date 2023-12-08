@@ -1,8 +1,8 @@
 import instance from "@/api/instance";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader, PageHeaderHeading } from "@/components/PageHeader";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TypographyBlockquote, TypographyH1 } from "@/components/ui/typography";
+import { TypographyBlockquote } from "@/components/ui/typography";
 import { constant, times } from "lodash-es";
 import { ChevronRight } from "lucide-react";
 import Head from "next/head";
@@ -40,7 +40,7 @@ const CoursePage = () => {
     return (
       <div className="min-h-[inherit] flex flex-col relative top-0 ">
         <PageHeader>
-          <TypographyH1>找不到頁面</TypographyH1>
+          <PageHeaderHeading>找不到頁面</PageHeaderHeading>
           <Head>
             <title>找不到頁面 - NPTU 考古題</title>
           </Head>
@@ -52,7 +52,7 @@ const CoursePage = () => {
   return (
     <div className="relative">
       <PageHeader>
-        <TypographyH1>{courseData?.course.name}</TypographyH1>
+        <PageHeaderHeading>{courseData?.course.name}</PageHeaderHeading>
         <Head>
           <title>{courseData?.course.name} - NPTU 考古題</title>
         </Head>

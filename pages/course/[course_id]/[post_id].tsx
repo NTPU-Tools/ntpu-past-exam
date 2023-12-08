@@ -1,8 +1,12 @@
 import instance from "@/api/instance";
 import PDFViewer from "@/components/PDFViewer";
-import { PageHeader } from "@/components/PageHeader";
+import {
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderHeading,
+} from "@/components/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TypographyH1, TypographyP } from "@/components/ui/typography";
+import { TypographyP } from "@/components/ui/typography";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -52,7 +56,7 @@ const PostPage = () => {
     return (
       <div className="min-h-[inherit] flex flex-col relative top-0 ">
         <PageHeader>
-          <TypographyH1>找不到頁面</TypographyH1>
+          <PageHeaderHeading>找不到頁面</PageHeaderHeading>
           <Head>
             <title>找不到頁面 - NPTU 考古題</title>
           </Head>
@@ -64,10 +68,13 @@ const PostPage = () => {
   return (
     <div className="min-h-[inherit] flex flex-col relative top-0 ">
       <PageHeader>
-        <TypographyH1>{post?.title}</TypographyH1>
+        <PageHeaderHeading>{post?.title}</PageHeaderHeading>
         <Head>
           <title>{post?.title} - NPTU 考古題</title>
         </Head>
+        <PageHeaderDescription>
+          發布者： {post.owner_name}
+        </PageHeaderDescription>
       </PageHeader>
       <TypographyP>{post?.content}</TypographyP>
 
