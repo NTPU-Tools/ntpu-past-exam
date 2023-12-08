@@ -18,7 +18,7 @@ import { TypographyP } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { createColumnHelper } from "@tanstack/react-table";
-import { omit } from "lodash-es";
+import { map, omit } from "lodash-es";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
 import useSWR, { mutate } from "swr";
@@ -176,10 +176,10 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
           </DialogHeader>
 
           <TypographyP>{postData?.content}</TypographyP>
-
-          {postData?.file && (
-            <PDFViewer src={postData?.file} className="w-full grow" />
-          )}
+          {postData?.files &&
+            map(postData?.files, (fileLink, index) => (
+              <PDFViewer key={index} src={fileLink} className="w-full" />
+            ))}
 
           <DialogFooter>
             {/* <DialogClose asChild> */}

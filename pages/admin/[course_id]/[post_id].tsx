@@ -2,6 +2,7 @@ import instance from "@/api/instance";
 import PDFViewer from "@/components/PDFViewer";
 import { PageHeader } from "@/components/PageHeader";
 import { TypographyH1, TypographyP } from "@/components/ui/typography";
+import { map } from "lodash-es";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -30,7 +31,10 @@ const PostPage = () => {
 
       <TypographyP>{post?.content}</TypographyP>
 
-      <PDFViewer src={post?.file} className="w-full" />
+      {post?.files &&
+        map(post?.files, (fileLink, index) => (
+          <PDFViewer key={index} src={fileLink} className="w-full" />
+        ))}
     </div>
   );
 };

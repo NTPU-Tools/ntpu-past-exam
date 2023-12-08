@@ -33,10 +33,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { createPostSchema } from "@/schemas/post";
 import userStore from "@/store/userStore";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { groupBy, map, omit } from "lodash-es";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { forEach, groupBy, map, omit } from "lodash-es";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import * as z from "zod";
 
@@ -57,8 +58,21 @@ const CreatePostDialog = () => {
     resolver: zodResolver(createPostSchema),
   });
 
+  const {
+    fields: fileFields,
+    append,
+    remove,
+  } = useFieldArray({
+    control: form.control,
+    // @ts-ignore
+    name: "files",
+  });
+
   function closeCreatePostDialog() {
     form.reset();
+    forEach(fileFields, (_, index) => {
+      remove(index);
+    });
     router.replace(
       { query: omit(query, "open_create_post_dialog") },
       undefined,
@@ -71,7 +85,16 @@ const CreatePostDialog = () => {
   const onSubmit = async (values: z.infer<typeof createPostSchema>) => {
     try {
       setIsLoading(true);
-      await instance.postForm("/posts", values);
+      const formData = new FormData();
+      formData.set("title", values.title);
+      if (values.content) formData.set("content", values.content);
+      formData.set("course_id", values.course_id);
+      if (values.files.length) {
+        forEach(values.files, (file) => {
+          formData.append("files", file);
+        });
+      }
+      await instance.postForm("/posts", formData);
       toast({
         title: "新增成功",
       });
@@ -118,30 +141,6 @@ const CreatePostDialog = () => {
               />
               <FormField
                 control={form.control}
-                name="file"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>考古題檔案</FormLabel>
-                    <FormControl>
-                      {/* @ts-ignore */}
-                      <Input
-                        placeholder="請選擇考古題檔案"
-                        {...field}
-                        type="file"
-                        // @ts-ignore
-                        value={field.value?.fileName}
-                        onChange={(event) => {
-                          field.onChange(event.target.files?.[0]);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                    <FormDescription>僅接受一份 pdf 格式之檔案</FormDescription>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="course_id"
                 render={({ field }) => (
                   <FormItem>
@@ -183,6 +182,60 @@ const CreatePostDialog = () => {
                   </FormItem>
                 )}
               />
+
+              <FormLabel>考古題檔案</FormLabel>
+              {map(fileFields, (fileField, index) => (
+                <div key={index} className="flex gap-2">
+                  <div className="grow">
+                    <FormField
+                      control={form.control}
+                      name={`files.${index}`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            {/* @ts-ignore */}
+                            <Input
+                              placeholder="請選擇考古題檔案"
+                              {...field}
+                              type="file"
+                              // @ts-ignore
+                              value={field.value?.fileName}
+                              onChange={(event) => {
+                                field.onChange(event.target.files?.[0]);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      remove(index);
+                    }}
+                  >
+                    <CrossCircledIcon />
+                  </Button>
+                </div>
+              ))}
+
+              <div>
+                <Button
+                  className="my-2"
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    append(new File([""], ""));
+                  }}
+                >
+                  新增檔案
+                </Button>
+                <FormDescription>僅接受 pdf 格式之檔案</FormDescription>
+              </div>
             </div>
           </form>
         </Form>

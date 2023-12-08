@@ -7,6 +7,7 @@ import {
 } from "@/components/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP } from "@/components/ui/typography";
+import { map } from "lodash-es";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -78,7 +79,10 @@ const PostPage = () => {
       </PageHeader>
       <TypographyP>{post?.content}</TypographyP>
 
-      {post?.file && <PDFViewer src={post?.file} className="w-full" />}
+      {post?.files &&
+        map(post?.files, (fileLink, index) => (
+          <PDFViewer key={index} src={fileLink} className="w-full" />
+        ))}
     </div>
   );
 };
