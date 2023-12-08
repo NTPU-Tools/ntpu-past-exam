@@ -3,6 +3,7 @@ import Layout from "@/components/Layout";
 import type { AppProps } from "next/app";
 import Dynamic from "next/dynamic";
 import Head from "next/head";
+import { SWRConfig } from "swr";
 
 const Dialogs = Dynamic(() => import("@/containers/Dialogs"), {
   ssr: false,
@@ -19,18 +20,23 @@ const TooltipProvider = Dynamic(() => import("@/components/ui/tooltip"), {
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <TooltipProvider delayDuration={200}>
-      <Layout>
-        <Component {...pageProps} />
-        <Head>
-          <title>
-            {(Component as unknown as { title: string }).title} - NPTU 考古題
-          </title>
-        </Head>
-      </Layout>
-      <Toaster />
-      <Dialogs />
-      <Analytics />
-    </TooltipProvider>
+    <SWRConfig>
+      <TooltipProvider delayDuration={200}>
+        <Layout>
+          <Component {...pageProps} />
+          {(Component as unknown as { title: string }).title && (
+            <Head>
+              <title>
+                {(Component as unknown as { title: string }).title} - NPTU
+                考古題
+              </title>
+            </Head>
+          )}
+        </Layout>
+        <Toaster />
+        <Dialogs />
+        <Analytics />
+      </TooltipProvider>
+    </SWRConfig>
   );
 }
