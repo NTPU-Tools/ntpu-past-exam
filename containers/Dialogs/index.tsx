@@ -1,4 +1,5 @@
 import Dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 
 const UpdateUserStatusDialog = Dynamic(
   () => import("@/containers/Dialogs/UpdateUserStatusDialog"),
@@ -28,13 +29,22 @@ const EditCourseDialog = Dynamic(
   },
 );
 
-const Dialogs = () => (
-  <>
-    <CreatePostDialog />
-    <UpdatePostStatusDialog />
-    <UpdateUserStatusDialog />
-    <EditCourseDialog />
-  </>
-);
+const Dialogs = () => {
+  const { pathname } = useRouter();
+  const isAdmin = pathname.includes("admin");
+
+  return (
+    <>
+      <CreatePostDialog />
+      {isAdmin && (
+        <>
+          <UpdatePostStatusDialog />
+          <UpdateUserStatusDialog />
+          <EditCourseDialog />
+        </>
+      )}
+    </>
+  );
+};
 
 export default Dialogs;
