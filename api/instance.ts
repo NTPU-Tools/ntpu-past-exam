@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { eraseCookie, getCookie, setCookie } from "@/utils/cookie";
 import axios, { AxiosRequestConfig } from "axios";
-import retry from "retry";
 
 const baseURL = process.env.NEXT_PUBLIC_API_ORIGIN;
 
@@ -46,13 +45,7 @@ instance.interceptors.response.use(
             .then(async (res) => {
               const { access_token } = res.data;
               setCookie("ntpu-past-exam-access-token", access_token, 30);
-
-              // eslint-disable-next-line no-param-reassign
-              error.config!.headers.Authorization = `Bearer ${access_token}`;
-
-              const data = await axios.request(error.config!);
-              // Re-request to target api
-              return data.data;
+              instance.defaults.headers.Authorization = `Bearer ${access_token}`;
             })
             .catch(() => {
               // Logout when refresh token api is unauthorized
@@ -64,32 +57,6 @@ instance.interceptors.response.use(
               instance.defaults.isTokenRefreshing = false;
             });
         }
-        // use swr internal retry
-        // return new Promise((resolve, reject) => {
-        //   const retries = 5;
-        //   const operation = retry.operation({ retries });
-        //
-        //   operation.attempt(async (attempt) => {
-        //     // @ts-ignore
-        //     if (instance.defaults.isTokenRefreshing) {
-        //       if (attempt - 1 === retries) {
-        //         reject(Error("FETCH_TIMEOUT_ERROR"));
-        //       }
-        //
-        //       operation.retry(Error("WAITING"));
-        //     } else {
-        //       const newAccessToken = getCookie("ntpu-past-exam-access-token");
-        //
-        //       // Re-add access token in header
-        //       // eslint-disable-next-line no-param-reassign
-        //       error.config!.headers.Authorization = `Bearer ${newAccessToken}`;
-        //
-        //       const data = await axios.request(error.config!);
-        //       // Re-request to target api
-        //       resolve(data.data);
-        //     }
-        //   });
-        // });
       }
     }
 
