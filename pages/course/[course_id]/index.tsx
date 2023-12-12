@@ -34,7 +34,7 @@ const CoursePage = () => {
     );
   }
 
-  if (isLoading || !courseData) {
+  if (isLoading) {
     return (
       <div className="relative">
         <PageHeader>
@@ -52,9 +52,9 @@ const CoursePage = () => {
   return (
     <div className="relative">
       <PageHeader>
-        <PageHeaderHeading>{courseData?.course.name}</PageHeaderHeading>
+        <PageHeaderHeading>{courseData?.course?.name}</PageHeaderHeading>
         <Head>
-          <title>{courseData?.course.name} - NPTU 考古題</title>
+          <title>{courseData?.course?.name} - NPTU 考古題</title>
         </Head>
       </PageHeader>
       <div className="grid grid-cols-1 gap-4 my-4">

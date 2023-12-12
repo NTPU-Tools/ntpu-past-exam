@@ -36,7 +36,7 @@ const PostPage = () => {
     );
   }
 
-  if (isLoading || !post) {
+  if (isLoading) {
     return (
       <div className="relative">
         <PageHeader>
@@ -74,7 +74,7 @@ const PostPage = () => {
           <title>{post?.title} - NPTU 考古題</title>
         </Head>
         <PageHeaderDescription>
-          發布者： {post.owner_name}
+          發布者： {post?.owner_name}
         </PageHeaderDescription>
       </PageHeader>
       <TypographyP>{post?.content}</TypographyP>
