@@ -23,7 +23,20 @@ const PostPage = () => {
     instance.get(`/posts/${postId}`),
   );
 
-  if (isLoading) {
+  if (error?.response?.status === 404) {
+    return (
+      <div className="min-h-[inherit] flex flex-col relative top-0 ">
+        <PageHeader>
+          <PageHeaderHeading>找不到頁面</PageHeaderHeading>
+          <Head>
+            <title>找不到頁面 - NPTU 考古題</title>
+          </Head>
+        </PageHeader>
+      </div>
+    );
+  }
+
+  if (isLoading || !post) {
     return (
       <div className="relative">
         <PageHeader>
@@ -49,19 +62,6 @@ const PostPage = () => {
           <Skeleton className="h-4 w-[100px] md:w-[500px]" />
           <Skeleton className="h-4 w-[80px] md:w-[300px]" />
         </div>
-      </div>
-    );
-  }
-
-  if (error?.response?.status === 404) {
-    return (
-      <div className="min-h-[inherit] flex flex-col relative top-0 ">
-        <PageHeader>
-          <PageHeaderHeading>找不到頁面</PageHeaderHeading>
-          <Head>
-            <title>找不到頁面 - NPTU 考古題</title>
-          </Head>
-        </PageHeader>
       </div>
     );
   }
