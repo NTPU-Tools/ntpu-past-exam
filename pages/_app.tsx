@@ -27,7 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
           {(Component as unknown as { title: string }).title && (
             <Head>
               <title>
-                {(Component as unknown as { title: string }).title} - NPTU
+                {(Component as unknown as { title: string }).title} - NTPU
                 考古題
               </title>
             </Head>
