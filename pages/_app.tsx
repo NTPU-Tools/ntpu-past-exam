@@ -20,7 +20,11 @@ const TooltipProvider = Dynamic(() => import("@/components/ui/tooltip"), {
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <SWRConfig>
+    <SWRConfig
+      value={{
+        errorRetryInterval: 1000,
+      }}
+    >
       <TooltipProvider delayDuration={200}>
         <Layout>
           <Component {...pageProps} />

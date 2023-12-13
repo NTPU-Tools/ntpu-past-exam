@@ -7,19 +7,21 @@ import {
 } from "@/components/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP } from "@/components/ui/typography";
+import userStore from "@/store/userStore";
 import { map } from "lodash-es";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
 const PostPage = () => {
+  const isActive = userStore().userData?.is_active;
   const router = useRouter();
   const postId = router.query.post_id as string | undefined;
   const {
     data: post,
     isLoading,
     error,
-  } = useSWR(postId ? `post-${postId}` : null, () =>
+  } = useSWR(isActive && postId ? `post-${postId}` : null, () =>
     instance.get(`/posts/${postId}`),
   );
 
@@ -36,7 +38,7 @@ const PostPage = () => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || !post) {
     return (
       <div className="relative">
         <PageHeader>

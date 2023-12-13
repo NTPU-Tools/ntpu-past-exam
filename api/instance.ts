@@ -42,14 +42,15 @@ instance.interceptors.response.use(
                 )}`,
               },
             })
-            .then(async (res) => {
+            .then((res) => {
               const { access_token } = res.data;
               setCookie("ntpu-past-exam-access-token", access_token, 30);
-              instance.defaults.headers.Authorization = `Bearer ${access_token}`;
+              instance.defaults.headers.authorization = `Bearer ${access_token}`;
             })
             .catch(() => {
               // Logout when refresh token api is unauthorized
               eraseCookie("ntpu-past-exam-access-token");
+              eraseCookie("ntpu-past-exam-refresh-token");
               window.location.href = "/login";
             })
             .finally(() => {
