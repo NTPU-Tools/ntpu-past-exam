@@ -29,6 +29,13 @@ const EditCourseDialog = Dynamic(
   },
 );
 
+const EditBulletinDialog = Dynamic(
+  () => import("@/containers/Dialogs/EditBulletinDialog"),
+  {
+    ssr: false,
+  },
+);
+
 const Dialogs = () => {
   const { pathname } = useRouter();
   const isAdmin = pathname.includes("admin");
@@ -41,6 +48,7 @@ const Dialogs = () => {
           <UpdatePostStatusDialog />
           <UpdateUserStatusDialog />
           <EditCourseDialog />
+          <EditBulletinDialog />
         </>
       )}
     </>

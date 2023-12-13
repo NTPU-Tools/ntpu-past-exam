@@ -74,7 +74,12 @@ const AdminDashboard = () => {
           </CardHeader>
         </Card>
 
-        <Card className="blur-sm">
+        <Card
+          className="hover:cursor-pointer"
+          onClick={() => {
+            openSettingDialog({ settingField: "bulletin" });
+          }}
+        >
           <CardHeader>
             <CardTitle>公告管理</CardTitle>
             <CardDescription>管理網站公告</CardDescription>
