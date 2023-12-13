@@ -16,7 +16,7 @@ function Page() {
         <TypographyH1>公告</TypographyH1>
       </PageHeader>
       <div>
-        {data.length ? (
+        {data?.length ? (
           data.map((bulletin) => (
             <div className="my-4">
               <Card className="hover:bg-muted">
