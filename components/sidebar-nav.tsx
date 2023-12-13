@@ -76,8 +76,10 @@ function SidebarNav() {
   const { userData } = userStore();
   const { pathname, asPath } = useRouter();
 
+  const isAdminPage = pathname.includes("admin");
+
   const { data, isLoading } = useSWR(
-    userData?.is_active ? "all-courses" : null,
+    userData?.is_active && !isAdminPage ? "all-courses" : null,
     () => instance.get("/courses"),
   );
 
@@ -109,6 +111,9 @@ function SidebarNav() {
       </div>
     );
   }
+  if (isAdminPage) {
+    return null;
+  }
 
   const items = sortBy(groupBy(data, "category")).sort((a, b) =>
     a[0].category.localeCompare(b[0].category, "zh-Hant"),
@@ -123,15 +128,10 @@ function SidebarNav() {
           </h4>
           {courses?.length && (
             <SidebarNavItems
-              items={map(courses, (course) => {
-                const path = pathname.includes("admin")
-                  ? `/admin/${course.id}`
-                  : `/course/${course.id}`;
-                return {
-                  title: course.name,
-                  href: path,
-                };
-              })}
+              items={map(courses, (course) => ({
+                title: course.name,
+                href: `/course/${course.id}`,
+              }))}
               pathname={asPath}
             />
           )}

@@ -51,7 +51,7 @@ export function MobileNav() {
   const items = sortBy(groupBy(data, "category")).sort((a, b) =>
     a[0].category.localeCompare(b[0].category, "zh-Hant"),
   );
-  const isAdmin = pathname.includes("admin");
+  const isAdminPage = pathname.includes("admin");
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -66,42 +66,39 @@ export function MobileNav() {
       </SheetTrigger>
       <SheetContent side="left">
         <MobileLink
-          href={isAdmin ? "/admin" : "/"}
+          href="/"
           className="flex items-center"
           onOpenChange={setOpen}
         >
           <span className="font-bold">
             NTPU 考古題 <TypographySmall>Beta</TypographySmall>{" "}
-            {isAdmin ? "- Admin" : ""}
+            {isAdminPage ? "- Admin" : ""}
           </span>
         </MobileLink>
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-          <div className="flex flex-col space-y-2">
-            {map(items, (courses) => (
-              <div
-                key={courses[0].category}
-                className="flex flex-col space-y-3 pt-6"
-              >
-                <h4 className="font-medium">{courses[0].category}</h4>
-                {map(courses, (course) => {
-                  const path = pathname.includes("admin")
-                    ? `/admin/${course.id}`
-                    : `/course/${course.id}`;
-                  return (
+          {isAdminPage ? null : (
+            <div className="flex flex-col space-y-2">
+              {map(items, (courses) => (
+                <div
+                  key={courses[0].category}
+                  className="flex flex-col space-y-3 pt-6"
+                >
+                  <h4 className="font-medium">{courses[0].category}</h4>
+                  {map(courses, (course) => (
                     <React.Fragment key={course.id}>
                       <MobileLink
-                        href={path}
+                        href={`/course/${course.id}`}
                         onOpenChange={setOpen}
                         className="text-muted-foreground"
                       >
                         {course.name}
                       </MobileLink>
                     </React.Fragment>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
         </ScrollArea>
       </SheetContent>
     </Sheet>
