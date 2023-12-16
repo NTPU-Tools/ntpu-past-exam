@@ -88,7 +88,6 @@ export function MobileNav() {
           >
             <span className="font-bold">
               NTPU 考古題 <TypographySmall>Beta</TypographySmall>{" "}
-              {isAdminPage ? "- Admin" : ""}
             </span>
           </MobileLink>
           {router.query?.department_id && (
@@ -126,7 +125,7 @@ export function MobileNav() {
                   {map(courses, (course) => (
                     <React.Fragment key={course.id}>
                       <MobileLink
-                        href={`/course/${course.id}`}
+                        href={`/${router.query.department_id}/${course.id}`}
                         onOpenChange={setOpen}
                         className="text-muted-foreground"
                       >
