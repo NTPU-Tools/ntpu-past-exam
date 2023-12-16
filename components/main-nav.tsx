@@ -14,7 +14,6 @@ import useSWR from "swr";
 
 export function MainNav() {
   const router = useRouter();
-  const isAdmin = router.pathname.includes("admin");
   const { userData } = userStore();
   const { data } = useSWR(
     userData?.is_active ? "visible-departments" : null,
