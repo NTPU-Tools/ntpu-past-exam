@@ -127,9 +127,13 @@ function Page() {
             <CardDescription>請選擇社群。</CardDescription>
           </CardHeader>
           <CardContent>
-            <Accordion type="single" collapsible defaultValue="visible">
+            <Accordion
+              type="single"
+              collapsible
+              defaultValue={data?.length > 0 ? "visible" : "invisible"}
+            >
               <AccordionItem value="visible">
-                <AccordionTrigger>已加入</AccordionTrigger>
+                <AccordionTrigger>已加入的社群</AccordionTrigger>
                 <AccordionContent>
                   <ScrollArea className="max-h-[250px] overflow-y-auto">
                     <div className="flex flex-col gap-2">
@@ -153,7 +157,7 @@ function Page() {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="invisible">
-                <AccordionTrigger>尚未加入</AccordionTrigger>
+                <AccordionTrigger>尚未加入的社群</AccordionTrigger>
                 <AccordionContent>
                   <ScrollArea className="max-h-[250px] overflow-y-auto">
                     <div className="flex flex-col gap-2">
