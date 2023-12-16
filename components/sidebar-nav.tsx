@@ -74,13 +74,15 @@ export function SidebarNavItems({ items, pathname }: DocsSidebarNavItemsProps) {
 
 function SidebarNav() {
   const { userData } = userStore();
-  const { pathname, asPath } = useRouter();
+  const { pathname, asPath, query } = useRouter();
 
   const isAdminPage = pathname.includes("admin");
 
   const { data, isLoading } = useSWR(
-    userData?.is_active && !isAdminPage ? "all-courses" : null,
-    () => instance.get("/courses"),
+    userData?.is_active && query.department_id && !isAdminPage
+      ? `${query.department_id}-courses`
+      : null,
+    () => instance.get(`/departments/${query.department_id}/courses`),
   );
 
   if (isLoading) {
@@ -130,7 +132,7 @@ function SidebarNav() {
             <SidebarNavItems
               items={map(courses, (course) => ({
                 title: course.name,
-                href: `/course/${course.id}`,
+                href: `/${query.department_id}/${course.id}`,
               }))}
               pathname={asPath}
             />

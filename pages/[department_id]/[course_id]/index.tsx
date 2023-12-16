@@ -62,7 +62,10 @@ const CoursePage = () => {
       <div className="grid grid-cols-1 gap-4 my-4">
         {courseData?.posts?.length ? (
           courseData?.posts?.map((post: any) => (
-            <Link href={`/course/${courseId}/${post.id}`} key={post.id}>
+            <Link
+              href={`/${router.query.department_id}/${courseId}/${post.id}`}
+              key={post.id}
+            >
               <Card className="hover:bg-muted">
                 <CardHeader className="flex flex-row hover:underline">
                   <ChevronRight />

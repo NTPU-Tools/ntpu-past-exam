@@ -48,8 +48,14 @@ const CreatePostDialog = () => {
   const query = router.query;
 
   const { userData } = userStore();
-  const { data } = useSWR(userData?.is_active ? "all-courses" : null, () =>
-    instance.get("/courses"),
+
+  const isAdminPage = router.pathname.includes("admin");
+
+  const { data } = useSWR(
+    userData?.is_active && query.department_id && !isAdminPage
+      ? `${query.department_id}-courses`
+      : null,
+    () => instance.get(`/departments/${query.department_id}/courses`),
   );
 
   const items = groupBy(data, "category");
@@ -87,6 +93,7 @@ const CreatePostDialog = () => {
       setIsLoading(true);
       const formData = new FormData();
       formData.set("title", values.title);
+      formData.set("department_id", query.department_id as string);
       if (values.content) formData.set("content", values.content);
       formData.set("course_id", values.course_id);
       if (values.files.length) {

@@ -1,3 +1,4 @@
+import instance from "@/api/instance";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Card,
@@ -8,10 +9,18 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { TypographyH1 } from "@/components/ui/typography";
 import { useRouter } from "next/router";
+import useSWR from "swr";
 
 const AdminDashboard = () => {
   const router = useRouter();
   const query = router.query;
+
+  const { data } = useSWR(
+    query.admin_department_id
+      ? `department-${query.admin_department_id}`
+      : null,
+    () => instance.get(`/departments/${query.admin_department_id}`),
+  );
 
   const openSettingDialog = ({ settingField }: { settingField: string }) => {
     router.replace(
@@ -29,7 +38,7 @@ const AdminDashboard = () => {
   return (
     <div>
       <PageHeader>
-        <TypographyH1>Admin Dashboard</TypographyH1>
+        <TypographyH1>{data?.name} - Admin Dashboard</TypographyH1>
       </PageHeader>
       <div className="grid grid-cols-2 gap-2">
         <Card
@@ -82,7 +91,7 @@ const AdminDashboard = () => {
         >
           <CardHeader>
             <CardTitle>公告管理</CardTitle>
-            <CardDescription>管理網站公告</CardDescription>
+            <CardDescription>管理社群公告</CardDescription>
           </CardHeader>
         </Card>
       </div>

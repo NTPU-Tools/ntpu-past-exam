@@ -2,16 +2,18 @@ import instance from "@/api/instance";
 import { ModeToggle } from "@/components/DarkModeToggle";
 import { MainNav } from "@/components/main-nav";
 import { MobileNav } from "@/components/mobile-nav";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
 import { useToast } from "@/components/ui/use-toast";
 import userStore from "@/store/userStore";
 import { eraseCookie, getCookie } from "@/utils/cookie";
@@ -33,6 +35,11 @@ function SiteHeader() {
     {
       refreshInterval: 1000 * 60,
     },
+  );
+
+  const { data: adminScopes } = useSWR(
+    userData?.is_active ? `departments-admin` : null,
+    () => instance.get("/users/me/departments-admin"),
   );
 
   useEffect(() => {
@@ -61,7 +68,7 @@ function SiteHeader() {
           <div className="flex gap-2">
             <div className="animate-pulse bg-muted h-10 w-10 rounded-md" />
             <div className="animate-pulse bg-muted h-10 w-[102px] rounded-md" />
-            <div className="animate-pulse bg-muted h-10 w-10 rounded-full" />
+            <div className="animate-pulse bg-muted h-10 w-[58px] rounded-md" />
           </div>
         </div>
       </header>
@@ -72,7 +79,8 @@ function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <MainNav />
-        <MobileNav />
+        {query.department_id && <MobileNav />}
+
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-2">
             <ModeToggle />
@@ -83,7 +91,8 @@ function SiteHeader() {
                     <Button variant="outline">回首頁</Button>
                   </Link>
                 ) : (
-                  userData?.is_active && (
+                  userData?.is_active &&
+                  query.department_id && (
                     <Button
                       onClick={() => {
                         router.replace(
@@ -103,34 +112,49 @@ function SiteHeader() {
                   )
                 )}
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Avatar>
-                      <AvatarFallback>
+                <Menubar>
+                  <MenubarMenu>
+                    <MenubarTrigger asChild>
+                      <div className="w-full h-full cursor-pointer">
                         <UserRound />
-                      </AvatarFallback>
-                    </Avatar>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-[300px]">
-                    <DropdownMenuLabel>
-                      Hi, {userData?.readable_name ?? userData?.username}
-                    </DropdownMenuLabel>
-                    {userData?.is_admin && (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => {
-                            router.push("/admin");
-                          }}
-                        >
-                          管理後台
-                        </DropdownMenuItem>
-                      </>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout}>登出</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      </div>
+                    </MenubarTrigger>
+
+                    <MenubarContent>
+                      <MenubarItem>
+                        Hi, {userData?.readable_name ?? userData?.username}
+                      </MenubarItem>
+                      {adminScopes?.length > 0 && (
+                        <>
+                          <MenubarSeparator />
+                          <MenubarSub
+                          // onClick={() => {
+                          //   router.push("/admin");
+                          // }}
+                          >
+                            <MenubarSubTrigger>管理後台</MenubarSubTrigger>
+                            <MenubarSubContent>
+                              {adminScopes?.length
+                                ? adminScopes?.map((scope: any) => (
+                                    <MenubarItem
+                                      key={scope.id}
+                                      onClick={() => {
+                                        router.push(`/admin/${scope.id}`);
+                                      }}
+                                    >
+                                      {scope.name}
+                                    </MenubarItem>
+                                  ))
+                                : null}
+                            </MenubarSubContent>
+                          </MenubarSub>
+                        </>
+                      )}
+                      <MenubarSeparator />
+                      <MenubarItem onClick={logout}>登出</MenubarItem>
+                    </MenubarContent>
+                  </MenubarMenu>
+                </Menubar>
               </>
             )}
           </nav>

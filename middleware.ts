@@ -1,16 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const STRICT_BACK_TO_INDEX = ["/admin"];
+const ALWAYS_ALLOW = [""];
+
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
+
+  if (ALWAYS_ALLOW.includes(path)) {
+    return NextResponse.next();
+  }
+
+  if (STRICT_BACK_TO_INDEX.includes(path)) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   try {
     const accessToken = request.cookies.get("ntpu-past-exam-access-token")
       ?.value;
 
     if (!accessToken) {
-      if (path === "/login") return NextResponse.next();
-      return NextResponse.redirect(new URL("/login", request.url));
+      throw Error();
     }
 
     const response = await fetch(`${process.env.API_ORIGIN}/verify-token`, {
@@ -23,22 +34,28 @@ export async function middleware(request: NextRequest) {
       throw Error();
     }
 
+    if (path === "/") return NextResponse.next();
+
     const data = await response.json();
 
-    if (!data?.is_active) {
-      if (path === "/inactive") return NextResponse.next();
-      return NextResponse.redirect(new URL("/inactive", request.url));
-    }
-
-    if (!data?.is_admin && path.startsWith("/admin")) {
+    if (path.startsWith("/admin")) {
+      if (data?.admin.length === 0) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+      const departmentId = path.split("/admin/")[1];
+      if (data?.admin?.some((a) => a.department_id === departmentId)) {
+        return NextResponse.next();
+      }
       return NextResponse.redirect(new URL("/", request.url));
     }
 
-    if (path === "/login" || path === "/inactive") {
-      return NextResponse.redirect(new URL("/", request.url));
+    const departmentId = path.split("/")[1];
+
+    if (data?.visible_departments?.some((d) => d.id === departmentId)) {
+      return NextResponse.next();
     }
 
-    return NextResponse.next();
+    return NextResponse.redirect(new URL("/", request.url));
   } catch (e) {
     if (path === "/login") {
       return NextResponse.next();

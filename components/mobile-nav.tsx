@@ -1,8 +1,16 @@
 import instance from "@/api/instance";
 import { Button } from "@/components/ui/button";
 import ScrollArea from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { TypographySmall } from "@/components/ui/typography";
+import userStore from "@/store/userStore";
 import { cn } from "@/utils/cn";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";
 import { groupBy, map, sortBy } from "lodash-es";
@@ -43,15 +51,25 @@ function MobileLink({
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
-  const { data } = useSWR(open ? "all-courses" : null, () =>
-    instance.get("/courses"),
+  const { userData } = userStore();
+  const router = useRouter();
+
+  const isAdminPage = router.pathname.includes("admin");
+  const { data } = useSWR(
+    userData?.is_active && router.query.department_id && !isAdminPage
+      ? `${router.query.department_id}-courses`
+      : null,
+    () => instance.get(`/departments/${router.query.department_id}/courses`),
   );
 
-  const { pathname } = useRouter();
+  const { data: visibleDepartment } = useSWR(
+    userData?.is_active ? "visible-departments" : null,
+    () => instance.get("/departments/visible"),
+  );
+
   const items = sortBy(groupBy(data, "category")).sort((a, b) =>
     a[0].category.localeCompare(b[0].category, "zh-Hant"),
   );
-  const isAdminPage = pathname.includes("admin");
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -65,16 +83,40 @@ export function MobileNav() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left">
-        <MobileLink
-          href="/"
-          className="flex items-center"
-          onOpenChange={setOpen}
-        >
-          <span className="font-bold">
-            NTPU 考古題 <TypographySmall>Beta</TypographySmall>{" "}
-            {isAdminPage ? "- Admin" : ""}
-          </span>
-        </MobileLink>
+        <div className="flex flex-col gap-2">
+          <MobileLink
+            href="/"
+            className="flex items-center"
+            onOpenChange={setOpen}
+          >
+            <span className="font-bold">
+              NTPU 考古題 <TypographySmall>Beta</TypographySmall>{" "}
+              {isAdminPage ? "- Admin" : ""}
+            </span>
+          </MobileLink>
+          {router.query?.department_id && (
+            <Select
+              defaultValue={
+                (router.query?.department_id as string | undefined) ?? undefined
+              }
+              onValueChange={(value) => {
+                router.push(`/${value}`);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="請選擇社群" />
+              </SelectTrigger>
+              <SelectContent>
+                {visibleDepartment?.length &&
+                  visibleDepartment.map((department) => (
+                    <SelectItem value={department.id} key={department.id}>
+                      {department.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
           {isAdminPage ? null : (
             <div className="flex flex-col space-y-2">

@@ -23,7 +23,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { addBulletinSchema } from "@/schemas/bulletin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
-import { omit } from "lodash-es";
+import { omit, set } from "lodash-es";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -45,8 +45,14 @@ const EditBulletinDialog: FC<pageProps> = () => {
 
   const dialogOpen = query?.open_edit_bulletin_dialog === "true";
 
-  const { data } = useSWR(dialogOpen ? "all-bulletins" : null, () =>
-    instance.get("/bulletins"),
+  const { data } = useSWR(
+    dialogOpen && router.query.admin_department_id
+      ? `${router.query.admin_department_id}-bulletins`
+      : null,
+    () =>
+      instance.get(
+        `/departments/${router.query.admin_department_id}/bulletins`,
+      ),
   );
 
   function closeEditBulletinDialog() {
@@ -62,12 +68,13 @@ const EditBulletinDialog: FC<pageProps> = () => {
 
   const addBulletin = async (values: z.infer<typeof addBulletinSchema>) => {
     try {
+      set(values, "department_id", router.query.admin_department_id as string);
       setAddBulletinLoading(true);
       await instance.postForm(`/bulletins`, values);
       toast({
         title: "操作成功",
       });
-      mutate("all-bulletins");
+      mutate(`${router.query.admin_department_id}-bulletins`);
       setAddBulletinOpen(false);
     } catch (e) {
       toast({

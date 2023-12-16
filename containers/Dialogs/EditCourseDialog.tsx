@@ -51,8 +51,12 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
 
   const dialogOpen = query?.open_edit_course_dialog === "true";
 
-  const { data } = useSWR(dialogOpen ? "all-courses" : null, () =>
-    instance.get("/courses"),
+  const { data } = useSWR(
+    dialogOpen && router.query.admin_department_id
+      ? `${router.query.admin_department_id}-courses`
+      : null,
+    () =>
+      instance.get(`/departments/${router.query.admin_department_id}/courses`),
   );
 
   function closeEditUserDialog() {

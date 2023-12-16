@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -15,12 +16,7 @@ import {
 import { TypographyP } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
 import userStore from "@/store/userStore";
-import {
-  LockClosedIcon,
-  LockOpen1Icon,
-  StarIcon,
-  StarFilledIcon,
-} from "@radix-ui/react-icons";
+import { StarIcon, StarFilledIcon, CheckIcon } from "@radix-ui/react-icons";
 import { createColumnHelper } from "@tanstack/react-table";
 import { omit } from "lodash-es";
 import { useRouter } from "next/router";
@@ -37,8 +33,22 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
 
   const dialogOpen = query?.open_edit_member_dialog === "true";
 
-  const { data } = useSWR(dialogOpen ? "inactive-users" : null, () =>
-    instance.get("/users"),
+  const { data: membersData } = useSWR(
+    dialogOpen && router.query.admin_department_id
+      ? `${router.query.admin_department_id}-members`
+      : null,
+    () =>
+      instance.get(`/departments/${router.query.admin_department_id}/members`),
+  );
+
+  const { data: pendingData } = useSWR(
+    dialogOpen && router.query.admin_department_id
+      ? `${router.query.admin_department_id}-pending`
+      : null,
+    () =>
+      instance.get(
+        `/departments/${router.query.admin_department_id}/join-request`,
+      ),
   );
 
   function closeEditUserDialog() {
@@ -51,8 +61,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
     );
   }
 
-  const updateUserStatus = async ({
-    is_active,
+  const updateMemberStatus = async ({
     is_admin,
     field = "status",
     id,
@@ -63,20 +72,40 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
     field?: string;
   }) => {
     try {
-      if (field === "status") {
-        await instance.putForm(`/users/status/${id}`, {
-          is_active,
-        });
-      }
+      // if (field === "status") {
+      //   await instance.putForm(`/users/status/${id}`, {
+      //     is_active,
+      //   });
+      // }
       if (field === "admin") {
-        await instance.putForm(`/users/admin/${id}`, {
-          is_admin,
-        });
+        await instance.putForm(
+          `/departments/${router.query.admin_department_id}/admin/`,
+          {
+            is_admin,
+            user_id: id,
+          },
+        );
       }
       toast({
         title: "操作成功",
       });
-      mutate("inactive-users");
+      mutate(`${router.query.admin_department_id}-members`);
+    } catch (e) {
+      toast({
+        title: "操作失敗",
+        variant: "error",
+      });
+    }
+  };
+
+  const approveJoinRequest = async ({ id }: { id: string }) => {
+    try {
+      await instance.put(`/departments/join-request/approve/${id}`);
+      mutate(`${router.query.admin_department_id}-members`);
+      mutate(`${router.query.admin_department_id}-pending`);
+      toast({
+        title: "操作成功",
+      });
     } catch (e) {
       toast({
         title: "操作失敗",
@@ -102,88 +131,59 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       header: "操作",
       size: 120,
       cell: (props) => {
-        const { id, username, readable_name, is_active, is_admin } =
-          props.row.original;
+        const {
+          id,
+          username,
+          readable_name,
+          status,
+          user_id,
+          is_department_admin,
+        } = props.row.original;
         return (
           <div className="flex gap-2">
-            {is_active ? (
+            {status === "PENDING" && (
               <Tooltip>
-                <TooltipTrigger disabled={id === userData?.id}>
+                <TooltipTrigger>
                   <Button
-                    disabled={id === userData?.id}
                     variant="outline"
                     size="icon"
                     onClick={() => {
-                      updateUserStatus({ is_active: false, id });
+                      approveJoinRequest({ id });
                     }}
                   >
-                    <LockOpen1Icon />
+                    <CheckIcon />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <TypographyP>
-                    停用 {readable_name ?? username} 的帳號
-                  </TypographyP>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger disabled={id === userData?.id}>
-                  <Button
-                    disabled={id === userData?.id}
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      updateUserStatus({ is_active: true, id });
-                    }}
-                  >
-                    <LockClosedIcon />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <TypographyP>
-                    啟用 {readable_name ?? username} 的帳號
+                    通過 {readable_name ?? username} 的申請
                   </TypographyP>
                 </TooltipContent>
               </Tooltip>
             )}
-            {is_admin ? (
+            {status === "APPROVED" && (
               <Tooltip>
-                <TooltipTrigger disabled={id === userData?.id}>
+                <TooltipTrigger disabled={user_id === userData?.id}>
                   <Button
-                    disabled={id === userData?.id}
+                    disabled={user_id === userData?.id}
                     variant="outline"
                     size="icon"
                     onClick={() => {
-                      updateUserStatus({ is_admin: false, id, field: "admin" });
+                      updateMemberStatus({
+                        is_admin: !is_department_admin,
+                        id,
+                        field: "admin",
+                      });
                     }}
                   >
-                    <StarFilledIcon />
+                    {is_department_admin ? <StarFilledIcon /> : <StarIcon />}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <TypographyP>
-                    降級 {readable_name ?? username} 為普通用戶
-                  </TypographyP>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger disabled={id === userData?.id}>
-                  <Button
-                    disabled={id === userData?.id}
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      updateUserStatus({ is_admin: true, id, field: "admin" });
-                    }}
-                  >
-                    <StarIcon />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <TypographyP>
-                    升級 {readable_name ?? username} 成為管理員
+                    {is_department_admin
+                      ? `降級 ${readable_name ?? username} 為社群普通用戶`
+                      : `給予 ${readable_name ?? username} 管理社群權限`}
                   </TypographyP>
                 </TooltipContent>
               </Tooltip>
@@ -205,10 +205,21 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>管理成員</DialogTitle>
+          <DialogTitle>管理社群成員</DialogTitle>
         </DialogHeader>
 
-        <DataTable columns={columns} data={data} />
+        <Tabs defaultValue="members">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="members">管理成員</TabsTrigger>
+            <TabsTrigger value="apply">審核申請</TabsTrigger>
+          </TabsList>
+          <TabsContent value="members">
+            <DataTable columns={columns} data={membersData} />
+          </TabsContent>
+          <TabsContent value="apply">
+            <DataTable columns={columns} data={pendingData} />
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

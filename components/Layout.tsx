@@ -27,7 +27,7 @@ const SiteHeader = Dynamic(() => import("@/components/site-header"), {
         <div className="flex gap-2">
           <div className="animate-pulse bg-muted h-10 w-10 rounded-md" />
           <div className="animate-pulse bg-muted h-10 w-[102px] rounded-md" />
-          <div className="animate-pulse bg-muted h-10 w-10 rounded-full" />
+          <div className="animate-pulse bg-muted h-10 w-[58px] rounded-md" />
         </div>
       </div>
     </header>

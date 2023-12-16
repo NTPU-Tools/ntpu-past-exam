@@ -36,8 +36,14 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
     !!query?.edit_post_detail_id &&
     query?.open_edit_post_detail_dialog === "true";
 
-  const { data } = useSWR(dialogOpen ? "pending-posts" : null, () =>
-    instance.get("/posts?status=PENDING"),
+  const { data } = useSWR(
+    dialogOpen && router.query.admin_department_id
+      ? `${router.query.admin_department_id}-pending-posts`
+      : null,
+    () =>
+      instance.get(
+        `/posts?department_id=${router.query.admin_department_id}&status=PENDING`,
+      ),
   );
 
   const { data: postData } = useSWR(
@@ -130,7 +136,7 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
       toast({
         title: "操作成功",
       });
-      mutate("pending-posts");
+      mutate(`${router.query.admin_department_id}-pending-posts`);
       mutate(`post-${query?.edit_post_detail_id}`);
       closePostDetailDialog();
     } catch (e) {
