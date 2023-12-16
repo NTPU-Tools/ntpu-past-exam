@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { TypographySmall } from "@/components/ui/typography";
-import userStore from "@/store/userStore";
 import { cn } from "@/utils/cn";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";
 import { groupBy, map, sortBy } from "lodash-es";
@@ -51,20 +50,18 @@ function MobileLink({
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
-  const { userData } = userStore();
   const router = useRouter();
 
   const isAdminPage = router.pathname.includes("admin");
   const { data } = useSWR(
-    userData?.is_active && router.query.department_id && !isAdminPage
+    router.query.department_id && !isAdminPage
       ? `${router.query.department_id}-courses`
       : null,
     () => instance.get(`/departments/${router.query.department_id}/courses`),
   );
 
-  const { data: visibleDepartment } = useSWR(
-    userData?.is_active ? "visible-departments" : null,
-    () => instance.get("/departments/visible"),
+  const { data: visibleDepartment } = useSWR("visible-departments", () =>
+    instance.get("/departments/visible"),
   );
 
   const items = sortBy(groupBy(data, "category")).sort((a, b) =>

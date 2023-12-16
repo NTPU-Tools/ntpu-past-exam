@@ -16,17 +16,15 @@ import {
   TypographyH1,
   TypographyP,
 } from "@/components/ui/typography";
-import userStore from "@/store/userStore";
 import { constant, omit, times } from "lodash-es";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
 function Page() {
   const router = useRouter();
-  const isActive = userStore().userData?.is_active;
 
   const { data, isLoading } = useSWR(
-    isActive ? `${router.query.department_id}-bulletins` : null,
+    `${router.query.department_id}-bulletins`,
     () => instance.get(`/departments/${router.query.department_id}/bulletins`),
   );
 

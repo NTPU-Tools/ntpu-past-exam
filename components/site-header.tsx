@@ -37,17 +37,13 @@ function SiteHeader() {
     },
   );
 
-  const { data: adminScopes } = useSWR(
-    userData?.is_active ? `departments-admin` : null,
-    () => instance.get("/users/me/departments-admin"),
+  const { data: adminScopes } = useSWR(`departments-admin`, () =>
+    instance.get("/users/me/departments-admin"),
   );
 
   useEffect(() => {
     setUserData(data);
-    if (data?.is_active && router.pathname === "/inactive") {
-      router.replace("/");
-    }
-  }, [setUserData, data, router]);
+  }, [setUserData, data]);
 
   const logout = () => {
     eraseCookie("ntpu-past-exam-access-token");
@@ -91,7 +87,6 @@ function SiteHeader() {
                     <Button variant="outline">回首頁</Button>
                   </Link>
                 ) : (
-                  userData?.is_active &&
                   query.department_id && (
                     <Button
                       onClick={() => {

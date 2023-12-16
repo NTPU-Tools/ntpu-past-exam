@@ -3,7 +3,6 @@ import { PageHeader, PageHeaderHeading } from "@/components/PageHeader";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyBlockquote } from "@/components/ui/typography";
-import userStore from "@/store/userStore";
 import { constant, times } from "lodash-es";
 import { ChevronRight } from "lucide-react";
 import Head from "next/head";
@@ -13,13 +12,12 @@ import useSWR from "swr";
 
 const CoursePage = () => {
   const router = useRouter();
-  const isActive = userStore().userData?.is_active;
   const courseId = router.query.course_id as string | undefined;
   const {
     data: courseData,
     isLoading,
     error,
-  } = useSWR(isActive && courseId ? `course-${courseId}` : null, () =>
+  } = useSWR(courseId ? `course-${courseId}` : null, () =>
     instance.get(`/courses/${courseId}`),
   );
 

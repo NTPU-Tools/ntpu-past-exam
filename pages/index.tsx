@@ -25,7 +25,6 @@ import ScrollArea from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyBlockquote, TypographyP } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
-import userStore from "@/store/userStore";
 import { filter, omit } from "lodash-es";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -35,17 +34,14 @@ import useSWR from "swr";
 function Page() {
   const [applyLoading, setApplyLoading] = useState(false);
   const router = useRouter();
-  const isActive = userStore().userData?.is_active;
   const { toast } = useToast();
 
-  const { data, isLoading } = useSWR(
-    isActive ? "visible-departments" : null,
-    () => instance.get("/departments/visible"),
+  const { data, isLoading } = useSWR("visible-departments", () =>
+    instance.get("/departments/visible"),
   );
 
-  const { data: allDepartments } = useSWR(
-    isActive ? "all-departments" : null,
-    () => instance.get("/departments"),
+  const { data: allDepartments } = useSWR("all-departments", () =>
+    instance.get("/departments"),
   );
 
   const invisible_department = data

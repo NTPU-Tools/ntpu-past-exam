@@ -7,17 +7,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TypographySmall } from "@/components/ui/typography";
-import userStore from "@/store/userStore";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
 export function MainNav() {
   const router = useRouter();
-  const { userData } = userStore();
-  const { data } = useSWR(
-    userData?.is_active ? "visible-departments" : null,
-    () => instance.get("/departments/visible"),
+  const { data } = useSWR("visible-departments", () =>
+    instance.get("/departments/visible"),
   );
 
   return (

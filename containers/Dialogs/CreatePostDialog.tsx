@@ -31,7 +31,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { TypographyBlockquote } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
 import { createPostSchema } from "@/schemas/post";
-import userStore from "@/store/userStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { forEach, groupBy, map, omit } from "lodash-es";
@@ -47,12 +46,10 @@ const CreatePostDialog = () => {
   const router = useRouter();
   const query = router.query;
 
-  const { userData } = userStore();
-
   const isAdminPage = router.pathname.includes("admin");
 
   const { data } = useSWR(
-    userData?.is_active && query.department_id && !isAdminPage
+    query.department_id && !isAdminPage
       ? `${query.department_id}-courses`
       : null,
     () => instance.get(`/departments/${query.department_id}/courses`),
