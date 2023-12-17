@@ -37,8 +37,9 @@ function SiteHeader() {
     },
   );
 
-  const { data: adminScopes } = useSWR(`departments-admin`, () =>
-    instance.get("/users/me/departments-admin"),
+  const { data: adminScopes } = useSWR(
+    accessToken ? `departments-admin` : null,
+    () => instance.get("/users/me/departments-admin"),
   );
 
   useEffect(() => {

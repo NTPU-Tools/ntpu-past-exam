@@ -7,13 +7,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TypographySmall } from "@/components/ui/typography";
+import { getCookie } from "@/utils/cookie";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
 export function MainNav() {
+  const accessToken = getCookie("ntpu-past-exam-access-token");
   const router = useRouter();
-  const { data } = useSWR("visible-departments", () =>
+  const { data } = useSWR(accessToken ? "visible-departments" : null, () =>
     instance.get("/departments/visible"),
   );
 
