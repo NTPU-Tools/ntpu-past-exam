@@ -33,7 +33,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { createPostSchema } from "@/schemas/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
-import { forEach, groupBy, map, omit } from "lodash-es";
+import { forEach, groupBy, head, map, omit, sortBy } from "lodash-es";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -55,7 +55,9 @@ const CreatePostDialog = () => {
     () => instance.get(`/departments/${query.department_id}/courses`),
   );
 
-  const items = groupBy(data, "category");
+  const items = sortBy(groupBy(data, "category")).sort((a, b) =>
+    a[0].category.localeCompare(b[0].category, "zh-Hant"),
+  );
 
   const form = useForm<z.infer<typeof createPostSchema>>({
     resolver: zodResolver(createPostSchema),
@@ -123,7 +125,7 @@ const CreatePostDialog = () => {
         }
       }}
     >
-      <DialogContent>
+      <DialogContent className="max-h-screen overflow-y-auto">
         <DialogHeader>
           <DialogTitle>上傳考古題</DialogTitle>
         </DialogHeader>
@@ -155,10 +157,12 @@ const CreatePostDialog = () => {
                           <SelectValue placeholder="請選擇課程" />
                         </SelectTrigger>
                         <SelectContent>
-                          {map(items, (value, key) => (
+                          {map(items, (courses, key) => (
                             <SelectGroup key={key}>
-                              <SelectLabel>{key}</SelectLabel>
-                              {map(value, (course) => (
+                              <SelectLabel>
+                                {head(courses).category}
+                              </SelectLabel>
+                              {map(courses, (course) => (
                                 <SelectItem value={course.id} key={course.id}>
                                   {course.name}
                                 </SelectItem>
@@ -187,49 +191,49 @@ const CreatePostDialog = () => {
                 )}
               />
 
-              <FormLabel>考古題檔案</FormLabel>
-              {map(fileFields, (fileField, index) => (
-                <div key={index} className="flex gap-2">
-                  <div className="grow">
-                    <FormField
-                      control={form.control}
-                      name={`files.${index}`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            {/* @ts-ignore */}
-                            <Input
-                              placeholder="請選擇考古題檔案"
-                              {...field}
-                              type="file"
-                              // @ts-ignore
-                              value={field.value?.fileName}
-                              onChange={(event) => {
-                                field.onChange(event.target.files?.[0]);
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+              <div className="flex flex-col my-2 space-y-2">
+                <FormLabel className="">考古題檔案</FormLabel>
+                {map(fileFields, (_, index) => (
+                  <div key={index} className="flex gap-2">
+                    <div className="grow">
+                      <FormField
+                        control={form.control}
+                        name={`files.${index}`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              {/* @ts-ignore */}
+                              <Input
+                                placeholder="請選擇考古題檔案"
+                                {...field}
+                                type="file"
+                                // @ts-ignore
+                                value={field.value?.fileName}
+                                onChange={(event) => {
+                                  field.onChange(event.target.files?.[0]);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <Button
+                      className="flex-shrink-0"
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        remove(index);
+                      }}
+                    >
+                      <CrossCircledIcon />
+                    </Button>
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      remove(index);
-                    }}
-                  >
-                    <CrossCircledIcon />
-                  </Button>
-                </div>
-              ))}
+                ))}
 
-              <div>
                 <Button
-                  className="my-2"
                   variant="outline"
                   type="button"
                   onClick={() => {

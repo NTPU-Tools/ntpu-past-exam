@@ -25,29 +25,39 @@ import ScrollArea from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyBlockquote, TypographyP } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
-import { filter, omit } from "lodash-es";
+import { filter, flatMap, omit } from "lodash-es";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import useSWR from "swr";
+import { useMemo, useState } from "react";
+import useSWR, { mutate } from "swr";
 
 function Page() {
   const [applyLoading, setApplyLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
-  const { data, isLoading } = useSWR("visible-departments", () =>
-    instance.get("/departments/visible"),
+  const { data, isLoading } = useSWR("departments-status", () =>
+    instance.get("/departments/status"),
   );
 
   const { data: allDepartments } = useSWR("all-departments", () =>
     instance.get("/departments"),
   );
 
+  const defaultTab = useMemo(() => {
+    if (!data) return "visible";
+    if (data.visible.length) return "visible";
+    if (data.pending.length) return "pending";
+    return "invisible";
+  }, [data]);
+
   const invisible_department = data
     ? filter(
         allDepartments,
-        (department) => !data.some((d) => d.id === department.id),
+        (department) =>
+          !flatMap<{ [key: string]: [id: string] }>(data).some(
+            (d) => d.id === department.id,
+          ),
       )
     : [];
 
@@ -82,6 +92,7 @@ function Page() {
         title: "申請成功",
         variant: "success",
       });
+      mutate("departments-status");
       closeApplyDepartmentDialog();
     } catch (error) {
       toast({
@@ -130,15 +141,15 @@ function Page() {
             <Accordion
               type="single"
               collapsible
-              defaultValue={data?.length > 0 ? "visible" : "invisible"}
+              defaultValue={data?.visible?.length > 0 ? "visible" : "invisible"}
             >
-              <AccordionItem value="visible">
+              <AccordionItem value={defaultTab}>
                 <AccordionTrigger>已加入的社群</AccordionTrigger>
                 <AccordionContent>
                   <ScrollArea className="max-h-[250px] overflow-y-auto">
                     <div className="flex flex-col gap-2">
-                      {data?.length ? (
-                        data.map((department, index) => (
+                      {data?.visible?.length ? (
+                        data?.visible.map((department, index) => (
                           <Link
                             key={index}
                             className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted"
@@ -150,6 +161,29 @@ function Page() {
                       ) : (
                         <TypographyBlockquote>
                           尚未加入任何社群
+                        </TypographyBlockquote>
+                      )}
+                    </div>
+                  </ScrollArea>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="pending">
+                <AccordionTrigger>審核中的社群</AccordionTrigger>
+                <AccordionContent>
+                  <ScrollArea className="max-h-[250px] overflow-y-auto">
+                    <div className="flex flex-col gap-2">
+                      {data?.pending?.length ? (
+                        data?.pending.map((department, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-4 rounded-md border p-4 hover:bg-muted cursor-not-allowed"
+                          >
+                            {department.name}
+                          </div>
+                        ))
+                      ) : (
+                        <TypographyBlockquote>
+                          尚未申請加入任何社群
                         </TypographyBlockquote>
                       )}
                     </div>
@@ -176,7 +210,7 @@ function Page() {
                         ))
                       ) : (
                         <TypographyBlockquote>
-                          已加入所有社群
+                          已加入所有社群，請聯絡平台新增更多社群
                         </TypographyBlockquote>
                       )}
                     </div>
