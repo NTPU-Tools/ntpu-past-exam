@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/", request.url));
       }
       const departmentId = path.split("/admin/")[1];
-      if (data?.admin?.some((a) => a.department_id === departmentId)) {
+      if (data?.admin?.some((a) => a.id === departmentId)) {
         return NextResponse.next();
       }
       return NextResponse.redirect(new URL("/", request.url));

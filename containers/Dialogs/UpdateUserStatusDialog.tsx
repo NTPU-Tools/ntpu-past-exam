@@ -161,7 +161,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
                 </TooltipContent>
               </Tooltip>
             )}
-            {status === "APPROVED" && (
+            {!status && (
               <Tooltip>
                 <TooltipTrigger disabled={user_id === userData?.id}>
                   <Button
@@ -171,7 +171,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
                     onClick={() => {
                       updateMemberStatus({
                         is_admin: !is_department_admin,
-                        id,
+                        id: user_id,
                         field: "admin",
                       });
                     }}
