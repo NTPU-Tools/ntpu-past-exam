@@ -57,6 +57,7 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.redirect(new URL("/", request.url));
   } catch (e) {
+    console.log(e);
     if (path === "/login") {
       return NextResponse.next();
     }
