@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { TypographyH1 } from "@/components/ui/typography";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
@@ -38,8 +39,11 @@ const AdminDashboard = () => {
   return (
     <div>
       <PageHeader>
-        <TypographyH1>{data?.name} - Admin Dashboard</TypographyH1>
+        <TypographyH1>{data?.name} Admin - NPTU 考古題</TypographyH1>
       </PageHeader>
+      <Head>
+        <title>{data?.name} Admin - NPTU 考古題</title>
+      </Head>
       <div className="grid grid-cols-2 gap-2">
         <Card
           className="hover:cursor-pointer"

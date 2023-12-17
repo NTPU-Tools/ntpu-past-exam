@@ -17,6 +17,7 @@ import {
   TypographyP,
 } from "@/components/ui/typography";
 import { constant, omit, times } from "lodash-es";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
@@ -33,6 +34,13 @@ function Page() {
   const { data: bulletinDetail, isLoading: isDetailLoading } = useSWR(
     dialogOpen ? `bulletin-${router.query?.bulletin_detail_dialog}` : null,
     () => instance.get(`/bulletins/${router.query?.bulletin_detail_dialog}`),
+  );
+
+  const { data: departmentData } = useSWR(
+    router.query.department_id
+      ? `department-${router.query.department_id}`
+      : null,
+    () => instance.get(`/departments/${router.query.department_id}`),
   );
 
   if (isLoading) {
@@ -53,6 +61,9 @@ function Page() {
   return (
     <>
       <div>
+        <Head>
+          <title>{departmentData.name} - NPTU 考古題</title>
+        </Head>
         <PageHeader>
           <TypographyH1>社群公告</TypographyH1>
         </PageHeader>
@@ -147,4 +158,3 @@ function Page() {
 }
 
 export default Page;
-Page.title = "公告";

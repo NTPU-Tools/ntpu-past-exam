@@ -273,4 +273,4 @@ function Page() {
 }
 
 export default Page;
-Page.title = "公告";
+Page.title = "選擇社群";
