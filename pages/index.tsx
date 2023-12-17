@@ -45,8 +45,7 @@ function Page() {
   );
 
   const defaultTab = useMemo(() => {
-    if (!data) return "visible";
-    if (data.visible.length) return "visible";
+    if (!data || data.visible.length) return "visible";
     if (data.pending.length) return "pending";
     return "invisible";
   }, [data]);
@@ -138,12 +137,8 @@ function Page() {
             <CardDescription>請選擇社群。</CardDescription>
           </CardHeader>
           <CardContent>
-            <Accordion
-              type="single"
-              collapsible
-              defaultValue={data?.visible?.length > 0 ? "visible" : "invisible"}
-            >
-              <AccordionItem value={defaultTab}>
+            <Accordion type="single" collapsible defaultValue={defaultTab}>
+              <AccordionItem value="visible">
                 <AccordionTrigger>已加入的社群</AccordionTrigger>
                 <AccordionContent>
                   <ScrollArea className="max-h-[250px] overflow-y-auto">
