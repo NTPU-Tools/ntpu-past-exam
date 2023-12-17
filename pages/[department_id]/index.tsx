@@ -62,7 +62,7 @@ function Page() {
     <>
       <div>
         <Head>
-          <title>{departmentData.name} - NPTU 考古題</title>
+          <title>{departmentData?.name} - NPTU 考古題</title>
         </Head>
         <PageHeader>
           <TypographyH1>社群公告</TypographyH1>
