@@ -1,11 +1,9 @@
-import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import Script from "next/script";
 
 function Analytics() {
   const clarityId = process.env.NEXT_PUBLIC_CLARITY_MEASUREMENT_ID;
   return (
     <>
-      <VercelAnalytics />
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
       />
