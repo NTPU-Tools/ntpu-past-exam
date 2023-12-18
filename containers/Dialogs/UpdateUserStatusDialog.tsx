@@ -79,7 +79,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       // }
       if (field === "admin") {
         await instance.putForm(
-          `/departments/${router.query.admin_department_id}/admin/`,
+          `/departments/${router.query.admin_department_id}/admin`,
           {
             is_admin,
             user_id: id,
