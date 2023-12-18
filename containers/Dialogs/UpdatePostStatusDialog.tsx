@@ -36,7 +36,7 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
     !!query?.edit_post_detail_id &&
     query?.open_edit_post_detail_dialog === "true";
 
-  const { data } = useSWR(
+  const { data, isLoading: isRootLoading } = useSWR(
     dialogOpen && router.query.admin_department_id
       ? `${router.query.admin_department_id}-pending-posts`
       : null,
@@ -53,7 +53,7 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
     () => instance.get(`/posts/${query?.edit_post_detail_id}`),
   );
 
-  function closeCreatePostDialog() {
+  function closePostsDialog() {
     router.replace({ query: omit(query, "open_edit_post_dialog") }, undefined, {
       shallow: true,
     });
@@ -155,7 +155,8 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
         open={dialogOpen}
         onOpenChange={(open) => {
           if (!open) {
-            closeCreatePostDialog();
+            if (isRootLoading && !data) return;
+            closePostsDialog();
           }
         }}
       >

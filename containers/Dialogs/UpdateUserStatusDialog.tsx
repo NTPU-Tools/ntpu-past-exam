@@ -33,7 +33,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
 
   const dialogOpen = query?.open_edit_member_dialog === "true";
 
-  const { data: membersData } = useSWR(
+  const { data: membersData, isLoading } = useSWR(
     dialogOpen && router.query.admin_department_id
       ? `${router.query.admin_department_id}-members`
       : null,
@@ -199,6 +199,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       open={dialogOpen}
       onOpenChange={(open) => {
         if (!open) {
+          if (isLoading && !membersData) return;
           closeEditUserDialog();
         }
       }}

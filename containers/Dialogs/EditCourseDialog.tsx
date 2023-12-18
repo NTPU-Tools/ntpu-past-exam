@@ -51,7 +51,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
 
   const dialogOpen = query?.open_edit_course_dialog === "true";
 
-  const { data } = useSWR(
+  const { data, isLoading } = useSWR(
     dialogOpen && router.query.admin_department_id
       ? `${router.query.admin_department_id}-courses`
       : null,
@@ -59,7 +59,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       instance.get(`/departments/${router.query.admin_department_id}/courses`),
   );
 
-  function closeEditUserDialog() {
+  function closeEditCourseDialog() {
     form.reset();
     router.replace(
       { query: omit(query, "open_edit_course_dialog") },
@@ -112,7 +112,8 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
         open={dialogOpen}
         onOpenChange={(open) => {
           if (!open) {
-            closeEditUserDialog();
+            if (isLoading && !data) return;
+            closeEditCourseDialog();
           }
         }}
       >

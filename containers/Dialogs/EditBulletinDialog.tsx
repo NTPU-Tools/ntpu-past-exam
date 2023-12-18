@@ -45,7 +45,7 @@ const EditBulletinDialog: FC<pageProps> = () => {
 
   const dialogOpen = query?.open_edit_bulletin_dialog === "true";
 
-  const { data } = useSWR(
+  const { data, isLoading } = useSWR(
     dialogOpen && router.query.admin_department_id
       ? `${router.query.admin_department_id}-bulletins`
       : null,
@@ -107,6 +107,7 @@ const EditBulletinDialog: FC<pageProps> = () => {
         open={dialogOpen}
         onOpenChange={(open) => {
           if (!open) {
+            if (isLoading && !data) return;
             closeEditBulletinDialog();
           }
         }}
