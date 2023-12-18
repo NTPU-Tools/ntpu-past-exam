@@ -29,7 +29,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { addCourseSchema } from "@/schemas/course";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
-import { map, omit } from "lodash-es";
+import { map, omit, set } from "lodash-es";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -73,6 +73,8 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
   const addCourse = async (values: z.infer<typeof addCourseSchema>) => {
     try {
       setAddCourseLoading(true);
+
+      set(values, "department_id", router.query.admin_department_id as string);
       await instance.postForm(`/courses`, values);
       toast({
         title: "操作成功",

@@ -96,9 +96,7 @@ function Page() {
               </div>
             ))
           ) : (
-            <TypographyBlockquote>
-              暫無公告，感謝大家的測試～！
-            </TypographyBlockquote>
+            <TypographyBlockquote>暫無公告。</TypographyBlockquote>
           )}
         </div>
       </div>
