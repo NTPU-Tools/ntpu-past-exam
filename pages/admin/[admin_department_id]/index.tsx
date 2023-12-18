@@ -39,7 +39,7 @@ const AdminDashboard = () => {
   return (
     <div>
       <PageHeader>
-        <TypographyH1>{data?.name} Admin - NPTU 考古題</TypographyH1>
+        <TypographyH1>{data?.name} Admin Dashboard</TypographyH1>
       </PageHeader>
       <Head>
         <title>{data?.name} Admin - NPTU 考古題</title>
