@@ -76,6 +76,7 @@ const PDFViewer = ({ className, src }: Props) => {
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
               variant="outline"
+              size="icon"
               className="disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronLeftIcon />
@@ -84,6 +85,7 @@ const PDFViewer = ({ className, src }: Props) => {
               onClick={() => setPage(page + 1)}
               disabled={page === pageNum}
               variant="outline"
+              size="icon"
               className="disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronRightIcon />
@@ -91,6 +93,7 @@ const PDFViewer = ({ className, src }: Props) => {
           </div>
           <Button
             variant="outline"
+            size="icon"
             className="absolute top-0 right-0 m-2 opacity-50 hover:opacity-100"
           >
             <a
@@ -106,6 +109,7 @@ const PDFViewer = ({ className, src }: Props) => {
           </Button>
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 opacity-30 hover:opacity-100">
             <Button
+              size="icon"
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
               variant="outline"
@@ -114,6 +118,7 @@ const PDFViewer = ({ className, src }: Props) => {
               <ChevronLeftIcon />
             </Button>
             <Button
+              size="icon"
               onClick={() => setPage(page + 1)}
               disabled={page === pageNum}
               variant="outline"
