@@ -127,6 +127,11 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       size: 120,
       cell: (props) => <span>{props.getValue() ?? "-"}</span>,
     }),
+    usersCol.accessor("school_department", {
+      header: "系級",
+      size: 120,
+      cell: (props) => <span>{props.getValue() ?? "-"}</span>,
+    }),
     usersCol.display({
       header: "操作",
       size: 120,
