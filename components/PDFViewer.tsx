@@ -10,6 +10,8 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Loader2 } from "lucide-react";
 import { Fragment, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
 import { useElementSize } from "usehooks-ts";
 
 interface Props {
@@ -66,12 +68,12 @@ const PDFViewer = ({ className, src }: Props) => {
                     <Loader2 className="w-6 h-6 animate-spin" />
                   </div>
                 )}
-                className="h-full w-full [&>*]:top-0 [&>*]:left-0 [&>*]:absolute [&>.textLayer]:opacity-0 [&>.annotationLayer]:opacity-0"
+                className="h-full w-full"
                 width={width}
               />
             </Fragment>
           </AspectRatio>
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 flex gap-2 opacity-30 hover:opacity-100">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 flex gap-2 opacity-30 hover:opacity-100 z-50">
             <Button
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
@@ -94,7 +96,7 @@ const PDFViewer = ({ className, src }: Props) => {
           <Button
             variant="outline"
             size="icon"
-            className="absolute top-0 right-0 m-2 opacity-50 hover:opacity-100"
+            className="absolute top-0 right-0 m-2 opacity-50 hover:opacity-100 z-50"
           >
             <a
               href={src}
@@ -107,7 +109,7 @@ const PDFViewer = ({ className, src }: Props) => {
               <DownloadIcon />
             </a>
           </Button>
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 opacity-30 hover:opacity-100">
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 opacity-30 hover:opacity-100 z-50">
             <Button
               size="icon"
               onClick={() => setPage(page - 1)}
