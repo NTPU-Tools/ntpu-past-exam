@@ -6,6 +6,7 @@ import {
   ChevronRightIcon,
   DownloadIcon,
 } from "@radix-ui/react-icons";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Loader2 } from "lucide-react";
 import { Fragment, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -92,7 +93,16 @@ const PDFViewer = ({ className, src }: Props) => {
             variant="outline"
             className="absolute top-0 right-0 m-2 opacity-50 hover:opacity-100"
           >
-            <DownloadIcon />
+            <a
+              href={src}
+              download
+              target="_blank"
+              rel="noreferrer"
+              className="h-full w-full flex justify-center items-center"
+            >
+              <VisuallyHidden>下載檔案</VisuallyHidden>
+              <DownloadIcon />
+            </a>
           </Button>
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 opacity-30 hover:opacity-100">
             <Button
