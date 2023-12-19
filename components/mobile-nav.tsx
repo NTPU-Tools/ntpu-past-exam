@@ -87,7 +87,10 @@ export function MobileNav() {
             onOpenChange={setOpen}
           >
             <span className="font-bold">
-              NTPU 考古題 <TypographySmall>Beta</TypographySmall>{" "}
+              NTPU 考古題{" "}
+              {process.env.ZEABUR_GIT_BRANCH !== "main" && (
+                <TypographySmall>測試環境</TypographySmall>
+              )}
             </span>
           </MobileLink>
           {router.query?.department_id && (
