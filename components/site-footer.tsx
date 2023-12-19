@@ -12,7 +12,6 @@ function SiteFooter() {
           >
             NTPU Tools
           </a>
-          .
         </p>
         <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
           version:{" "}
