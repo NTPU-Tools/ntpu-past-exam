@@ -27,7 +27,7 @@ export function MainNav() {
       >
         <span className="font-bold">
           NTPU 考古題{" "}
-          {process.env.ZEABUR_GIT_BRANCH !== "main" && (
+          {process.env.NEXT_PUBLIC_ZEABUR_GIT_BRANCH !== "main" && (
             <TypographySmall>測試環境</TypographySmall>
           )}
         </span>
