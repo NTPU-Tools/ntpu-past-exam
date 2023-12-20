@@ -38,7 +38,8 @@ const ServiceTermDialog = ({ open, close }: Props) => (
 
       <TypographyH2>個資蒐集</TypographyH2>
       <TypographyP>
-        此服務在登入時會連線至『臺北大學學生資訊系統』驗證身份並蒐集您的學號、姓名、系級以及信箱（僅限於此四項資訊），且不會對您的密碼做任何之保留行為。
+        此服務在登入時利用 Google Login
+        驗證身份並蒐集您的學號、姓名以及信箱（僅限於此三項資訊），且不會對您的密碼做任何之保留行為。
       </TypographyP>
 
       <TypographyH2>您的行為準則</TypographyH2>

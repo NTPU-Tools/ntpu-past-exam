@@ -108,6 +108,7 @@ const LoginPage = () => {
               <CardDescription>
                 僅限使用學校配發之 Google 學術帳號。
               </CardDescription>
+              <CardDescription>例如：s410985XXX@gm.ntpu.edu.tw</CardDescription>
             </CardHeader>
             <CardContent>
               <Button
