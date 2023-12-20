@@ -177,7 +177,7 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
           }
         }}
       >
-        <DialogContent className="flex flex-col justify-start max-h-full h-full overflow-y-auto">
+        <DialogContent className="flex flex-col justify-start">
           <DialogHeader>
             <DialogTitle>審核考古題: {postData?.title}</DialogTitle>
           </DialogHeader>

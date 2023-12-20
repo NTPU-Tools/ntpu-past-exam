@@ -1,10 +1,12 @@
 import "../styles/globals.css";
-import Layout from "@/components/Layout";
 import type { AppProps } from "next/app";
 import Dynamic from "next/dynamic";
 import Head from "next/head";
 import { SWRConfig } from "swr";
 
+const Layout = Dynamic(() => import("@/components/Layout"), {
+  ssr: false,
+});
 const Dialogs = Dynamic(() => import("@/containers/Dialogs"), {
   ssr: false,
 });

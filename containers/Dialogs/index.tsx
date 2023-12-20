@@ -42,7 +42,7 @@ const Dialogs = () => {
 
   return (
     <>
-      <CreatePostDialog />
+      {!isAdmin && <CreatePostDialog />}
       {isAdmin && (
         <>
           <UpdatePostStatusDialog />

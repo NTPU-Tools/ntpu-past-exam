@@ -5,7 +5,7 @@ function SiteFooter() {
         <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
           Shipped by{" "}
           <a
-            href="https://github.com/NTPU-Past-Exam"
+            href="https://github.com/ntpu-tools"
             target="_blank"
             className="font-medium underline underline-offset-4"
             rel="noreferrer"

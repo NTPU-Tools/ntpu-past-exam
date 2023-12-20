@@ -125,7 +125,7 @@ const CreatePostDialog = () => {
         }
       }}
     >
-      <DialogContent className="max-h-screen overflow-y-auto">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>上傳考古題</DialogTitle>
         </DialogHeader>

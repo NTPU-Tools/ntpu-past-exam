@@ -16,7 +16,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { TypographySmall } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
+import ServiceTermDialog from "@/containers/Dialogs/ServiceTermDialog";
 import { loginSchema } from "@/schemas/login";
 import userStore from "@/store/userStore";
 import { setCookie } from "@/utils/cookie";
@@ -28,6 +30,7 @@ import * as z from "zod";
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [openTerm, setOpenTerm] = useState(false);
   const { setUserData } = userStore();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -55,70 +58,85 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)]">
-      <div className="w-full h-full flex justify-center items-center">
-        <Card className="w-[350px]">
-          <CardHeader>
-            <CardTitle>登入</CardTitle>
-            <CardDescription>帳號密碼與學生資訊系統相同。</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  form.handleSubmit(onSubmit)();
-                }}
-              >
-                <div className="grid w-full items-center gap-4">
-                  <div className="flex flex-col space-y-1.5">
-                    <FormField
-                      control={form.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>學號</FormLabel>
-                          <FormControl>
-                            <Input placeholder="請輸入學號" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+    <>
+      <div className="h-[calc(100vh-8rem)]">
+        <div className="w-full h-full flex justify-center items-center">
+          <Card className="w-[350px]">
+            <CardHeader>
+              <CardTitle>登入</CardTitle>
+              <CardDescription>帳號密碼與學生資訊系統相同。</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    form.handleSubmit(onSubmit)();
+                  }}
+                >
+                  <div className="grid w-full items-center gap-4">
+                    <div className="flex flex-col space-y-1.5">
+                      <FormField
+                        control={form.control}
+                        name="username"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>學號</FormLabel>
+                            <FormControl>
+                              <Input placeholder="請輸入學號" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-1.5">
+                      <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>密碼</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="請輸入密碼"
+                                type="password"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormMessage>
+                      {form.formState.errors.root?.message}
+                    </FormMessage>
+                    <Button className="w-full my-2" isLoading={isLoading}>
+                      登入
+                    </Button>
+                    <div className="flex justify-center">
+                      <TypographySmall>
+                        登入即代表您同意我們的
+                        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+                        <span
+                          className="hover:underline cursor-pointer font-extrabold mx-1"
+                          onClick={() => setOpenTerm(true)}
+                        >
+                          服務條款
+                        </span>
+                        。
+                      </TypographySmall>
+                    </div>
                   </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>密碼</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="請輸入密碼"
-                              type="password"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <FormMessage>
-                    {form.formState.errors.root?.message}
-                  </FormMessage>
-
-                  <Button className="w-full my-2" isLoading={isLoading}>
-                    登入
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+      <ServiceTermDialog open={openTerm} close={() => setOpenTerm(false)} />
+    </>
   );
 };
 
