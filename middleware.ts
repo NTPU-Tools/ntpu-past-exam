@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/", request.url));
       }
       const departmentId = path.split("/admin/")[1];
-      if (data?.admin?.some((a) => a.id === departmentId)) {
+      if (data?.admin?.includes(departmentId)) {
         return NextResponse.next();
       }
       return NextResponse.redirect(new URL("/", request.url));
@@ -51,7 +51,7 @@ export async function middleware(request: NextRequest) {
 
     const departmentId = path.split("/")[1];
 
-    if (data?.visible_departments?.some((d) => d.id === departmentId)) {
+    if (data?.visible_departments?.includes(departmentId)) {
       return NextResponse.next();
     }
 
