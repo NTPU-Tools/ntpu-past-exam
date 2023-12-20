@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import type { AppProps } from "next/app";
 import Dynamic from "next/dynamic";
 import Head from "next/head";
@@ -27,22 +28,26 @@ export default function App({ Component, pageProps }: AppProps) {
         errorRetryInterval: 1000,
       }}
     >
-      <TooltipProvider delayDuration={200}>
-        <Layout>
-          <Component {...pageProps} />
-          {(Component as unknown as { title: string }).title && (
-            <Head>
-              <title>
-                {(Component as unknown as { title: string }).title} - NTPU
-                考古題
-              </title>
-            </Head>
-          )}
-        </Layout>
-        <Toaster />
-        <Dialogs />
-        <Analytics />
-      </TooltipProvider>
+      <GoogleOAuthProvider
+        clientId={process.env.NEXT_PUBLIC_GOOGLE_LOGIN_CLIENT_ID as string}
+      >
+        <TooltipProvider delayDuration={200}>
+          <Layout>
+            <Component {...pageProps} />
+            {(Component as unknown as { title: string }).title && (
+              <Head>
+                <title>
+                  {(Component as unknown as { title: string }).title} - NTPU
+                  考古題
+                </title>
+              </Head>
+            )}
+          </Layout>
+          <Toaster />
+          <Dialogs />
+          <Analytics />
+        </TooltipProvider>
+      </GoogleOAuthProvider>
     </SWRConfig>
   );
 }
