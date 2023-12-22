@@ -139,7 +139,7 @@ function Page() {
           <CardContent>
             <Accordion type="single" collapsible defaultValue={defaultTab}>
               <AccordionItem value="visible">
-                <AccordionTrigger>已加入的社群</AccordionTrigger>
+                <AccordionTrigger>可瀏覽的社群</AccordionTrigger>
                 <AccordionContent>
                   <ScrollArea className="max-h-[250px] overflow-y-auto">
                     <div className="flex flex-col gap-2">
