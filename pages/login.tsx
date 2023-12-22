@@ -28,8 +28,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { isEmbedded, useDeviceSelectors, isMobile } from "react-device-detect";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+
+const googleLoginBlacklist = ["Line", "Instagram", "Facebook"];
 
 const LoginPage = () => {
   const router = useRouter();
@@ -41,6 +44,7 @@ const LoginPage = () => {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
   });
+  const [selectors] = useDeviceSelectors(window.navigator.userAgent);
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
@@ -97,7 +101,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     login_with_google_code_flow();
-  }, []);
+  }, [router.query.code]);
 
   return (
     <>
@@ -113,6 +117,10 @@ const LoginPage = () => {
             </CardHeader>
             <CardContent>
               <Button
+                disabled={
+                  googleLoginBlacklist.includes(selectors.browserName) ||
+                  isEmbedded
+                }
                 isLoading={isLoading}
                 className="w-full my-2"
                 onClick={() => {
@@ -120,8 +128,17 @@ const LoginPage = () => {
                   login();
                 }}
               >
-                使用 Google 登入
+                {googleLoginBlacklist.includes(selectors.browserName) ||
+                isEmbedded
+                  ? "請使用內建瀏覽器"
+                  : "使用 Google 登入"}
               </Button>
+              {isMobile && (
+                <CardDescription className={"text-center"}>
+                  系統偵測到您使用的是手機瀏覽器，請使用內建瀏覽器登入。
+                </CardDescription>
+              )}
+
               {adminMode && (
                 <Form {...form}>
                   <form
