@@ -1,4 +1,9 @@
 import { ThemeProvider } from "@/components/ThemeProvider";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import Dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { FC, ReactNode } from "react";
@@ -62,15 +67,26 @@ const Layout: FC<pageProps> = ({ children }: pageProps) => {
         <SiteHeader />
         <div className="flex-1">
           <div className="border-b">
-            <div className="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)_120px] lg:gap-10">
-              <aside className="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-4rem)] w-full shrink-0 md:sticky md:block">
-                <ScrollArea className="h-full py-6 pl-8 pr-6 lg:py-8">
-                  <SidebarNav />
-                </ScrollArea>
-              </aside>
-              <main className="relative py-6 lg:gap-10 lg:py-8  min-h-[calc(100vh-4rem)]">
-                {children}
-              </main>
+            <div className="container flex-1 items-start md:gap-6 lg:gap-10">
+              <ResizablePanelGroup direction="horizontal">
+                <ResizablePanel
+                  minSize={18}
+                  defaultSize={18}
+                  className="hidden md:flex"
+                >
+                  <aside className="fixed z-30 -ml-2 h-[calc(100vh-4rem)] w-full shrink-0 md:sticky ">
+                    <ScrollArea className="h-full py-6 pl-8 pr-6 lg:py-8">
+                      <SidebarNav />
+                    </ScrollArea>
+                  </aside>
+                </ResizablePanel>
+                <ResizableHandle className="md:block hidden" />
+                <ResizablePanel>
+                  <main className="relative py-6 lg:gap-10 lg:py-8 md:pl-10 min-h-[calc(100vh-4rem)]">
+                    {children}
+                  </main>
+                </ResizablePanel>
+              </ResizablePanelGroup>
             </div>
           </div>
         </div>

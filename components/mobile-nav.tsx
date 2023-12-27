@@ -125,17 +125,22 @@ export function MobileNav() {
                   className="flex flex-col space-y-3 pt-6"
                 >
                   <h4 className="font-medium">{courses[0].category}</h4>
-                  {map(courses, (course) => (
-                    <React.Fragment key={course.id}>
-                      <MobileLink
-                        href={`/${router.query.department_id}/${course.id}`}
-                        onOpenChange={setOpen}
-                        className="text-muted-foreground"
-                      >
-                        {course.name}
-                      </MobileLink>
-                    </React.Fragment>
-                  ))}
+                  {map(
+                    courses.sort((a, b) =>
+                      a.name.localeCompare(b.name, "zh-Hant"),
+                    ),
+                    (course) => (
+                      <React.Fragment key={course.id}>
+                        <MobileLink
+                          href={`/${router.query.department_id}/${course.id}`}
+                          onOpenChange={setOpen}
+                          className="text-muted-foreground"
+                        >
+                          {course.name}
+                        </MobileLink>
+                      </React.Fragment>
+                    ),
+                  )}
                 </div>
               ))}
             </div>

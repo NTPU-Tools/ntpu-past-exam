@@ -128,10 +128,13 @@ function SidebarNav() {
           </h4>
           {courses?.length && (
             <SidebarNavItems
-              items={map(courses, (course) => ({
-                title: course.name,
-                href: `/${query.department_id}/${course.id}`,
-              }))}
+              items={map(
+                courses.sort((a, b) => a.name.localeCompare(b.name, "zh-Hant")),
+                (course) => ({
+                  title: course.name,
+                  href: `/${query.department_id}/${course.id}`,
+                }),
+              )}
               pathname={asPath}
             />
           )}
