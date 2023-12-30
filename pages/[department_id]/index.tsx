@@ -146,7 +146,7 @@ function Page() {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button>關閉</Button>
+              <Button className="w-full">關閉</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

@@ -265,7 +265,7 @@ const CreatePostDialog = () => {
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" isLoading={isLoading}>
+            <Button variant="outline" className="w-full" isLoading={isLoading}>
               取消
             </Button>
           </DialogClose>

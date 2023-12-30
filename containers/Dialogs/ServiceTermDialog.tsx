@@ -60,7 +60,7 @@ const ServiceTermDialog = ({ open, close }: Props) => (
       </TypographyP>
       <DialogFooter>
         <DialogClose asChild>
-          <Button>關閉</Button>
+          <Button className="w-full">關閉</Button>
         </DialogClose>
       </DialogFooter>
     </DialogContent>
