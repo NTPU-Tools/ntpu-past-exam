@@ -38,7 +38,7 @@ const PostPage = () => {
 
   if (isLoading || !post) {
     return (
-      <div className="relative">
+      <div>
         <PageHeader>
           <Skeleton className="h-12 w-[200px]" />
         </PageHeader>

@@ -68,20 +68,28 @@ const Layout: FC<pageProps> = ({ children }: pageProps) => {
         <div className="flex-1">
           <div className="border-b">
             <div className="container flex-1 items-start md:gap-6 lg:gap-10">
-              <ResizablePanelGroup direction="horizontal">
+              <ResizablePanelGroup
+                direction="horizontal"
+                style={{
+                  overflow: "unset",
+                }}
+              >
                 <ResizablePanel
                   minSize={18}
                   defaultSize={18}
                   className="hidden md:flex"
+                  style={{
+                    overflow: "unset",
+                  }}
                 >
-                  <aside className="fixed z-30 -ml-2 h-[calc(100vh-4rem)] w-full shrink-0 md:sticky ">
+                  <aside className="z-30 -ml-2 h-[calc(100vh-4rem)] w-full md:sticky top-16">
                     <ScrollArea className="h-full py-6 pl-8 pr-6 lg:py-8">
                       <SidebarNav />
                     </ScrollArea>
                   </aside>
                 </ResizablePanel>
                 <ResizableHandle className="md:block hidden" />
-                <ResizablePanel>
+                <ResizablePanel minSize={30}>
                   <main className="relative py-6 lg:gap-10 lg:py-8 md:pl-10 min-h-[calc(100vh-4rem)]">
                     {children}
                   </main>

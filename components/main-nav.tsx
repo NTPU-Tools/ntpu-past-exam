@@ -41,7 +41,7 @@ export function MainNav() {
             router.push(`/${value}`);
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger className="min-w-[200px]">
             <SelectValue placeholder="請選擇社群" />
           </SelectTrigger>
           <SelectContent>

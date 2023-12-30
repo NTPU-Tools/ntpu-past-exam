@@ -55,6 +55,13 @@ const CreatePostDialog = () => {
     () => instance.get(`/departments/${query.department_id}/courses`),
   );
 
+  const { data: departmentData } = useSWR(
+    router.query.department_id
+      ? `department-${router.query.department_id}`
+      : null,
+    () => instance.get(`/departments/${router.query.department_id}`),
+  );
+
   const items = sortBy(groupBy(data, "category")).sort((a, b) =>
     a[0].category.localeCompare(b[0].category, "zh-Hant"),
   );
@@ -142,6 +149,9 @@ const CreatePostDialog = () => {
                       <Input placeholder="請輸入標題" {...field} />
                     </FormControl>
                     <FormMessage />
+                    <FormDescription>
+                      建議以『學期 - 課程名稱 - 老師姓名 - 期中 / 末考』格式上傳
+                    </FormDescription>
                   </FormItem>
                 )}
               />
@@ -247,9 +257,11 @@ const CreatePostDialog = () => {
             </div>
           </form>
         </Form>
-        <TypographyBlockquote>
-          待管理員審核通過後，才會顯示在課程頁面上。
-        </TypographyBlockquote>
+        {departmentData?.is_public && (
+          <TypographyBlockquote>
+            待管理員審核通過後，才會顯示在課程頁面上。
+          </TypographyBlockquote>
+        )}
 
         <DialogFooter>
           <DialogClose asChild>
