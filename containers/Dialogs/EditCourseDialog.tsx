@@ -206,7 +206,11 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
           </Form>
           <DialogFooter>
             <DialogClose>
-              <Button variant="outline" isLoading={addCourseLoading}>
+              <Button
+                className="w-full"
+                variant="outline"
+                isLoading={addCourseLoading}
+              >
                 取消
               </Button>
             </DialogClose>
