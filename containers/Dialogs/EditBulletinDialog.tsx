@@ -139,7 +139,7 @@ const EditBulletinDialog: FC<pageProps> = () => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>新增課程</DialogTitle>
+            <DialogTitle>新增公告</DialogTitle>
           </DialogHeader>
 
           <Form {...form}>
@@ -181,7 +181,11 @@ const EditBulletinDialog: FC<pageProps> = () => {
           </Form>
           <DialogFooter>
             <DialogClose>
-              <Button variant="outline" isLoading={addBulletinLoading}>
+              <Button
+                variant="outline"
+                className="w-full"
+                isLoading={addBulletinLoading}
+              >
                 取消
               </Button>
             </DialogClose>
