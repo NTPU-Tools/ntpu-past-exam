@@ -7,6 +7,9 @@ import {
 } from "@/components/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP } from "@/components/ui/typography";
+import { formatRelative, subHours } from "date-fns";
+import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
+import { zhTW } from "date-fns/locale";
 import { map } from "lodash-es";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -75,6 +78,21 @@ const PostPage = () => {
         </Head>
         <PageHeaderDescription>
           發布者： {post?.owner_name}
+        </PageHeaderDescription>
+
+        <PageHeaderDescription>
+          發布時間：{" "}
+          {formatRelative(
+            new Date(
+              subHours(new Date(post?.create_time), 8).toLocaleString("en-US", {
+                timeZone: "Europe/London",
+              }),
+            ),
+            new Date(),
+            {
+              locale: zhTW,
+            },
+          )}
         </PageHeaderDescription>
       </PageHeader>
       <TypographyP>{post?.content}</TypographyP>
