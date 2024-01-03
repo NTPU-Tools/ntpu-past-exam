@@ -245,11 +245,7 @@ function Page() {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button
-                className="w-full"
-                isLoading={applyLoading}
-                variant="outline"
-              >
+              <Button isLoading={applyLoading} variant="outline">
                 關閉
               </Button>
             </DialogClose>

@@ -100,7 +100,9 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
 
   const approveJoinRequest = async ({ id }: { id: string }) => {
     try {
-      await instance.put(`/departments/join-request/approve/${id}`);
+      await instance.put(
+        `/departments/join-request/${router.query.admin_department_id}/approve/${id}`,
+      );
       mutate(`${router.query.admin_department_id}-members`);
       mutate(`${router.query.admin_department_id}-pending`);
       toast({
