@@ -79,20 +79,25 @@ const PostPage = () => {
           發布者： {post?.owner_name}
         </PageHeaderDescription>
 
-        <PageHeaderDescription>
-          發布時間：{" "}
-          {formatRelative(
-            new Date(
-              subHours(new Date(post?.create_time), 8).toLocaleString("en-US", {
-                timeZone: "Europe/London",
-              }),
-            ),
-            new Date(),
-            {
-              locale: zhTW,
-            },
-          )}
-        </PageHeaderDescription>
+        {!post?.is_migrate && (
+          <PageHeaderDescription>
+            發布時間：{" "}
+            {formatRelative(
+              new Date(
+                subHours(new Date(post?.create_time), 8).toLocaleString(
+                  "en-US",
+                  {
+                    timeZone: "Europe/London",
+                  },
+                ),
+              ),
+              new Date(),
+              {
+                locale: zhTW,
+              },
+            )}
+          </PageHeaderDescription>
+        )}
       </PageHeader>
       <TypographyP>{post?.content}</TypographyP>
 
