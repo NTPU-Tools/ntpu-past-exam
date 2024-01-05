@@ -25,7 +25,8 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <SWRConfig
       value={{
-        errorRetryInterval: 1000,
+        errorRetryInterval: 500,
+        errorRetryCount: 5,
       }}
     >
       <GoogleOAuthProvider

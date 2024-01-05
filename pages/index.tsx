@@ -45,8 +45,8 @@ function Page() {
   );
 
   const defaultTab = useMemo(() => {
-    if (!data || data.visible.length) return "visible";
-    if (data.pending.length) return "pending";
+    if (!data || data.visible?.length) return "visible";
+    if (data.pending?.length) return "pending";
     return "invisible";
   }, [data]);
 

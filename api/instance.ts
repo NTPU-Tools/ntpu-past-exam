@@ -30,10 +30,10 @@ instance.interceptors.response.use(
         error.response.data.detail === "Credentials Expired"
       ) {
         // @ts-ignore
-        if (!instance.defaults.isTokenRefreshing) {
+        const isTokenRefreshing = instance.defaults.isTokenRefreshing;
+        if (!isTokenRefreshing) {
           // @ts-ignore
           instance.defaults.isTokenRefreshing = true;
-          // Refresh token
           return axios
             .post(`${baseURL}/refresh`, undefined, {
               headers: {
@@ -46,6 +46,8 @@ instance.interceptors.response.use(
               const { access_token } = res.data;
               setCookie("ntpu-past-exam-access-token", access_token, 30);
               instance.defaults.headers.authorization = `Bearer ${access_token}`;
+              // @ts-ignore
+              instance.defaults.isTokenRefreshing = false;
             })
             .catch(() => {
               // Logout when refresh token api is unauthorized
@@ -53,10 +55,7 @@ instance.interceptors.response.use(
               eraseCookie("ntpu-past-exam-refresh-token");
               window.location.href = "/login";
             })
-            .finally(() => {
-              // @ts-ignore
-              instance.defaults.isTokenRefreshing = false;
-            });
+            .finally(() => Promise.reject(error));
         }
       }
     }
