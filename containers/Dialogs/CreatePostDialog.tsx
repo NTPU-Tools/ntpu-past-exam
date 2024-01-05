@@ -30,10 +30,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { TypographyBlockquote } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
+import useDepartmentCourse from "@/hooks/useDepartmentCourse";
 import { createPostSchema } from "@/schemas/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
-import { forEach, groupBy, head, map, omit, sortBy } from "lodash-es";
+import { forEach, head, map, omit } from "lodash-es";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -48,11 +49,9 @@ const CreatePostDialog = () => {
 
   const isAdminPage = router.pathname.includes("admin");
 
-  const { data } = useSWR(
-    query.department_id && !isAdminPage
-      ? `${query.department_id}-courses`
-      : null,
-    () => instance.get(`/departments/${query.department_id}/courses`),
+  const { data } = useDepartmentCourse(
+    router.query.department_id,
+    !isAdminPage,
   );
 
   const { data: departmentData } = useSWR(
@@ -60,10 +59,6 @@ const CreatePostDialog = () => {
       ? `department-${router.query.department_id}`
       : null,
     () => instance.get(`/departments/${router.query.department_id}`),
-  );
-
-  const items = sortBy(groupBy(data, "category")).sort((a, b) =>
-    a[0].category.localeCompare(b[0].category, "zh-Hant"),
   );
 
   const form = useForm<z.infer<typeof createPostSchema>>({
@@ -167,7 +162,7 @@ const CreatePostDialog = () => {
                           <SelectValue placeholder="請選擇課程" />
                         </SelectTrigger>
                         <SelectContent>
-                          {map(items, (courses, key) => (
+                          {map(data, (courses, key) => (
                             <SelectGroup key={key}>
                               <SelectLabel>
                                 {head(courses).category}
@@ -257,7 +252,7 @@ const CreatePostDialog = () => {
             </div>
           </form>
         </Form>
-        {departmentData?.is_public && (
+        {!departmentData?.is_public && (
           <TypographyBlockquote>
             待管理員審核通過後，才會顯示在課程頁面上。
           </TypographyBlockquote>

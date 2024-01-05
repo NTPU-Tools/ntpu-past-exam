@@ -1,10 +1,9 @@
-import instance from "@/api/instance";
 import { Skeleton } from "@/components/ui/skeleton";
+import useDepartmentCourse from "@/hooks/useDepartmentCourse";
 import { cn } from "@/utils/cn";
-import { groupBy, head, map, sortBy } from "lodash-es";
+import { head, map } from "lodash-es";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import useSWR from "swr";
 
 interface SidebarNavItem {
   title?: string;
@@ -76,11 +75,9 @@ function SidebarNav() {
 
   const isAdminPage = pathname.includes("admin");
 
-  const { data, isLoading } = useSWR(
-    query.department_id && !isAdminPage
-      ? `${query.department_id}-courses`
-      : null,
-    () => instance.get(`/departments/${query.department_id}/courses`),
+  const { data, isLoading } = useDepartmentCourse(
+    query.department_id,
+    !isAdminPage,
   );
 
   if (isLoading) {
@@ -115,13 +112,9 @@ function SidebarNav() {
     return null;
   }
 
-  const items = sortBy(groupBy(data, "category")).sort((a, b) =>
-    a[0].category.localeCompare(b[0].category, "zh-Hant"),
-  );
-
   return data?.length ? (
     <div className="w-full">
-      {map(items, (courses) => (
+      {map(data, (courses) => (
         <div key={head(courses).category} className={cn("pb-4")}>
           <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
             {head(courses).category}

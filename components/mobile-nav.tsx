@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { TypographySmall } from "@/components/ui/typography";
+import useDepartmentCourse from "@/hooks/useDepartmentCourse";
 import { cn } from "@/utils/cn";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";
-import { groupBy, map, sortBy } from "lodash-es";
+import { map } from "lodash-es";
 import Link, { LinkProps } from "next/link";
 import { useRouter } from "next/router";
 import * as React from "react";
@@ -53,19 +54,14 @@ export function MobileNav() {
   const router = useRouter();
 
   const isAdminPage = router.pathname.includes("admin");
-  const { data } = useSWR(
-    router.query.department_id && !isAdminPage
-      ? `${router.query.department_id}-courses`
-      : null,
-    () => instance.get(`/departments/${router.query.department_id}/courses`),
+
+  const { data } = useDepartmentCourse(
+    router.query.department_id,
+    !isAdminPage,
   );
 
   const { data: visibleDepartment } = useSWR("visible-departments", () =>
     instance.get("/departments/visible"),
-  );
-
-  const items = sortBy(groupBy(data, "category")).sort((a, b) =>
-    a[0].category.localeCompare(b[0].category, "zh-Hant"),
   );
 
   return (
@@ -119,7 +115,7 @@ export function MobileNav() {
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
           {isAdminPage ? null : (
             <div className="flex flex-col space-y-2">
-              {map(items, (courses) => (
+              {map(data, (courses) => (
                 <div
                   key={courses[0].category}
                   className="flex flex-col space-y-3 pt-6"
