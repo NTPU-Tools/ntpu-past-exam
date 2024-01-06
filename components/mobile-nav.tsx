@@ -120,7 +120,9 @@ export function MobileNav() {
                   key={courses[0].category}
                   className="flex flex-col space-y-3 pt-6"
                 >
-                  <h4 className="font-medium">{courses[0].category}</h4>
+                  <h4 className="font-medium sticky top-0 bg-background">
+                    {courses[0].category}
+                  </h4>
                   {map(
                     courses.sort((a, b) =>
                       a.name.localeCompare(b.name, "zh-Hant"),

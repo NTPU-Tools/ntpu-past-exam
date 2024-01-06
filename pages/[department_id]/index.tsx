@@ -69,8 +69,8 @@ function Page() {
         </PageHeader>
         <div>
           {data?.length ? (
-            data.map((bulletin) => (
-              <div className="my-4">
+            data.map((bulletin, idx) => (
+              <div className="my-4" key={idx}>
                 <Card
                   className="hover:bg-muted cursor-pointer"
                   onClick={() => {
