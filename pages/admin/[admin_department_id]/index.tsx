@@ -1,4 +1,4 @@
-import instance from "@/api/instance";
+import instance from "@/api-client/instance";
 import { PageHeader } from "@/components/PageHeader";
 import {
   Card,

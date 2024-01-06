@@ -1,5 +1,5 @@
 /* eslint-disable */
-import instance from "@/api/instance";
+import instance from "@/api-client/instance";
 import { Button } from "@/components/ui/button";
 import {
   Card,

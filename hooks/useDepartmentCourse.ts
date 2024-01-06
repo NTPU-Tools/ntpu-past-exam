@@ -1,4 +1,4 @@
-import instance from "@/api/instance";
+import instance from "@/api-client/instance";
 import { groupBy, sortBy } from "lodash-es";
 import useSWR, { SWRResponse } from "swr";
 

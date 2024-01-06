@@ -1,4 +1,4 @@
-import instance from "@/api/instance";
+import instance from "@/api-client/instance";
 import { ModeToggle } from "@/components/DarkModeToggle";
 import { MainNav } from "@/components/main-nav";
 import { MobileNav } from "@/components/mobile-nav";
