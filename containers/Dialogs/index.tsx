@@ -36,6 +36,13 @@ const EditBulletinDialog = Dynamic(
   },
 );
 
+const EditUserInfoDialog = Dynamic(
+  () => import("@/containers/Dialogs/EditUserInfoDialog"),
+  {
+    ssr: false,
+  },
+);
+
 const Dialogs = () => {
   const { pathname } = useRouter();
   const isAdmin = pathname.includes("admin");
@@ -51,6 +58,7 @@ const Dialogs = () => {
           <EditBulletinDialog />
         </>
       )}
+      <EditUserInfoDialog />
     </>
   );
 };

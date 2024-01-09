@@ -17,6 +17,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import userStore from "@/store/userStore";
 import { eraseCookie, getCookie } from "@/utils/cookie";
+import { isEmpty } from "lodash-es";
 import { UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -30,7 +31,7 @@ function SiteHeader() {
   const query = router.query;
   const accessToken = getCookie("ntpu-past-exam-access-token");
   const { data, isLoading } = useSWR(
-    accessToken ? `me-${accessToken}` : null,
+    accessToken ? `me` : null,
     () => instance.get("/users/me"),
     {
       refreshInterval: 1000 * 60,
@@ -43,7 +44,15 @@ function SiteHeader() {
   );
 
   useEffect(() => {
-    setUserData(data);
+    if (data) {
+      setUserData(data);
+      if (isEmpty(data?.school_department)) {
+        toast({
+          title: "請填寫您的個人資訊！",
+          variant: "default",
+        });
+      }
+    }
   }, [setUserData, data]);
 
   const logout = () => {
@@ -117,17 +126,32 @@ function SiteHeader() {
                     </MenubarTrigger>
 
                     <MenubarContent>
-                      <MenubarItem>
+                      <MenubarItem className="pointer-events-none">
                         Hi, {userData?.readable_name ?? userData?.username}
+                      </MenubarItem>
+
+                      <MenubarSeparator />
+
+                      <MenubarItem
+                        onClick={() => {
+                          router.replace(
+                            {
+                              query: {
+                                ...query,
+                                open_edit_user_info_dialog: "true",
+                              },
+                            },
+                            undefined,
+                            { shallow: true },
+                          );
+                        }}
+                      >
+                        編輯個人資訊
                       </MenubarItem>
                       {adminScopes?.length > 0 && (
                         <>
                           <MenubarSeparator />
-                          <MenubarSub
-                          // onClick={() => {
-                          //   router.push("/admin");
-                          // }}
-                          >
+                          <MenubarSub>
                             <MenubarSubTrigger>管理後台</MenubarSubTrigger>
                             <MenubarSubContent>
                               {adminScopes?.length
