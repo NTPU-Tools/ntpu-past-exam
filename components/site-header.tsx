@@ -46,9 +46,9 @@ function SiteHeader() {
   useEffect(() => {
     if (data) {
       setUserData(data);
-      if (isEmpty(data?.school_department)) {
+      if (isEmpty(data?.school_department) || data?.school_department === " ") {
         toast({
-          title: "請填寫您的個人資訊！",
+          title: "請點選右上方按鈕填寫您的個人資訊！",
           variant: "default",
         });
       }
