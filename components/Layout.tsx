@@ -4,9 +4,11 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import globalUiStateStore from "@/store/globalUiStateStore";
+import { debounce } from "lodash-es";
 import Dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useMemo } from "react";
 
 interface pageProps {
   children: ReactNode;
@@ -46,6 +48,15 @@ const SiteFooter = Dynamic(() => import("@/components/site-footer"), {
 });
 const Layout: FC<pageProps> = ({ children }: pageProps) => {
   const { pathname } = useRouter();
+  const { setMainPanelWidth } = globalUiStateStore();
+
+  const debouncedUpdateMainPanelWidth = useMemo(
+    () =>
+      debounce((value: number) => {
+        setMainPanelWidth(value);
+      }, 200),
+    [setMainPanelWidth],
+  );
 
   if (pathname === "/login" || pathname === "/") {
     return (
@@ -89,7 +100,10 @@ const Layout: FC<pageProps> = ({ children }: pageProps) => {
                   </aside>
                 </ResizablePanel>
                 <ResizableHandle className="md:block hidden" />
-                <ResizablePanel minSize={30}>
+                <ResizablePanel
+                  minSize={30}
+                  onResize={debouncedUpdateMainPanelWidth}
+                >
                   <main className="relative py-6 lg:gap-10 lg:py-8 md:pl-10 min-h-[calc(100vh-4rem)]">
                     {children}
                   </main>

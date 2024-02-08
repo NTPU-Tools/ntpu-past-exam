@@ -1,5 +1,6 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
+import globalUiStateStore from "@/store/globalUiStateStore";
 import { cn } from "@/utils/cn";
 import {
   ChevronLeftIcon,
@@ -33,6 +34,7 @@ const PDFViewer = ({ className, src }: Props) => {
   const [pageNum, setPageNum] = useState(0);
   const [page, setPage] = useState(1);
   const [error, setError] = useState(false);
+  const { mainPanelWidth } = globalUiStateStore();
 
   const [containerRef, { width }] = useElementSize();
 
@@ -60,7 +62,7 @@ const PDFViewer = ({ className, src }: Props) => {
           className="max-h-full max-w-full relative overflow-hidden"
         >
           <AspectRatio ratio={1 / 1.4142}>
-            <Fragment key={width}>
+            <Fragment key={`${width}-${mainPanelWidth}`}>
               <Page
                 pageNumber={page}
                 loading={() => (
