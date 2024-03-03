@@ -63,6 +63,9 @@ const CreatePostDialog = () => {
 
   const form = useForm<z.infer<typeof createPostSchema>>({
     resolver: zodResolver(createPostSchema),
+    defaultValues: {
+      files: null,
+    },
   });
 
   const {
@@ -100,7 +103,7 @@ const CreatePostDialog = () => {
       formData.set("department_id", query.department_id as string);
       if (values.content) formData.set("content", values.content);
       formData.set("course_id", values.course_id);
-      if (values.files.length) {
+      if (values.files?.length) {
         forEach(values.files, (file) => {
           formData.append("files", file);
         });
@@ -341,7 +344,15 @@ const CreatePostDialog = () => {
               取消
             </Button>
           </DialogClose>
-          <Button onClick={form.handleSubmit(onSubmit)} isLoading={isLoading}>
+          <Button
+            onClick={form.handleSubmit(onSubmit, (e) => {
+              toast({
+                title: e?.[Object.keys(e)?.[0]]?.message ?? "表單發生錯誤",
+                variant: "error",
+              });
+            })}
+            isLoading={isLoading}
+          >
             上傳
           </Button>
         </DialogFooter>
