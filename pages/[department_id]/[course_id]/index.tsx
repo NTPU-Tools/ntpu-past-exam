@@ -21,6 +21,13 @@ const CoursePage = () => {
     instance.get(`/courses/${courseId}`),
   );
 
+  const { data: departmentData } = useSWR(
+    router.query.department_id
+      ? `department-${router.query.department_id}`
+      : null,
+    () => instance.get(`/departments/${router.query.department_id}`),
+  );
+
   if (error?.response?.status === 404) {
     return (
       <div className="min-h-[inherit] flex flex-col relative top-0 ">
@@ -73,7 +80,9 @@ const CoursePage = () => {
             </Link>
           ))
         ) : (
-          <TypographyBlockquote>尚無通過審核之考古題</TypographyBlockquote>
+          <TypographyBlockquote>
+            {departmentData.is_public ? "尚無考古題" : "尚無通過審核之考古題"}
+          </TypographyBlockquote>
         )}
       </div>
     </div>
