@@ -93,7 +93,10 @@ const CreatePostDialog = () => {
     try {
       setIsLoading(true);
       const formData = new FormData();
-      formData.set("title", values.title);
+      formData.set(
+        "title",
+        `${values.year}-${values.semester}-${values.teacher}-${values.term}`,
+      );
       formData.set("department_id", query.department_id as string);
       if (values.content) formData.set("content", values.content);
       formData.set("course_id", values.course_id);
@@ -136,22 +139,6 @@ const CreatePostDialog = () => {
             <div className="grid gap-2">
               <FormField
                 control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>標題</FormLabel>
-                    <FormControl>
-                      <Input placeholder="請輸入標題" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    <FormDescription>
-                      建議以『學期 - 課程名稱 - 老師姓名 - 期中 / 末考』格式上傳
-                    </FormDescription>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="course_id"
                 render={({ field }) => (
                   <FormItem>
@@ -181,7 +168,97 @@ const CreatePostDialog = () => {
                   </FormItem>
                 )}
               />
-
+              <FormField
+                control={form.control}
+                name="year"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>學年</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="請選擇學年" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {map(
+                            Array.from(
+                              { length: 5 },
+                              (_, i) => i + new Date().getFullYear() - 1911 - 5,
+                            ),
+                            (y) => (
+                              <SelectItem value={String(y)} key={String(y)}>
+                                {y}
+                              </SelectItem>
+                            ),
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="semester"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>學期</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="請選擇學期" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {map(["上學期", "下學期"], (s) => (
+                            <SelectItem value={s} key={s}>
+                              {s}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="teacher"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>老師名稱</FormLabel>
+                    <FormControl>
+                      <Input placeholder="請輸入老師名稱" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="term"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>考試分類</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="請選擇考試分類" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {map(["期中考", "期末考"], (t) => (
+                            <SelectItem value={t} key={t}>
+                              {t}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="content"
