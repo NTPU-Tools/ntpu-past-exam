@@ -74,8 +74,10 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
     try {
       setAddCourseLoading(true);
 
-      set(values, "department_id", router.query.admin_department_id as string);
-      await instance.postForm(`/courses`, values);
+      await instance.postForm(
+        `/courses/${router.query.admin_department_id}`,
+        values,
+      );
       toast({
         title: "操作成功",
       });

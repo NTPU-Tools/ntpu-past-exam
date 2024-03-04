@@ -130,9 +130,12 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
   const updatePostStatus = async ({ status }: { status: string }) => {
     try {
       setIsLoading(true);
-      await instance.putForm(`/posts/status/${query?.edit_post_detail_id}`, {
-        status,
-      });
+      await instance.putForm(
+        `/posts/status/${query?.admin_department_id}/${query?.edit_post_detail_id}`,
+        {
+          status,
+        },
+      );
       toast({
         title: "操作成功",
       });
