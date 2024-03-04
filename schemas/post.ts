@@ -9,6 +9,7 @@ export const createPostSchema = z.object({
   term: z.string({ required_error: "請選擇考試分類" }).min(1, "請選擇考試分類"),
   content: z.string().optional(),
   course_id: z.string({ required_error: "請選擇課程" }).min(1, "請選擇課程"),
+  is_anonymous: z.boolean().optional(),
   files: z
     .array(
       z

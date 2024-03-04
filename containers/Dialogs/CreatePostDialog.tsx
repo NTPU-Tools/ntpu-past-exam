@@ -1,5 +1,6 @@
 import instance from "@/api-client/instance";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogClose,
@@ -101,6 +102,8 @@ const CreatePostDialog = () => {
         `${values.year}-${values.semester}-${values.teacher}-${values.term}`,
       );
       formData.set("department_id", query.department_id as string);
+      // @ts-ignore
+      formData.set("is_anonymous", values.is_anonymous);
       if (values.content) formData.set("content", values.content);
       formData.set("course_id", values.course_id);
       if (values.files?.length) {
@@ -140,6 +143,23 @@ const CreatePostDialog = () => {
         <Form {...form}>
           <form>
             <div className="grid gap-2">
+              <FormField
+                control={form.control}
+                name="is_anonymous"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="leading-none">
+                      <FormLabel>匿名上傳</FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="course_id"
