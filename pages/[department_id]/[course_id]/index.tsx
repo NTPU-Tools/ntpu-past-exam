@@ -81,7 +81,7 @@ const CoursePage = () => {
           ))
         ) : (
           <TypographyBlockquote>
-            {departmentData.is_public ? "尚無考古題" : "尚無通過審核之考古題"}
+            {departmentData?.is_public ? "尚無考古題" : "尚無通過審核之考古題"}
           </TypographyBlockquote>
         )}
       </div>
