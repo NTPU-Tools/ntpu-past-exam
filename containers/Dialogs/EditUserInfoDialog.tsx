@@ -111,6 +111,9 @@ const EditUserInfoDialog = () => {
         if (key === "readable_name") {
           form.setValue("name", value);
         }
+        if (key === "note") {
+          form.setValue("note", value);
+        }
       });
     }
   }, [data, departmentsData, form]);
@@ -182,13 +185,15 @@ const EditUserInfoDialog = () => {
                   <FormItem>
                     <FormLabel>備註</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="請輸入備註" {...field} disabled />
+                      <Textarea
+                        placeholder="請輸入備註，如雙主修、輔系等相關資訊"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <TypographyBlockquote>欄位會陸續開放</TypographyBlockquote>
             </div>
           </form>
         </Form>

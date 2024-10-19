@@ -85,7 +85,7 @@ export function MobileNav() {
             <span className="font-bold">
               NTPU 考古題{" "}
               {process.env.NEXT_PUBLIC_GIT_BRANCH !== "main" && (
-                <TypographySmall>測試環境</TypographySmall>
+                <TypographySmall>測試環境 - 請勿拿來日常使用！</TypographySmall>
               )}
             </span>
           </MobileLink>
