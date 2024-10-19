@@ -16,7 +16,12 @@ import {
 import { TypographyP } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
 import userStore from "@/store/userStore";
-import { StarIcon, StarFilledIcon, CheckIcon } from "@radix-ui/react-icons";
+import {
+  StarIcon,
+  StarFilledIcon,
+  CheckIcon,
+  MixerHorizontalIcon,
+} from "@radix-ui/react-icons";
 import { createColumnHelper } from "@tanstack/react-table";
 import { omit } from "lodash-es";
 import { useRouter } from "next/router";
@@ -116,6 +121,31 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
     }
   };
 
+  const openUserDetailDialog = ({ id }: { id: string }) => {
+    router.replace(
+      {
+        query: {
+          ...query,
+          open_user_detail_dialog: "true",
+          user_detail_id: id,
+        },
+      },
+      undefined,
+      { shallow: true },
+    );
+  };
+  function closeUserDetailDialog() {
+    router.replace(
+      {
+        query: omit(query, ["open_user_detail_dialog", "user_detail_id"]),
+      },
+      undefined,
+      {
+        shallow: true,
+      },
+    );
+  }
+
   const usersCol = createColumnHelper<any>();
 
   const columns: any[] = [
@@ -149,24 +179,40 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
         return (
           <div className="flex gap-2">
             {status === "PENDING" && (
-              <Tooltip>
-                <TooltipTrigger>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      approveJoinRequest({ id });
-                    }}
-                  >
-                    <CheckIcon />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <TypographyP>
-                    通過 {readable_name ?? username} 的申請
-                  </TypographyP>
-                </TooltipContent>
-              </Tooltip>
+              <div className="flex gap-1">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => openUserDetailDialog({ id: user_id })}
+                    >
+                      <MixerHorizontalIcon />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <TypographyP>查看 {readable_name} 的資訊</TypographyP>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        approveJoinRequest({ id });
+                      }}
+                    >
+                      <CheckIcon />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <TypographyP>
+                      通過 {readable_name ?? username} 的申請
+                    </TypographyP>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             )}
             {!status && (
               <Tooltip>
@@ -201,35 +247,68 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
     }),
   ];
 
-  return (
-    <Dialog
-      open={dialogOpen}
-      onOpenChange={(open) => {
-        if (!open) {
-          if (isLoading && !membersData) return;
-          closeEditUserDialog();
-        }
-      }}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>管理社群成員</DialogTitle>
-        </DialogHeader>
+  const userDetailDialogOpen =
+    !!query?.user_detail_id && query?.open_user_detail_dialog === "true";
 
-        <Tabs defaultValue="members">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="members">管理成員</TabsTrigger>
-            <TabsTrigger value="apply">審核申請</TabsTrigger>
-          </TabsList>
-          <TabsContent value="members">
-            <DataTable columns={columns} data={membersData} />
-          </TabsContent>
-          <TabsContent value="apply">
-            <DataTable columns={columns} data={pendingData} />
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+  const { data: userDetailData } = useSWR(
+    userDetailDialogOpen ? `${query?.user_detail_id}-detail` : null,
+    () => instance.get(`/users/${query?.user_detail_id}`),
+  );
+
+  return (
+    <>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            if (isLoading && !membersData) return;
+            closeEditUserDialog();
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>管理社群成員</DialogTitle>
+          </DialogHeader>
+
+          <Tabs defaultValue="members">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="members">管理成員</TabsTrigger>
+              <TabsTrigger value="apply">審核申請</TabsTrigger>
+            </TabsList>
+            <TabsContent value="members">
+              <DataTable columns={columns} data={membersData} />
+            </TabsContent>
+            <TabsContent value="apply">
+              <DataTable columns={columns} data={pendingData} />
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={userDetailDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeUserDetailDialog();
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>詳細資訊</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            <p className="text-4xl font-extrabold">
+              {userDetailData?.readable_name}
+            </p>
+            <p className="text-lg">{userDetailData?.school_department}</p>
+
+            <hr />
+            <p className="whitespace-break-spaces">{userDetailData?.note}</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
