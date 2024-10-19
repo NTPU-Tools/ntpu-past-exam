@@ -25,7 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { TypographyBlockquote } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
 import { editUserInfoSchema } from "@/schemas/user";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,6 +54,9 @@ const EditUserInfoDialog = () => {
 
   const form = useForm<z.infer<typeof editUserInfoSchema>>({
     resolver: zodResolver(editUserInfoSchema),
+    defaultValues: {
+      note: "",
+    },
   });
 
   function closeEditUserInfoDialog() {
@@ -112,7 +114,7 @@ const EditUserInfoDialog = () => {
           form.setValue("name", value);
         }
         if (key === "note") {
-          form.setValue("note", value);
+          form.setValue("note", value ?? "");
         }
       });
     }
