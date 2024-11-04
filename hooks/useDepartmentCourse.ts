@@ -5,7 +5,20 @@ import useSWR, { SWRResponse } from "swr";
 const useDepartmentCourse = (
   departmentId: string | string[] | undefined,
   shouldFetch: Partial<boolean> = true,
-): SWRResponse<any[][]> => {
+): SWRResponse<
+  {
+    category: string;
+
+    id: string;
+    name: string;
+  }[][]
+> & {
+  allCourses: {
+    category: string;
+    id: string;
+    name: string;
+  }[];
+} => {
   const swrState = useSWR(
     departmentId && shouldFetch ? `${departmentId}-courses` : null,
     () => instance.get(`/departments/${departmentId}/courses`),
@@ -14,7 +27,10 @@ const useDepartmentCourse = (
   const { data } = swrState;
 
   if (!data) {
-    return swrState;
+    return {
+      ...swrState,
+      allCourses: [],
+    };
   }
 
   const items = sortBy(groupBy(data, "category")).sort((a, b) =>
@@ -24,6 +40,7 @@ const useDepartmentCourse = (
   return {
     ...swrState,
     data: items,
+    allCourses: data,
   };
 };
 

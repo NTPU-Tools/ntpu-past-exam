@@ -6,7 +6,7 @@ import {
   PageHeaderHeading,
 } from "@/components/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TypographyP } from "@/components/ui/typography";
+// import { TypographyH4, TypographyP } from "@/components/ui/typography";
 import { formatRelative, subHours } from "date-fns";
 import { zhTW } from "date-fns/locale";
 import { map } from "lodash-es";
@@ -99,12 +99,13 @@ const PostPage = () => {
           </PageHeaderDescription>
         )}
       </PageHeader>
-      <TypographyP>{post?.content}</TypographyP>
-
       {post?.files &&
         map(post?.files, (fileLink, index) => (
           <PDFViewer key={index} src={fileLink} className="w-full" />
         ))}
+      {/* <TypographyH4 className="underline cursor-pointer">
+        發現錯誤？錯誤回報
+      </TypographyH4> */}
     </div>
   );
 };

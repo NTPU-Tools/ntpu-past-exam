@@ -50,7 +50,7 @@ const CreatePostDialog = () => {
 
   const isAdminPage = router.pathname.includes("admin");
 
-  const { data } = useDepartmentCourse(
+  const { data: courseData, allCourses } = useDepartmentCourse(
     router.query.department_id,
     !isAdminPage,
   );
@@ -96,14 +96,18 @@ const CreatePostDialog = () => {
   const onSubmit = async (values: z.infer<typeof createPostSchema>) => {
     try {
       setIsLoading(true);
+
+      const course = allCourses.find((c) => c.id === values.course_id);
       const formData = new FormData();
       formData.set(
         "title",
-        `${values.year}-${values.semester}-${values.teacher}-${values.term}`,
+        `${course?.name ?? ""}-${values.year}-${values.semester}-${
+          values.teacher
+        }-${values.term}`,
       );
       formData.set("department_id", query.department_id as string);
       // @ts-ignore
-      formData.set("is_anonymous", values.is_anonymous);
+      formData.set("is_anonymous", values.is_anonymous ?? false);
       if (values.content) formData.set("content", values.content);
       formData.set("course_id", values.course_id);
       if (values.files?.length) {
@@ -172,10 +176,10 @@ const CreatePostDialog = () => {
                           <SelectValue placeholder="請選擇課程" />
                         </SelectTrigger>
                         <SelectContent>
-                          {map(data, (courses, key) => (
+                          {map(courseData, (courses, key) => (
                             <SelectGroup key={key}>
                               <SelectLabel>
-                                {head(courses).category}
+                                {head(courses ?? [])?.category}
                               </SelectLabel>
                               {map(courses, (course) => (
                                 <SelectItem value={course.id} key={course.id}>
