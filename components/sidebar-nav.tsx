@@ -115,9 +115,9 @@ function SidebarNav() {
   return data?.length ? (
     <div className="w-full">
       {map(data, (courses) => (
-        <div key={head(courses).category} className={cn("pb-4")}>
+        <div key={head(courses)?.category} className={cn("pb-4")}>
           <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold sticky top-0 bg-background">
-            {head(courses).category}
+            {head(courses)?.category}
           </h4>
           {courses?.length && (
             <SidebarNavItems
