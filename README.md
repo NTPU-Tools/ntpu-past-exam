@@ -7,9 +7,10 @@
 - **Styling**: [Tailwind CSS](https://tailwindcss.com)
 - **Analytics**: [Clarity Analytics](https://clarity.microsoft.com/)
 
-
 ## Start dev server
+
 1. Create a ".env" file in root folder. It should contain following key:
+
 ```
 NEXT_PUBLIC_GA_MEASUREMENT_ID=
 NEXT_PUBLIC_CLARITY_MEASUREMENT_ID=
@@ -23,16 +24,21 @@ API_ORIGIN=http://127.0.0.1:8000
 You should get the value from the code owner.
 
 2. Install dependancies (we use pnpm to manage dependancies):
+
 ```shell
 npm install -g pnpm
 or
 yarn global add pnpm
 ```
+
 ```shell
 pnpm install
 ```
 
 3. Start dev server
+
 ```shell
 pnpm dev
 ```
+
+[![Deployed on Zeabur](https://zeabur.com/deployed-on-zeabur-dark.svg)](https://zeabur.com?referralCode=f312213213&utm_source=f312213213&utm_campaign=oss)
