@@ -17,12 +17,12 @@ function SiteFooter() {
           version:{" "}
           {process.env.NEXT_PUBLIC_GIT_COMMIT_SHA?.slice(0, 7) ?? "local"}
         </p>
-        <a href="https://zeabur.com?referralCode=f312213213&utm_source=f312213213&utm_campaign=oss">
+        {/* <a href="https://zeabur.com?referralCode=f312213213&utm_source=f312213213&utm_campaign=oss">
           <img
             src="https://zeabur.com/deployed-on-zeabur-dark.svg"
             alt="Deployed on Zeabur"
           />
-        </a>
+        </a> */}
       </div>
     </footer>
   );
