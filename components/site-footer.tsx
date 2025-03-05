@@ -1,7 +1,4 @@
-import { useTheme } from "next-themes";
-
 function SiteFooter() {
-  const { theme } = useTheme();
   return (
     <footer className="py-3 md:px-8 md:py-0">
       <div className="container flex flex-col items-center justify-between gap-4 md:h-14 md:flex-row">
@@ -22,9 +19,7 @@ function SiteFooter() {
         </p>
         <a href="https://zeabur.com?referralCode=f312213213&utm_source=f312213213&utm_campaign=oss">
           <img
-            src={`https://zeabur.com/deployed-on-zeabur-${
-              theme === "dark" ? "dark" : "light"
-            }.svg`}
+            src="https://zeabur.com/deployed-on-zeabur-dark.svg"
             alt="Deployed on Zeabur"
           />
         </a>
