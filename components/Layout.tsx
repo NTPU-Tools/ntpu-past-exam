@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/components/ThemeProvider";
+import SiteFooter from "@/components/site-footer";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -41,9 +42,6 @@ const SiteHeader = Dynamic(() => import("@/components/site-header"), {
   ),
 });
 const SidebarNav = Dynamic(() => import("@/components/sidebar-nav"), {
-  ssr: false,
-});
-const SiteFooter = Dynamic(() => import("@/components/site-footer"), {
   ssr: false,
 });
 const Layout: FC<pageProps> = ({ children }: pageProps) => {
