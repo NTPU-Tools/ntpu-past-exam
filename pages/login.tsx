@@ -1,8 +1,22 @@
 /* eslint-disable */
 import instance from "@/api-client/instance";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { TypographySmall } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
@@ -17,7 +31,6 @@ import { useEffect, useState } from "react";
 import { isEmbedded, useDeviceSelectors, isMobile } from "react-device-detect";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-
 
 const googleLoginBlacklist = ["Line", "Instagram", "Facebook"];
 
@@ -91,7 +104,7 @@ const LoginPage = () => {
 
         let targetUrl = "/";
 
-        if (departmentsStatus.visible?.length) {
+        if (departmentsStatus.visible?.length && userData?.school_department) {
           const userDepartment = departmentsStatus.visible.find(
             (dept) => dept.name === userData.school_department,
           );
