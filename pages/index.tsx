@@ -28,7 +28,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { filter, flatMap, omit } from "lodash-es";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import useSWR, { mutate } from "swr";
 
 function Page() {
