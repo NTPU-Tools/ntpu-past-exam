@@ -28,7 +28,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { filter, flatMap, omit } from "lodash-es";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR, { mutate } from "swr";
 
 function Page() {
@@ -52,12 +52,12 @@ function Page() {
 
   const invisible_department = data
     ? filter(
-      allDepartments,
-      (department) =>
-        !flatMap<{ [key: string]: [id: string] }>(data).some(
-          (d) => d.id === department.id,
-        ),
-    )
+        allDepartments,
+        (department) =>
+          !flatMap<{ [key: string]: [id: string] }>(data).some(
+            (d) => d.id === department.id,
+          ),
+      )
     : [];
 
   const openApplyDepartmentDialog = (department_id: string) => {

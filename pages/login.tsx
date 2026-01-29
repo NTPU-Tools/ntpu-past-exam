@@ -86,8 +86,28 @@ const LoginPage = () => {
         toast({
           title: "登入成功",
         });
+
+        // After login, jump to user's department or homepage
+        const [userData, departmentsStatus] = await Promise.all([
+          instance.get("/users/me"),
+          instance.get("/departments/status"),
+        ]);
+
+        let targetUrl = "/";
+
+        if (departmentsStatus.visible?.length) {
+          const userDepartment = departmentsStatus.visible.find(
+            (dept) => dept.name === userData.school_department,
+          );
+
+          if (userDepartment) {
+            targetUrl = `/${userDepartment.id}`;
+            localStorage.setItem("last_department", userDepartment.id);
+          }
+        }
+
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = targetUrl;
         }, 1000);
       } catch (e) {
         toast({
