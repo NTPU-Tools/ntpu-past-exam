@@ -1,22 +1,8 @@
 /* eslint-disable */
 import instance from "@/api-client/instance";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { TypographySmall } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
@@ -31,6 +17,7 @@ import { useEffect, useState } from "react";
 import { isEmbedded, useDeviceSelectors, isMobile } from "react-device-detect";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+
 
 const googleLoginBlacklist = ["Line", "Instagram", "Facebook"];
 
@@ -88,10 +75,19 @@ const LoginPage = () => {
         });
 
         // After login, jump to user's department or homepage
-        const [userData, departmentsStatus] = await Promise.all([
-          instance.get("/users/me"),
-          instance.get("/departments/status"),
-        ]);
+
+        const [userDataResult, departmentsStatusResult] =
+          await Promise.allSettled([
+            instance.get("/users/me"),
+            instance.get("/departments/status"),
+          ]);
+
+        const userData =
+          userDataResult.status === "fulfilled" ? userDataResult.value : null;
+        const departmentsStatus =
+          departmentsStatusResult.status === "fulfilled"
+            ? departmentsStatusResult.value
+            : null;
 
         let targetUrl = "/";
 
