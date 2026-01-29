@@ -104,14 +104,13 @@ const LoginPage = () => {
 
         let targetUrl = "/";
 
-        if (departmentsStatus.visible?.length && userData?.school_department) {
+        if (departmentsStatus?.visible?.length && userData?.school_department) {
           const userDepartment = departmentsStatus.visible.find(
             (dept) => dept.name === userData.school_department,
           );
 
           if (userDepartment) {
             targetUrl = `/${userDepartment.id}`;
-            localStorage.setItem("last_department", userDepartment.id);
           }
         }
 
