@@ -28,7 +28,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { filter, flatMap, omit } from "lodash-es";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR, { mutate } from "swr";
 
 function Page() {
@@ -43,6 +43,24 @@ function Page() {
   const { data: allDepartments } = useSWR("all-departments", () =>
     instance.get("/departments"),
   );
+
+  const { data: userData } = useSWR("user-me", () =>
+    instance.get("/users/me").catch(() => null),
+  );
+
+  useEffect(() => {
+    if (router.query?.mode === "select") return;
+
+    if (userData?.school_department && allDepartments?.length) {
+      const userDepartment = allDepartments.find(
+        (dept: { name: string }) => dept.name === userData.school_department,
+      );
+
+      if (userDepartment) {
+        router.replace(`/${userDepartment.id}`);
+      }
+    }
+  }, [userData, allDepartments]);
 
   const defaultTab = useMemo(() => {
     if (!data || data.visible?.length) return "visible";
