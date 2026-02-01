@@ -86,8 +86,36 @@ const LoginPage = () => {
         toast({
           title: "登入成功",
         });
+
+        // After login, jump to user's department or homepage
+
+        const [userDataResult, departmentsStatusResult] =
+          await Promise.allSettled([
+            instance.get("/users/me"),
+            instance.get("/departments/status"),
+          ]);
+
+        const userData =
+          userDataResult.status === "fulfilled" ? userDataResult.value : null;
+        const departmentsStatus =
+          departmentsStatusResult.status === "fulfilled"
+            ? departmentsStatusResult.value
+            : null;
+
+        let targetUrl = "/";
+
+        if (departmentsStatus?.visible?.length && userData?.school_department) {
+          const userDepartment = departmentsStatus.visible.find(
+            (dept) => dept.name === userData.school_department,
+          );
+
+          if (userDepartment) {
+            targetUrl = `/${userDepartment.id}`;
+          }
+        }
+
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = targetUrl;
         }, 1000);
       } catch (e) {
         toast({
