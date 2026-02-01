@@ -50,17 +50,16 @@ function Page() {
 
   useEffect(() => {
     if (router.query?.mode === "select") return;
+    if (!userData?.school_department || !data?.visible?.length) return;
 
-    if (userData?.school_department && allDepartments?.length) {
-      const userDepartment = allDepartments.find(
-        (dept: { name: string }) => dept.name === userData.school_department,
-      );
+    const userDepartment = data.visible.find(
+      (dept: { name: string }) => dept.name === userData.school_department,
+    );
 
-      if (userDepartment) {
-        router.replace(`/${userDepartment.id}`);
-      }
+    if (userDepartment) {
+      router.replace(`/${userDepartment.id}`);
     }
-  }, [userData, allDepartments]);
+  }, [userData, data]);
 
   const defaultTab = useMemo(() => {
     if (!data || data.visible?.length) return "visible";
