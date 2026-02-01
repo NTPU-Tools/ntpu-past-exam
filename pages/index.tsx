@@ -52,12 +52,12 @@ function Page() {
 
   const invisible_department = data
     ? filter(
-      allDepartments,
-      (department) =>
-        !flatMap<{ [key: string]: [id: string] }>(data).some(
-          (d) => d.id === department.id,
-        ),
-    )
+        allDepartments,
+        (department) =>
+          !flatMap<{ [key: string]: [id: string] }>(data).some(
+            (d) => d.id === department.id,
+          ),
+      )
     : [];
 
   const openApplyDepartmentDialog = (department_id: string) => {

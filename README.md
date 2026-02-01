@@ -36,3 +36,6 @@ pnpm install
 ```shell
 pnpm dev
 ```
+
+
+[![Deployed on Zeabur](https://zeabur.com/deployed-on-zeabur-dark.svg)](https://zeabur.com/referral?referralCode=f312213213&utm_source=f312213213&utm_campaign=oss)
