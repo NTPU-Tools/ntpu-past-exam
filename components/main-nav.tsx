@@ -22,7 +22,7 @@ export function MainNav() {
   return (
     <div className="hidden md:flex gap-6 md:gap-10">
       <Link
-        href="/"
+        href="/?mode=select"
         className="flex items-center space-x-2 basis-full whitespace-nowrap"
       >
         <span className="font-bold">
