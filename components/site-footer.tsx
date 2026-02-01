@@ -1,4 +1,8 @@
+import { useTheme } from "next-themes";
+
 function SiteFooter() {
+    const { theme } = useTheme();
+
   return (
     <footer className="py-3 md:px-8 md:py-0">
       <div className="container flex flex-col items-center justify-between gap-4 md:h-14 md:flex-row">
@@ -13,10 +17,7 @@ function SiteFooter() {
             NTPU Tools
           </a>
         </p>
-        <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-          version:{" "}
-          {process.env.NEXT_PUBLIC_GIT_COMMIT_SHA?.slice(0, 7) ?? "local"}
-        </p>
+        <a href="https://zeabur.com/referral?referralCode=f312213213&utm_source=f312213213&utm_campaign=oss"><img src={`https://zeabur.com/deployed-on-zeabur-${theme}.svg`} alt="Deployed on Zeabur"/></a>
       </div>
     </footer>
   );
