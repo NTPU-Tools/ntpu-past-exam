@@ -137,10 +137,11 @@ const CreatePostDialog = () => {
         }
       }}
     >
-      <DialogContent>
+      <DialogContent className="max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>上傳考古題</DialogTitle>
         </DialogHeader>
+        <div className="overflow-y-auto flex-1">
         <Form {...form}>
           <form>
             <div className="grid gap-2">
@@ -358,6 +359,7 @@ const CreatePostDialog = () => {
             待管理員審核通過後，才會顯示在課程頁面上。
           </TypographyBlockquote>
         )}
+        </div>
 
         <DialogFooter>
           <DialogClose asChild>

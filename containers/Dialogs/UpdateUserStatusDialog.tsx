@@ -243,20 +243,20 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="max-h-[85vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>管理社群成員</DialogTitle>
           </DialogHeader>
 
-          <Tabs defaultValue="members">
+          <Tabs defaultValue="members" className="flex flex-col flex-1 overflow-hidden">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="members">管理成員</TabsTrigger>
               <TabsTrigger value="apply">審核申請</TabsTrigger>
             </TabsList>
-            <TabsContent value="members">
+            <TabsContent value="members" className="overflow-y-auto flex-1">
               <DataTable columns={columns} data={membersData} />
             </TabsContent>
-            <TabsContent value="apply">
+            <TabsContent value="apply" className="overflow-y-auto flex-1">
               <DataTable columns={columns} data={pendingData} />
             </TabsContent>
           </Tabs>

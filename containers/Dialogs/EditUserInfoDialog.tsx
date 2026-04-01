@@ -123,10 +123,11 @@ const EditUserInfoDialog = () => {
         }
       }}
     >
-      <DialogContent>
+      <DialogContent className="max-h-[85vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>修改個人檔案</DialogTitle>
         </DialogHeader>
+        <div className="overflow-y-auto flex-1">
         <Form {...form}>
           <form>
             <div className="grid gap-2">
@@ -193,6 +194,7 @@ const EditUserInfoDialog = () => {
             </div>
           </form>
         </Form>
+        </div>
 
         <DialogFooter>
           <DialogClose asChild>

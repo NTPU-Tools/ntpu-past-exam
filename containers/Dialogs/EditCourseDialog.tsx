@@ -115,12 +115,14 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="max-h-[85vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>編輯課程</DialogTitle>
           </DialogHeader>
 
-          <DataTable columns={columns} data={data} />
+          <div className="overflow-y-auto flex-1">
+            <DataTable columns={columns} data={data} />
+          </div>
           <DialogFooter>
             <Button
               onClick={() => {

@@ -30,7 +30,6 @@ const PostPage = () => {
       <div className="min-h-[inherit] flex flex-col relative top-0 ">
         <PageHeader>
           <PageHeaderHeading>找不到頁面</PageHeaderHeading>
-          <title>找不到頁面 - NPTU 考古題</title>
         </PageHeader>
       </div>
     );
@@ -70,7 +69,6 @@ const PostPage = () => {
     <div className="min-h-[inherit] flex flex-col relative top-0 ">
       <PageHeader>
         <PageHeaderHeading>{post?.title}</PageHeaderHeading>
-        <title>{post?.title} - NPTU 考古題</title>
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mt-2">
           <span>{post?.owner_name}</span>
           {!post?.is_migrate && (

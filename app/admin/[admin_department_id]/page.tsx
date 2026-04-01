@@ -29,7 +29,6 @@ const AdminDashboard = () => {
 
   return (
     <div>
-      {data?.name && <title>{data.name} Admin - NPTU 考古題</title>}
       <PageHeader>
         <TypographyH1>{data?.name} Admin Dashboard</TypographyH1>
       </PageHeader>

@@ -33,7 +33,6 @@ const CoursePage = () => {
       <div>
         <PageHeader>
           <PageHeaderHeading>找不到頁面</PageHeaderHeading>
-          <title>找不到頁面 - NTPU 考古題</title>
         </PageHeader>
       </div>
     );
@@ -63,7 +62,6 @@ const CoursePage = () => {
         {postCount > 0 && (
           <p className="text-xs text-muted-foreground pl-4 ml-[3px] mt-2 font-mono">{postCount} 份考古題</p>
         )}
-        <title>{courseData?.course?.name} - NTPU 考古題</title>
       </PageHeader>
       {postCount > 0 ? (
         <div>

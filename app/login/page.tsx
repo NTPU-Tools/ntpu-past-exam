@@ -94,13 +94,12 @@ const LoginPage = () => {
 
   return (
     <>
-      <title>登入 - NTPU 考古題</title>
       <div className="min-h-[calc(100dvh-3.5rem)] flex">
         {/* Left: branding */}
         <div className="hidden lg:flex lg:w-[45%] bg-primary items-end p-12">
           <div>
             <h1 className="font-heading text-5xl font-black tracking-tight text-primary-foreground leading-[1.1]">
-              考古題，<br />找到了。
+                臺北大學考古題
             </h1>
             <p className="text-primary-foreground/70 mt-4 text-base max-w-xs">
               北大學生共建的考古題資料庫。上傳、搜尋、通過考試。
@@ -114,7 +113,7 @@ const LoginPage = () => {
             {/* Mobile-only title */}
             <div className="lg:hidden mb-12">
               <h1 className="font-heading text-4xl font-black tracking-tight leading-[1.1]">
-                考古題，<br />找到了。
+                臺北大學考古題
               </h1>
               <p className="text-muted-foreground mt-3 text-sm">
                 北大學生共建的考古題資料庫。

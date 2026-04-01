@@ -142,12 +142,14 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="max-h-[85vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>審核考古題</DialogTitle>
           </DialogHeader>
 
-          <DataTable columns={columns} data={data} />
+          <div className="overflow-y-auto flex-1">
+            <DataTable columns={columns} data={data} />
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -159,16 +161,18 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
           }
         }}
       >
-        <DialogContent className="flex flex-col justify-start">
+        <DialogContent className="max-h-[85vh] flex flex-col justify-start">
           <DialogHeader>
             <DialogTitle>審核考古題: {postData?.title}</DialogTitle>
           </DialogHeader>
 
-          <TypographyP>{postData?.content}</TypographyP>
-          {postData?.files &&
-            map(postData?.files, (fileLink, index) => (
-              <PDFViewer key={index} src={fileLink} className="w-full" />
-            ))}
+          <div className="overflow-y-auto flex-1">
+            <TypographyP>{postData?.content}</TypographyP>
+            {postData?.files &&
+              map(postData?.files, (fileLink, index) => (
+                <PDFViewer key={index} src={fileLink} className="w-full" />
+              ))}
+          </div>
 
           <DialogFooter>
             {/* <DialogClose asChild> */}

@@ -36,11 +36,6 @@ function Page() {
     () => instance.get(`/bulletins/${bulletinDetailId}`),
   );
 
-  const { data: departmentData } = useSWR(
-    departmentId ? `department-${departmentId}` : null,
-    () => instance.get(`/departments/${departmentId}`),
-  );
-
   if (isLoading) {
     return (
       <div>
@@ -59,7 +54,6 @@ function Page() {
   return (
     <>
       <div>
-        <title>{departmentData?.name} - NTPU 考古題</title>
         <PageHeader>
           <PageHeaderHeading>公告</PageHeaderHeading>
         </PageHeader>
