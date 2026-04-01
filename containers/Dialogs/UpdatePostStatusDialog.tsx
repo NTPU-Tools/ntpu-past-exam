@@ -1,0 +1,201 @@
+import instance from "@/api-client/instance";
+import { DataTable } from "@/components/ClientPaginationDataTable";
+import PDFViewer from "@/components/PDFViewer";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { TypographyP } from "@/components/ui/typography";
+import { useToast } from "@/components/ui/use-toast";
+import { MixerHorizontalIcon } from "@radix-ui/react-icons";
+import { Loader2 } from "lucide-react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { map } from "lodash-es";
+import { useParams } from "next/navigation";
+import { useQueryState } from "@/hooks/useQueryState";
+import { FC, useState } from "react";
+import useSWR, { mutate } from "swr";
+
+interface pageProps {}
+
+const UpdatePostStatusDialog: FC<pageProps> = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const params = useParams();
+  const { get, setParams, removeParams } = useQueryState();
+  const { toast } = useToast();
+
+  const dialogOpen = get("open_edit_post_dialog") === "true";
+  const postDetailDialogOpen =
+    !!get("edit_post_detail_id") &&
+    get("open_edit_post_detail_dialog") === "true";
+
+  const { data, isLoading: isRootLoading } = useSWR(
+    dialogOpen && params.admin_department_id
+      ? `${params.admin_department_id}-pending-posts`
+      : null,
+    () =>
+      instance.get(
+        `/posts?department_id=${params.admin_department_id}&status=PENDING`,
+      ),
+  );
+
+  const { data: postData } = useSWR(
+    dialogOpen && postDetailDialogOpen
+      ? `post-${get("edit_post_detail_id")}`
+      : null,
+    () => instance.get(`/posts/${get("edit_post_detail_id")}`),
+  );
+
+  function closePostsDialog() {
+    removeParams("open_edit_post_dialog");
+  }
+
+  const openPostDetailDialog = ({ id }: { id: string }) => {
+    setParams({ open_edit_post_detail_dialog: "true", edit_post_detail_id: id });
+  };
+  function closePostDetailDialog() {
+    removeParams("open_edit_post_detail_dialog", "edit_post_detail_id");
+  }
+
+  const postsCol = createColumnHelper<any>();
+
+  const columns: any[] = [
+    postsCol.accessor("course_name", {
+      header: "課程",
+      size: 120,
+      cell: (props) => <span>{props.getValue()}</span>,
+    }),
+    postsCol.accessor("title", {
+      header: "標題",
+      size: 120,
+      cell: (props) => <span>{props.getValue()}</span>,
+    }),
+    postsCol.display({
+      header: "查看",
+      size: 120,
+      cell: (props) => {
+        const { id, title } = props.row.original;
+        return (
+          <div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => openPostDetailDialog({ id })}
+                >
+                  <MixerHorizontalIcon />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <TypographyP>查看 {title} 的內容</TypographyP>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        );
+      },
+    }),
+  ];
+
+  const updatePostStatus = async ({ status }: { status: string }) => {
+    try {
+      setIsLoading(true);
+      await instance.putForm(
+        `/posts/status/${params.admin_department_id}/${get("edit_post_detail_id")}`,
+        {
+          status,
+        },
+      );
+      toast({
+        title: "操作成功",
+      });
+      mutate(`${params.admin_department_id}-pending-posts`);
+      mutate(`post-${get("edit_post_detail_id")}`);
+      closePostDetailDialog();
+    } catch (e) {
+      toast({
+        title: "操作失敗",
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            if (isRootLoading && !data) return;
+            closePostsDialog();
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>審核考古題</DialogTitle>
+          </DialogHeader>
+
+          <DataTable columns={columns} data={data} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={postDetailDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closePostDetailDialog();
+          }
+        }}
+      >
+        <DialogContent className="flex flex-col justify-start">
+          <DialogHeader>
+            <DialogTitle>審核考古題: {postData?.title}</DialogTitle>
+          </DialogHeader>
+
+          <TypographyP>{postData?.content}</TypographyP>
+          {postData?.files &&
+            map(postData?.files, (fileLink, index) => (
+              <PDFViewer key={index} src={fileLink} className="w-full" />
+            ))}
+
+          <DialogFooter>
+            {/* <DialogClose asChild> */}
+            {/*  <Button */}
+            {/*    variant="outline" */}
+            {/*    onClick={() => { */}
+            {/*      updatePostStatus({ status: "REJECTED" }); */}
+            {/*    }} */}
+            {/*    isLoading={isLoading} */}
+            {/*  > */}
+            {/*    不通過 */}
+            {/*  </Button> */}
+            {/* </DialogClose> */}
+            <Button
+              onClick={() => {
+                updatePostStatus({ status: "APPROVED" });
+              }}
+              disabled={isLoading}
+            >
+              {isLoading && <Loader2 className="animate-spin" />}
+              通過
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
+export default UpdatePostStatusDialog;
