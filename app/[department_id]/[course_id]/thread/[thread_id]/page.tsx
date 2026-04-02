@@ -45,23 +45,6 @@ function isSafeImageUrl(url: string): boolean {
   }
 }
 
-const AVATAR_COLORS = [
-  "bg-blue-400",
-  "bg-green-400",
-  "bg-yellow-400",
-  "bg-purple-400",
-  "bg-pink-400",
-  "bg-orange-400",
-  "bg-teal-400",
-  "bg-red-400",
-];
-
-function avatarColor(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++)
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-}
 
 type SortMode = "all" | "asc" | "desc";
 
@@ -203,7 +186,6 @@ const ThreadDetailPage = () => {
     userData.id === thread.owner_id;
 
   const displayName = thread.is_anonymous ? "匿名" : thread.owner_name ?? "?";
-  const threadColor = avatarColor(displayName);
   const threadInitials = displayName.slice(0, 1);
   const threadDate = (() => {
     try {
@@ -229,13 +211,8 @@ const ThreadDetailPage = () => {
         <CardContent className="pt-4 pb-4 px-4 space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
-              <Avatar className={cn("h-9 w-9 shrink-0", threadColor)}>
-                <AvatarFallback
-                  className={cn(
-                    "text-sm font-semibold text-white",
-                    threadColor,
-                  )}
-                >
+              <Avatar className="h-9 w-9 shrink-0">
+                <AvatarFallback className="text-sm font-semibold">
                   {threadInitials}
                 </AvatarFallback>
               </Avatar>
@@ -281,14 +258,12 @@ const ThreadDetailPage = () => {
           </p>
 
           {thread.image_url && isSafeImageUrl(thread.image_url) && (
-            <div className="rounded-lg overflow-hidden">
-              <img
-                src={thread.image_url}
-                alt="討論圖片"
-                className="w-full object-contain rounded-lg"
-                referrerPolicy="no-referrer"
-              />
-            </div>
+            <img
+              src={thread.image_url}
+              alt="討論圖片"
+              className="w-full object-contain"
+              referrerPolicy="no-referrer"
+            />
           )}
         </CardContent>
       </Card>
@@ -300,7 +275,7 @@ const ThreadDetailPage = () => {
             type="button"
             onClick={() => setSortMode(tab.value)}
             className={cn(
-              "px-4 py-1.5 rounded-full text-sm font-medium border transition-colors",
+              "px-3 py-1.5 text-sm font-medium border transition-colors",
               sortMode === tab.value
                 ? "bg-foreground text-background border-foreground"
                 : "bg-background text-muted-foreground border-border hover:border-foreground/40",
@@ -342,7 +317,7 @@ const ThreadDetailPage = () => {
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-3 flex items-center gap-3 z-50">
         <Textarea
           placeholder="輸入訊息..."
-          className="flex-1 rounded-2xl bg-muted border-0 focus-visible:ring-1 min-h-0 h-10 resize-none py-2.5"
+          className="flex-1 bg-muted min-h-0 h-10 resize-none py-2.5"
           value={form.watch("content")}
           onChange={(e) => form.setValue("content", e.target.value)}
           onKeyDown={(e) => {

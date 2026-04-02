@@ -41,23 +41,6 @@ export interface ThreadCommentDetail extends ThreadComment {
   replies?: ThreadCommentDetail[];
 }
 
-const AVATAR_COLORS = [
-  "bg-blue-400",
-  "bg-green-400",
-  "bg-yellow-400",
-  "bg-purple-400",
-  "bg-pink-400",
-  "bg-orange-400",
-  "bg-teal-400",
-  "bg-red-400",
-];
-
-function avatarColor(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++)
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-}
 
 function parseUTC(iso: string): Date {
   const s = /Z|[+-]\d{2}:\d{2}$/.test(iso) ? iso : iso + "Z";
@@ -152,7 +135,7 @@ const ReplyForm = ({
           <Button
             size="sm"
             onClick={form.handleSubmit(onSubmit)}
-            isLoading={isLoading}
+            disabled={isLoading}
           >
             送出
           </Button>
@@ -202,7 +185,6 @@ const ReplyItem = ({
   };
 
   const displayName = reply.is_anonymous ? "匿名" : reply.owner_name;
-  const color = avatarColor(displayName);
   const initials = displayName.slice(0, 1);
   const date = formatDate(reply.create_time);
 
@@ -210,10 +192,8 @@ const ReplyItem = ({
     <div className="py-2">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <Avatar className={cn("h-7 w-7 shrink-0", color)}>
-            <AvatarFallback
-              className={cn("text-xs text-white font-semibold", color)}
-            >
+          <Avatar className="h-7 w-7 shrink-0">
+            <AvatarFallback className="text-xs">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -328,7 +308,6 @@ const CommentItem = ({
     (comment.reply_count ?? 0) > 0 || hasReplies || showReplies;
 
   const displayName = comment.is_anonymous ? "匿名" : comment.owner_name;
-  const color = avatarColor(displayName);
   const initials = displayName.slice(0, 1);
   const date = formatDate(comment.create_time);
 
@@ -336,10 +315,8 @@ const CommentItem = ({
     <div className="py-3 border-b border-border last:border-b-0">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <Avatar className={cn("h-8 w-8 shrink-0", color)}>
-            <AvatarFallback
-              className={cn("text-sm text-white font-semibold", color)}
-            >
+          <Avatar className="h-8 w-8 shrink-0">
+            <AvatarFallback className="text-sm">
               {initials}
             </AvatarFallback>
           </Avatar>
