@@ -22,6 +22,13 @@ const CreatePostDialog = Dynamic(
   },
 );
 
+const CreateThreadDialog = Dynamic(
+  () => import("@/containers/Dialogs/CreateThreadDialog"),
+  {
+    ssr: false,
+  },
+);
+
 const EditCourseDialog = Dynamic(
   () => import("@/containers/Dialogs/EditCourseDialog"),
   {
@@ -50,6 +57,7 @@ const Dialogs = () => {
   return (
     <>
       {!isAdmin && <CreatePostDialog />}
+      {!isAdmin && <CreateThreadDialog />}
       {isAdmin && (
         <>
           <UpdatePostStatusDialog />
