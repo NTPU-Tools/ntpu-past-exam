@@ -99,18 +99,16 @@ function Page() {
           </DialogHeader>
 
           <div className="basis-full my-4">
-            <TypographyP>
-              {isDetailLoading ? (
-                <div className="flex flex-col gap-3">
-                  <Skeleton className="h-4 w-64" />
-                  <Skeleton className="h-4 w-40" />
-                  <Skeleton className="h-4 w-52" />
-                  <Skeleton className="h-4 w-36" />
-                </div>
-              ) : (
-                bulletinDetail?.content
-              )}
-            </TypographyP>
+            {isDetailLoading ? (
+              <div className="flex flex-col gap-3">
+                <Skeleton className="h-4 w-64" />
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-4 w-52" />
+                <Skeleton className="h-4 w-36" />
+              </div>
+            ) : (
+              <TypographyP>{bulletinDetail?.content}</TypographyP>
+            )}
           </div>
 
           <DialogFooter>

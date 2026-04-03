@@ -16,7 +16,7 @@ import { cn } from "@/utils/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatRelative } from "date-fns";
 import { zhTW } from "date-fns/locale";
-import { CornerDownLeft, Heart } from "lucide-react";
+import { CornerDownLeft, Heart, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
@@ -30,6 +30,7 @@ export interface ThreadComment {
   owner_id: string;
   owner_name: string;
   is_anonymous: boolean;
+  is_owner: boolean;
   like_count: number;
   reply_count: number;
   liked: boolean;
@@ -152,20 +153,22 @@ interface ReplyItemProps {
   reply: ThreadCommentDetail;
   threadId: string;
   rootCommentId: string;
-  currentUserId?: string;
 }
 
 const ReplyItem = ({
   reply,
   threadId,
   rootCommentId,
-  currentUserId,
 }: ReplyItemProps) => {
   const { toast } = useToast();
   const [liked, setLiked] = useState(reply.liked ?? false);
   const [likeCount, setLikeCount] = useState(reply.like_count);
   const [isLiking, setIsLiking] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+
+  const isOwner = reply.is_owner;
 
   const handleLike = async () => {
     if (isLiking) return;
@@ -183,6 +186,23 @@ const ReplyItem = ({
       setIsLiking(false);
     }
   };
+
+  const handleDelete = async () => {
+    if (isDeleting) return;
+    if (!confirm("確定要刪除這則回覆嗎？")) return;
+    try {
+      setIsDeleting(true);
+      await instance.delete(`/threads/comments/${reply.id}`);
+      mutate(`comment-${rootCommentId}`);
+      setDeleted(true);
+    } catch {
+      toast({ title: "刪除失敗", variant: "error" });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  if (deleted) return null;
 
   const displayName = reply.is_anonymous ? "匿名" : reply.owner_name;
   const initials = displayName.slice(0, 1);
@@ -223,6 +243,17 @@ const ReplyItem = ({
           >
             <Heart className={cn("h-3.5 w-3.5", liked && "fill-current")} />
           </Button>
+          {isOwner && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-destructive hover:text-destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          )}
         </div>
       </div>
 
@@ -251,7 +282,6 @@ const ReplyItem = ({
               reply={subReply}
               threadId={threadId}
               rootCommentId={rootCommentId}
-              currentUserId={currentUserId}
             />
           ))}
         </div>
@@ -263,20 +293,22 @@ const ReplyItem = ({
 interface CommentItemProps {
   comment: ThreadComment;
   threadId: string;
-  currentUserId?: string;
 }
 
 const CommentItem = ({
   comment,
   threadId,
-  currentUserId,
 }: CommentItemProps) => {
   const { toast } = useToast();
   const [liked, setLiked] = useState(comment.liked ?? false);
   const [likeCount, setLikeCount] = useState(comment.like_count);
   const [isLiking, setIsLiking] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleted, setDeleted] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
+
+  const isOwner = comment.is_owner;
 
   const { data: commentDetail, isLoading: isLoadingReplies } =
     useSWR<ThreadCommentDetail>(
@@ -302,10 +334,27 @@ const CommentItem = ({
     }
   };
 
+  const handleDelete = async () => {
+    if (isDeleting) return;
+    if (!confirm("確定要刪除這則留言嗎？")) return;
+    try {
+      setIsDeleting(true);
+      await instance.delete(`/threads/comments/${comment.id}`);
+      mutate(`thread-comments-${threadId}`);
+      setDeleted(true);
+    } catch {
+      toast({ title: "刪除失敗", variant: "error" });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const replies = commentDetail?.replies ?? [];
   const hasReplies = replies.length > 0;
   const showToggleButton =
     (comment.reply_count ?? 0) > 0 || hasReplies || showReplies;
+
+  if (deleted) return null;
 
   const displayName = comment.is_anonymous ? "匿名" : comment.owner_name;
   const initials = displayName.slice(0, 1);
@@ -347,6 +396,17 @@ const CommentItem = ({
           >
             <Heart className={cn("h-4 w-4", liked && "fill-current")} />
           </Button>
+          {isOwner && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-destructive hover:text-destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
 
@@ -394,7 +454,6 @@ const CommentItem = ({
                 reply={reply}
                 threadId={threadId}
                 rootCommentId={comment.id}
-                currentUserId={currentUserId}
               />
             ))
           )}

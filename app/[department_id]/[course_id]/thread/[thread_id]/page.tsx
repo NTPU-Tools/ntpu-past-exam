@@ -179,11 +179,7 @@ const ThreadDetailPage = () => {
     );
   }
 
-  const isOwner =
-    !thread.is_anonymous &&
-    userData?.id &&
-    thread.owner_id &&
-    userData.id === thread.owner_id;
+  const isOwner = thread.is_owner;
 
   const displayName = thread.is_anonymous ? "匿名" : thread.owner_name ?? "?";
   const threadInitials = displayName.slice(0, 1);
@@ -306,7 +302,6 @@ const ThreadDetailPage = () => {
               key={comment.id}
               comment={comment}
               threadId={validThreadId!}
-              currentUserId={userData?.id}
             />
           ))}
         </div>
