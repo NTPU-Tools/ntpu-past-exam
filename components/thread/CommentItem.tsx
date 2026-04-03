@@ -1,4 +1,15 @@
 import instance from "@/api-client/instance";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -189,7 +200,6 @@ const ReplyItem = ({
 
   const handleDelete = async () => {
     if (isDeleting) return;
-    if (!confirm("確定要刪除這則回覆嗎？")) return;
     try {
       setIsDeleting(true);
       await instance.delete(`/threads/comments/${reply.id}`);
@@ -244,15 +254,30 @@ const ReplyItem = ({
             <Heart className={cn("h-3.5 w-3.5", liked && "fill-current")} />
           </Button>
           {isOwner && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-destructive hover:text-destructive"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-destructive hover:text-destructive"
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>確定要刪除這則回覆嗎？</AlertDialogTitle>
+                  <AlertDialogDescription>此操作無法復原。</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>取消</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                    刪除
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
       </div>
@@ -336,7 +361,6 @@ const CommentItem = ({
 
   const handleDelete = async () => {
     if (isDeleting) return;
-    if (!confirm("確定要刪除這則留言嗎？")) return;
     try {
       setIsDeleting(true);
       await instance.delete(`/threads/comments/${comment.id}`);
@@ -397,15 +421,30 @@ const CommentItem = ({
             <Heart className={cn("h-4 w-4", liked && "fill-current")} />
           </Button>
           {isOwner && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-destructive hover:text-destructive"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>確定要刪除這則留言嗎？</AlertDialogTitle>
+                  <AlertDialogDescription>此操作無法復原。</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>取消</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                    刪除
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
       </div>

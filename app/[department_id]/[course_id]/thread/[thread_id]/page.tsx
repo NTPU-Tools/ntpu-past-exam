@@ -2,15 +2,20 @@
 
 import instance from "@/api-client/instance";
 import CommentItem, { ThreadComment } from "@/components/thread/CommentItem";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyBlockquote } from "@/components/ui/typography";
@@ -21,12 +26,7 @@ import { cn } from "@/utils/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatRelative } from "date-fns";
 import { zhTW } from "date-fns/locale";
-import {
-  ArrowLeft,
-  MoreHorizontal,
-  SendHorizontal,
-  Trash2,
-} from "lucide-react";
+import { ArrowLeft, SendHorizontal, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
@@ -94,7 +94,6 @@ const ThreadDetailPage = () => {
 
   const handleDelete = async () => {
     if (!validThreadId || isDeleting) return;
-    if (!confirm("確定要刪除這篇討論嗎？")) return;
     try {
       setIsDeleting(true);
       await instance.delete(`/threads/${validThreadId}`);
@@ -223,27 +222,30 @@ const ThreadDetailPage = () => {
             </div>
 
             {isOwner && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 shrink-0"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    className="text-destructive focus:text-destructive"
-                    onClick={handleDelete}
+                    className="h-8 w-8 shrink-0 text-destructive hover:text-destructive"
                     disabled={isDeleting}
                   >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    刪除
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>確定要刪除這篇討論嗎？</AlertDialogTitle>
+                    <AlertDialogDescription>此操作無法復原。</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>取消</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                      刪除
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </div>
 
@@ -315,14 +317,6 @@ const ThreadDetailPage = () => {
           className="flex-1 bg-muted min-h-0 h-10 resize-none py-2.5"
           value={form.watch("content")}
           onChange={(e) => form.setValue("content", e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-              e.preventDefault();
-              form.handleSubmit(onSubmitComment, () => {
-                toast({ title: "請輸入留言內容", variant: "error" });
-              })();
-            }
-          }}
         />
 
         <Button

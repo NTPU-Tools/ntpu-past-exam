@@ -153,7 +153,7 @@ const CreateThreadDialog = () => {
         </Form>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" isLoading={isLoading}>
+            <Button variant="outline" disabled={isLoading}>
               取消
             </Button>
           </DialogClose>
