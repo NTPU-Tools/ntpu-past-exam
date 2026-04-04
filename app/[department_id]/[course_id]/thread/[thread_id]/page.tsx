@@ -22,10 +22,9 @@ import { TypographyBlockquote } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
 import { createCommentSchema } from "@/schemas/thread";
 import userStore from "@/store/userStore";
-import { cn } from "@/utils/cn";
+import { cn, formatDate, parseUTC } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formatRelative } from "date-fns";
-import { zhTW } from "date-fns/locale";
+import { isEmpty } from "lodash-es";
 import { ArrowLeft, SendHorizontal, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -134,12 +133,12 @@ const ThreadDetailPage = () => {
     if (sortMode === "asc")
       return [...comments].sort(
         (a, b) =>
-          new Date(a.create_time).getTime() - new Date(b.create_time).getTime(),
+          parseUTC(a.create_time).getTime() - parseUTC(b.create_time).getTime(),
       );
     if (sortMode === "desc")
       return [...comments].sort(
         (a, b) =>
-          new Date(b.create_time).getTime() - new Date(a.create_time).getTime(),
+          parseUTC(b.create_time).getTime() - parseUTC(a.create_time).getTime(),
       );
     return comments;
   }, [comments, sortMode]);
@@ -182,18 +181,10 @@ const ThreadDetailPage = () => {
 
   const displayName = thread.is_anonymous ? "匿名" : thread.owner_name ?? "?";
   const threadInitials = displayName.slice(0, 1);
-  const threadDate = (() => {
-    try {
-      const iso = thread.create_time as string;
-      const s = /Z|[+-]\d{2}:\d{2}$/.test(iso) ? iso : iso + "Z";
-      return formatRelative(new Date(s), new Date(), { locale: zhTW });
-    } catch {
-      return thread.create_time;
-    }
-  })();
+  const threadDate = formatDate(thread.create_time as string);
 
   return (
-    <div className="min-h-[inherit] flex flex-col pb-24">
+    <div className="min-h-[inherit] flex flex-col">
       <div className="flex items-center gap-1 pt-2 pb-3 px-1">
         <Button variant="ghost" size="icon" asChild>
           <Link href={`/${departmentId}/${courseId}/thread`}>
@@ -311,26 +302,31 @@ const ThreadDetailPage = () => {
         <TypographyBlockquote>尚無留言，來留下第一則吧！</TypographyBlockquote>
       )}
 
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-3 flex items-center gap-3 z-50">
-        <Textarea
-          placeholder="輸入訊息..."
-          className="flex-1 bg-muted min-h-0 h-10 resize-none py-2.5"
-          value={form.watch("content")}
-          onChange={(e) => form.setValue("content", e.target.value)}
-        />
+      {!isEmpty(userData) ? (
+        <div className="sticky bottom-0 z-40 bg-background border-t border-border px-4 py-3 flex items-center gap-3">
+          <Textarea
+            placeholder="輸入訊息..."
+            className="flex-1 bg-muted min-h-0 h-10 resize-none py-2.5"
+            {...form.register("content")}
+          />
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="shrink-0 text-muted-foreground"
-          disabled={isSubmitting}
-          onClick={form.handleSubmit(onSubmitComment, () => {
-            toast({ title: "請輸入留言內容", variant: "error" });
-          })}
-        >
-          <SendHorizontal className="h-5 w-5" />
-        </Button>
-      </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 text-muted-foreground"
+            disabled={isSubmitting}
+            onClick={form.handleSubmit(onSubmitComment, () => {
+              toast({ title: "請輸入留言內容", variant: "error" });
+            })}
+          >
+            <SendHorizontal className="h-5 w-5" />
+          </Button>
+        </div>
+      ) : (
+        <div className="sticky bottom-0 z-40 bg-background border-t border-border px-4 py-3 text-center text-sm text-muted-foreground">
+          <Link href="/login" className="underline">登入</Link>後才能留言
+        </div>
+      )}
     </div>
   );
 };

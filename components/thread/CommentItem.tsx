@@ -23,10 +23,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { createCommentSchema } from "@/schemas/thread";
-import { cn } from "@/utils/cn";
+import { cn, formatDate } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formatRelative } from "date-fns";
-import { zhTW } from "date-fns/locale";
 import { CornerDownLeft, Heart, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -53,21 +51,6 @@ export interface ThreadCommentDetail extends ThreadComment {
   replies?: ThreadCommentDetail[];
 }
 
-
-function parseUTC(iso: string): Date {
-  const s = /Z|[+-]\d{2}:\d{2}$/.test(iso) ? iso : iso + "Z";
-  return new Date(s);
-}
-
-function formatDate(iso: string) {
-  try {
-    return formatRelative(parseUTC(iso), new Date(), {
-      locale: zhTW,
-    });
-  } catch {
-    return iso;
-  }
-}
 
 interface ReplyFormProps {
   threadId: string;
@@ -160,16 +143,20 @@ const ReplyForm = ({
   );
 };
 
+const MAX_REPLY_DEPTH = 2;
+
 interface ReplyItemProps {
   reply: ThreadCommentDetail;
   threadId: string;
   rootCommentId: string;
+  depth?: number;
 }
 
 const ReplyItem = ({
   reply,
   threadId,
   rootCommentId,
+  depth = 0,
 }: ReplyItemProps) => {
   const { toast } = useToast();
   const [liked, setLiked] = useState(reply.liked ?? false);
@@ -299,7 +286,7 @@ const ReplyItem = ({
         </div>
       )}
 
-      {reply.replies && reply.replies.length > 0 && (
+      {reply.replies && reply.replies.length > 0 && depth < MAX_REPLY_DEPTH && (
         <div className="ml-6 mt-1 border-l border-border pl-3">
           {reply.replies.map((subReply) => (
             <ReplyItem
@@ -307,6 +294,7 @@ const ReplyItem = ({
               reply={subReply}
               threadId={threadId}
               rootCommentId={rootCommentId}
+              depth={depth + 1}
             />
           ))}
         </div>

@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyBlockquote } from "@/components/ui/typography";
 import { useQueryState } from "@/hooks/useQueryState";
 import userStore from "@/store/userStore";
-import { constant, times } from "lodash-es";
+import { constant, isEmpty, times } from "lodash-es";
 import { ArrowLeft, PenSquare } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -78,7 +78,7 @@ const ThreadListPage = () => {
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" asChild>
             <Link href={`/${departmentId}/${courseId}`}>
-              <ArrowLeft className="h-20 w-20" />
+              <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
           <div>
@@ -90,15 +90,17 @@ const ThreadListPage = () => {
         </div>
       </PageHeader>
 
-      <div className="flex justify-end mb-4">
-        <Button
-          onClick={() => setParams({ open_create_thread_dialog: "true" })}
-          className="gap-2"
-        >
-          <PenSquare className="h-4 w-4" />
-          新增討論
-        </Button>
-      </div>
+      {!isEmpty(userData) && (
+        <div className="flex justify-end mb-4">
+          <Button
+            onClick={() => setParams({ open_create_thread_dialog: "true" })}
+            className="gap-2"
+          >
+            <PenSquare className="h-4 w-4" />
+            新增討論
+          </Button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4">
         {threads?.length ? (
@@ -107,7 +109,6 @@ const ThreadListPage = () => {
               key={thread.id}
               thread={thread}
               courseId={courseId!}
-              currentUserId={userData?.id}
             />
           ))
         ) : (

@@ -1,13 +1,22 @@
 import instance from "@/api-client/instance";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { cn } from "@/utils/cn";
-import { formatRelative } from "date-fns";
-import { zhTW } from "date-fns/locale";
-import { Heart } from "lucide-react";
+import { cn, formatDate } from "@/lib/utils";
+import { Heart, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -19,6 +28,7 @@ interface Thread {
   content: string;
   owner_id: string;
   owner_name: string;
+  is_owner: boolean;
   like_count: number;
   liked: boolean;
   is_anonymous: boolean;
@@ -31,17 +41,17 @@ interface Thread {
 interface ThreadCardProps {
   thread: Thread;
   courseId: string;
-  currentUserId?: string;
 }
 
-const ThreadCard = ({ thread, courseId, currentUserId }: ThreadCardProps) => {
+const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
   const params = useParams();
   const { toast } = useToast();
   const [liked, setLiked] = useState(thread.liked ?? false);
   const [likeCount, setLikeCount] = useState(thread.like_count);
   const [isLiking, setIsLiking] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleted, setDeleted] = useState(false);
 
-  const isOwner = !thread.is_anonymous && currentUserId && currentUserId === thread.owner_id;
   const displayName = thread.is_anonymous ? "匿名" : thread.owner_name;
 
   const handleLike = async (e: React.MouseEvent) => {
@@ -63,17 +73,26 @@ const ThreadCard = ({ thread, courseId, currentUserId }: ThreadCardProps) => {
     }
   };
 
-  const formattedDate = (() => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isDeleting) return;
     try {
-      const iso = thread.create_time;
-      const s = /Z|[+-]\d{2}:\d{2}$/.test(iso) ? iso : iso + "Z";
-      return formatRelative(new Date(s), new Date(), { locale: zhTW });
+      setIsDeleting(true);
+      await instance.delete(`/threads/${thread.id}`);
+      mutate(`threads-${courseId}`);
+      setDeleted(true);
     } catch {
-      return thread.create_time;
+      toast({ title: "刪除失敗", variant: "error" });
+    } finally {
+      setIsDeleting(false);
     }
-  })();
+  };
+
+  const formattedDate = formatDate(thread.create_time);
 
   const href = `/${params?.department_id}/${courseId}/thread/${thread.id}`;
+
+  if (deleted) return null;
 
   return (
     <Link href={href}>
@@ -82,7 +101,7 @@ const ThreadCard = ({ thread, courseId, currentUserId }: ThreadCardProps) => {
           <div className="flex items-center gap-2 min-w-0">
             <Avatar className="h-8 w-8 shrink-0">
               <AvatarFallback className="text-xs">
-                {thread.owner_name.slice(0, 2)}
+                {displayName.slice(0, 2)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
@@ -94,11 +113,42 @@ const ThreadCard = ({ thread, courseId, currentUserId }: ThreadCardProps) => {
               </p>
             </div>
           </div>
-          {thread.is_anonymous && (
-            <Badge variant="secondary" className="shrink-0 text-xs">
-              匿名
-            </Badge>
-          )}
+          <div className="flex items-center gap-1 shrink-0">
+            {thread.is_anonymous && (
+              <Badge variant="secondary" className="text-xs">
+                匿名
+              </Badge>
+            )}
+            {thread.is_owner && (
+              <div onClick={(e) => e.preventDefault()}>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-destructive hover:text-destructive"
+                      disabled={isDeleting}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>確定要刪除這篇討論嗎？</AlertDialogTitle>
+                      <AlertDialogDescription>此操作無法復原。</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>取消</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                        刪除
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            )}
+          </div>
         </div>
         <div>
           <h3 className="font-semibold text-base leading-tight">
