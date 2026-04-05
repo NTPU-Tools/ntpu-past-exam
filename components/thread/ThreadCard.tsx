@@ -19,7 +19,8 @@ import { cn, formatDate } from "@/lib/utils";
 import userStore from "@/store/userStore";
 import { isEmpty } from "lodash-es";
 import { Heart, Trash2 } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { mutate } from "swr";
 
@@ -46,7 +47,6 @@ interface ThreadCardProps {
 
 const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
   const params = useParams();
-  const router = useRouter();
   const { toast } = useToast();
   const { userData } = userStore();
   const isLoggedIn = !isEmpty(userData);
@@ -99,9 +99,9 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
   if (deleted) return null;
 
   return (
+    <Link href={href}>
     <Card
-      className="hover:bg-muted transition-colors cursor-pointer"
-      onClick={() => router.push(href)}
+      className="hover:bg-muted transition-colors"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
@@ -126,7 +126,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
             </Badge>
           )}
           {thread.is_owner && (
-            <div onClick={(e) => e.stopPropagation()}>
+            <div onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
@@ -174,10 +174,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
               "gap-1.5 h-8 px-2",
               liked && "text-red-500 hover:text-red-600",
             )}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleLike(e);
-            }}
+            onClick={handleLike}
             disabled={isLiking}
           >
             <Heart className={cn("h-4 w-4", liked && "fill-current")} />
@@ -192,6 +189,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
         )}
       </div>
     </Card>
+    </Link>
   );
 };
 
