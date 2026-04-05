@@ -160,7 +160,10 @@ const CreateThreadDialog = () => {
           <Button
             onClick={form.handleSubmit(onSubmit, (e) => {
               toast({
-                title: e?.[Object.keys(e)?.[0]]?.message ?? "表單發生錯誤",
+                title:
+                  (e as Record<string, { message?: string }>)?.[
+                    Object.keys(e)?.[0]
+                  ]?.message ?? "表單發生錯誤",
                 variant: "error",
               });
             })}
