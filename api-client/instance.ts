@@ -78,7 +78,7 @@ declare module "axios" {
     ): Promise<T>;
 
     get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
-    // delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
+    delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
     // head<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
     post<T = any>(
       url: string,

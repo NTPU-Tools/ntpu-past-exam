@@ -2,7 +2,7 @@
 
 import instance from "@/api-client/instance";
 import { PageHeader, PageHeaderDescription, PageHeaderHeading } from "@/components/PageHeader";
-import ThreadCard from "@/components/thread/ThreadCard";
+import ThreadCard, { Thread } from "@/components/thread/ThreadCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyBlockquote } from "@/components/ui/typography";
@@ -12,7 +12,10 @@ import { constant, isEmpty, times } from "lodash-es";
 import { ArrowLeft, PenSquare } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import useSWR from "swr";
+
+const PAGE_SIZE = 20;
 
 const ThreadListPage = () => {
   const params = useParams();
@@ -20,14 +23,18 @@ const ThreadListPage = () => {
   const { setParams } = useQueryState();
   const courseId = params.course_id as string | undefined;
   const departmentId = params.department_id as string | undefined;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const {
-    data: threads,
+    data: threadsData,
     isLoading,
     error,
-  } = useSWR(courseId ? `threads-${courseId}` : null, () =>
-    instance.get(`/threads/${courseId}`),
+  } = useSWR<{ threads: Thread[]; total: number }>(
+    courseId ? `threads-${courseId}` : null,
+    () => instance.get(`/threads/${courseId}`),
   );
+
+  const threads = threadsData?.threads;
 
   const { data: courseData } = useSWR(
     courseId ? `course-${courseId}` : null,
@@ -46,7 +53,7 @@ const ThreadListPage = () => {
     );
   }
 
-  if (isLoading || (!threads && !error)) {
+  if (isLoading || (!threadsData && !error)) {
     return (
       <div>
         <PageHeader>
@@ -76,7 +83,7 @@ const ThreadListPage = () => {
     <div className="relative">
       <PageHeader>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" aria-label="返回課程頁面" asChild>
             <Link href={`/${departmentId}/${courseId}`}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
@@ -104,13 +111,24 @@ const ThreadListPage = () => {
 
       <div className="grid grid-cols-1 gap-4">
         {threads?.length ? (
-          threads.map((thread: any) => (
-            <ThreadCard
-              key={thread.id}
-              thread={thread}
-              courseId={courseId!}
-            />
-          ))
+          <>
+            {threads.slice(0, visibleCount).map((thread: Thread) => (
+              <ThreadCard
+                key={thread.id}
+                thread={thread}
+                courseId={courseId!}
+              />
+            ))}
+            {visibleCount < (threadsData?.total ?? 0) && (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+              >
+                載入更多
+              </Button>
+            )}
+          </>
         ) : (
           <TypographyBlockquote>尚無討論，來發第一篇吧！</TypographyBlockquote>
         )}

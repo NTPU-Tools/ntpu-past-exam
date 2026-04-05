@@ -186,7 +186,7 @@ const ThreadDetailPage = () => {
   return (
     <div className="min-h-[inherit] flex flex-col">
       <div className="flex items-center gap-1 pt-2 pb-3 px-1">
-        <Button variant="ghost" size="icon" asChild>
+        <Button variant="ghost" size="icon" aria-label="返回討論列表" asChild>
           <Link href={`/${departmentId}/${courseId}/thread`}>
             <ArrowLeft className="h-5 w-5" />
           </Link>
@@ -218,6 +218,7 @@ const ThreadDetailPage = () => {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label="刪除討論"
                     className="h-8 w-8 shrink-0 text-destructive hover:text-destructive"
                     disabled={isDeleting}
                   >
@@ -313,6 +314,7 @@ const ThreadDetailPage = () => {
           <Button
             variant="ghost"
             size="icon"
+            aria-label="送出留言"
             className="shrink-0 text-muted-foreground"
             disabled={isSubmitting}
             onClick={form.handleSubmit(onSubmitComment, () => {

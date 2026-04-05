@@ -24,7 +24,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { createCommentSchema } from "@/schemas/thread";
 import { cn, formatDate } from "@/lib/utils";
+import userStore from "@/store/userStore";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isEmpty } from "lodash-es";
 import { CornerDownLeft, Heart, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -41,7 +43,7 @@ export interface ThreadComment {
   is_anonymous: boolean;
   is_owner: boolean;
   like_count: number;
-  reply_count: number;
+  reply_count?: number;
   liked: boolean;
   create_time: string;
   updated_time: string;
@@ -128,6 +130,7 @@ const ReplyForm = ({
         />
         <div className="flex gap-2">
           <Button
+            type="button"
             size="sm"
             onClick={form.handleSubmit(onSubmit)}
             disabled={isLoading}
@@ -143,7 +146,7 @@ const ReplyForm = ({
   );
 };
 
-const MAX_REPLY_DEPTH = 2;
+const MAX_INDENT_DEPTH = 3;
 
 interface ReplyItemProps {
   reply: ThreadCommentDetail;
@@ -159,6 +162,8 @@ const ReplyItem = ({
   depth = 0,
 }: ReplyItemProps) => {
   const { toast } = useToast();
+  const { userData } = userStore();
+  const isLoggedIn = !isEmpty(userData);
   const [liked, setLiked] = useState(reply.liked ?? false);
   const [likeCount, setLikeCount] = useState(reply.like_count);
   const [isLiking, setIsLiking] = useState(false);
@@ -220,32 +225,43 @@ const ReplyItem = ({
           <span className="text-xs text-muted-foreground">{date}</span>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={() => setShowReplyForm((v) => !v)}
-          >
-            <CornerDownLeft className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "h-7 w-7",
-              liked && "text-red-500 hover:text-red-600",
-            )}
-            onClick={handleLike}
-            disabled={isLiking}
-          >
-            <Heart className={cn("h-3.5 w-3.5", liked && "fill-current")} />
-          </Button>
+          {isLoggedIn && (
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="回覆"
+              className="h-7 w-7"
+              onClick={() => setShowReplyForm((v) => !v)}
+            >
+              <CornerDownLeft className="h-3.5 w-3.5" />
+            </Button>
+          )}
+          {isLoggedIn ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={liked ? "取消喜歡" : "喜歡"}
+              className={cn(
+                "h-7 w-7",
+                liked && "text-red-500 hover:text-red-600",
+              )}
+              onClick={handleLike}
+              disabled={isLiking}
+            >
+              <Heart className={cn("h-3.5 w-3.5", liked && "fill-current")} />
+            </Button>
+          ) : (
+            <span className="h-7 w-7 flex items-center justify-center text-muted-foreground">
+              <Heart className="h-3.5 w-3.5" />
+            </span>
+          )}
           {isOwner && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
+                  aria-label="刪除回覆"
                   className="h-7 w-7 text-destructive hover:text-destructive"
                   disabled={isDeleting}
                 >
@@ -286,8 +302,8 @@ const ReplyItem = ({
         </div>
       )}
 
-      {reply.replies && reply.replies.length > 0 && depth < MAX_REPLY_DEPTH && (
-        <div className="ml-6 mt-1 border-l border-border pl-3">
+      {reply.replies && reply.replies.length > 0 && (
+        <div className={depth < MAX_INDENT_DEPTH ? "ml-6 mt-1 border-l border-border pl-3" : "mt-1"}>
           {reply.replies.map((subReply) => (
             <ReplyItem
               key={subReply.id}
@@ -313,6 +329,8 @@ const CommentItem = ({
   threadId,
 }: CommentItemProps) => {
   const { toast } = useToast();
+  const { userData } = userStore();
+  const isLoggedIn = !isEmpty(userData);
   const [liked, setLiked] = useState(comment.liked ?? false);
   const [likeCount, setLikeCount] = useState(comment.like_count);
   const [isLiking, setIsLiking] = useState(false);
@@ -388,32 +406,43 @@ const CommentItem = ({
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => setShowReplyForm((v) => !v)}
-          >
-            <CornerDownLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "h-8 w-8",
-              liked && "text-red-500 hover:text-red-600",
-            )}
-            onClick={handleLike}
-            disabled={isLiking}
-          >
-            <Heart className={cn("h-4 w-4", liked && "fill-current")} />
-          </Button>
+          {isLoggedIn && (
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="回覆"
+              className="h-8 w-8"
+              onClick={() => setShowReplyForm((v) => !v)}
+            >
+              <CornerDownLeft className="h-4 w-4" />
+            </Button>
+          )}
+          {isLoggedIn ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={liked ? "取消喜歡" : "喜歡"}
+              className={cn(
+                "h-8 w-8",
+                liked && "text-red-500 hover:text-red-600",
+              )}
+              onClick={handleLike}
+              disabled={isLiking}
+            >
+              <Heart className={cn("h-4 w-4", liked && "fill-current")} />
+            </Button>
+          ) : (
+            <span className="h-8 w-8 flex items-center justify-center text-muted-foreground">
+              <Heart className="h-4 w-4" />
+            </span>
+          )}
           {isOwner && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
+                  aria-label="刪除留言"
                   className="h-8 w-8 text-destructive hover:text-destructive"
                   disabled={isDeleting}
                 >

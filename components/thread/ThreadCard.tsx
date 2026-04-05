@@ -16,13 +16,15 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { cn, formatDate } from "@/lib/utils";
+import userStore from "@/store/userStore";
+import { isEmpty } from "lodash-es";
 import { Heart, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { mutate } from "swr";
 
-interface Thread {
+export interface Thread {
   id: string;
   title: string;
   content: string;
@@ -46,6 +48,8 @@ interface ThreadCardProps {
 const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
   const params = useParams();
   const { toast } = useToast();
+  const { userData } = userStore();
+  const isLoggedIn = !isEmpty(userData);
   const [liked, setLiked] = useState(thread.liked ?? false);
   const [likeCount, setLikeCount] = useState(thread.like_count);
   const [isLiking, setIsLiking] = useState(false);
@@ -101,7 +105,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
           <div className="flex items-center gap-2 min-w-0">
             <Avatar className="h-8 w-8 shrink-0">
               <AvatarFallback className="text-xs">
-                {displayName.slice(0, 2)}
+                {displayName.slice(0, 1)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
@@ -126,6 +130,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
                     <Button
                       variant="ghost"
                       size="icon"
+                      aria-label="刪除討論"
                       className="h-7 w-7 text-destructive hover:text-destructive"
                       disabled={isDeleting}
                       onClick={(e) => e.stopPropagation()}
@@ -159,19 +164,28 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
           </p>
         </div>
         <div className="flex items-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "gap-1.5 h-8 px-2",
-              liked && "text-red-500 hover:text-red-600",
-            )}
-            onClick={handleLike}
-            disabled={isLiking}
-          >
-            <Heart className={cn("h-4 w-4", liked && "fill-current")} />
-            <span className="text-xs">{likeCount}</span>
-          </Button>
+          {isLoggedIn && (
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label={liked ? "取消喜歡" : "喜歡"}
+              className={cn(
+                "gap-1.5 h-8 px-2",
+                liked && "text-red-500 hover:text-red-600",
+              )}
+              onClick={handleLike}
+              disabled={isLiking}
+            >
+              <Heart className={cn("h-4 w-4", liked && "fill-current")} />
+              <span className="text-xs">{likeCount}</span>
+            </Button>
+          )}
+          {!isLoggedIn && (
+            <span className="flex items-center gap-1 h-8 px-2 text-xs text-muted-foreground">
+              <Heart className="h-4 w-4" />
+              {likeCount}
+            </span>
+          )}
         </div>
       </Card>
     </Link>
