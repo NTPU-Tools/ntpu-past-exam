@@ -54,6 +54,10 @@ const GUIDELINES = [
     title: "禁止侵犯隱私",
     desc: "不得未經同意公開他人個人資訊，例如學號、姓名、聯絡方式等。",
   },
+  {
+    title: "禁止著作權侵犯",
+    desc: "禁止上傳原文書、商業出版教材或任何標有版權聲明的掃描檔。",
+  },
 ];
 
 function GuidelinesSheet() {
