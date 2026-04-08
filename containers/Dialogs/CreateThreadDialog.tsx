@@ -83,7 +83,7 @@ function GuidelinesSheet() {
         <Separator />
         <ul className="flex flex-col divide-y px-6">
           {GUIDELINES.map((g, i) => (
-            <li key={i} className="py-4">
+            <li key={g.title} className="py-4">
               <div className="mb-1 flex items-center gap-2">
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-xs font-bold text-destructive">
                   {i + 1}
@@ -225,7 +225,7 @@ const CreateThreadDialog = () => {
             />
           </form>
         </Form>
-        <div className="flex items-start gap-2 py-1">
+        <div className="flex flex-row items-start space-x-3 space-y-0 py-2">
           <Checkbox
             id="agree-guidelines"
             checked={agreed}
