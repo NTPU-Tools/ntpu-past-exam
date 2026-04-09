@@ -2,9 +2,11 @@
 
 import instance from "@/api-client/instance";
 import { PageHeader, PageHeaderHeading } from "@/components/PageHeader";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQueryState } from "@/hooks/useQueryState";
 import { constant, times } from "lodash-es";
+import { MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
@@ -63,6 +65,14 @@ const CoursePage = () => {
           <p className="text-xs text-muted-foreground pl-4 ml-[3px] mt-2 font-mono">{postCount} 份考古題</p>
         )}
       </PageHeader>
+      <div className="flex justify-end mb-2">
+        <Button variant="outline" size="sm" className="gap-2" asChild>
+          <Link href={`/${departmentId}/${courseId}/thread`}>
+            <MessageSquare className="h-4 w-4" />
+            前往討論區
+          </Link>
+        </Button>
+      </div>
       {postCount > 0 ? (
         <div>
           {courseData.posts.map((post: any, idx: number) => (
