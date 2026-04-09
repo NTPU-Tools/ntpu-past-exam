@@ -91,7 +91,7 @@ export function MobileNav() {
           </MobileLink>
           {params?.department_id && (
             <Select
-              defaultValue={
+              value={
                 (params?.department_id as string | undefined) ?? undefined
               }
               onValueChange={(value) => {

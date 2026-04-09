@@ -248,11 +248,12 @@ const CreateThreadDialog = () => {
           <Button
             disabled={!agreed}
             onClick={form.handleSubmit(onSubmit, (e) => {
+              const firstError = Object.values(e ?? {})[0];
               toast({
                 title:
-                  (e as Record<string, { message?: string }>)?.[
-                    Object.keys(e)?.[0]
-                  ]?.message ?? "表單發生錯誤",
+                  (firstError && "message" in firstError
+                    ? String(firstError.message)
+                    : null) ?? "表單發生錯誤",
                 variant: "error",
               });
             })}
