@@ -59,7 +59,7 @@ const Layout: FC<pageProps> = ({ children }: pageProps) => {
     <div className="relative flex min-h-screen flex-col">
       <SiteHeader />
       <div className="flex-1 flex">
-        <aside className="hidden md:flex flex-col sticky top-12 z-30 w-[220px] lg:w-[240px] shrink-0 h-[calc(100dvh-3rem)] border-r">
+        <aside className="hidden md:flex flex-col sticky top-12 z-30 w-[220px] lg:w-[240px] shrink-0 h-[calc(100dvh-3rem)] border-r bg-sidebar-bg/60">
           <ScrollArea className="flex-1 min-h-0 py-4 px-3">
             <SidebarNav />
           </ScrollArea>

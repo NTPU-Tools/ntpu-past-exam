@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
-const API = process.env.API_ORIGIN || process.env.NEXT_PUBLIC_API_ORIGIN;
+const API = process.env.NEXT_PUBLIC_API_ORIGIN;
 
 type Props = { params: Promise<{ admin_department_id: string }> };
 

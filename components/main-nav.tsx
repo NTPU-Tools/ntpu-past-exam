@@ -27,7 +27,7 @@ export function MainNav() {
         <>
           <span className="text-border">/</span>
           <Select
-            defaultValue={(params?.department_id as string | undefined) ?? undefined}
+            value={(params?.department_id as string | undefined) ?? undefined}
             onValueChange={(value) => router.push(`/${value}`)}
           >
             <SelectTrigger className="min-w-[160px] border-0 shadow-none bg-transparent pl-0 font-medium">

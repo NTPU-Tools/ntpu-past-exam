@@ -86,11 +86,11 @@
     --header-bg: oklch(0.11 0.005 75);
     --header-foreground: oklch(0.90 0.005 75);
     --sidebar-bg: oklch(0.13 0.005 75);
-    --sidebar-fg: oklch(0.50 0.004 75);
+    --sidebar-fg: oklch(0.72 0.004 75);
     --sidebar-fg-active: oklch(0.90 0.005 75);
-    --sidebar-heading: oklch(0.42 0.004 75);
+    --sidebar-heading: oklch(0.62 0.004 75);
     --sidebar: oklch(0.13 0.005 75);
-    --sidebar-foreground: oklch(0.50 0.004 75);
+    --sidebar-foreground: oklch(0.72 0.004 75);
     --sidebar-primary: oklch(0.90 0.005 75);
     --sidebar-primary-foreground: oklch(0.11 0.005 75);
     --sidebar-accent: oklch(0.90 0.005 75 / 6%);

@@ -17,26 +17,25 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"],
+      "next": ["./src/next/index.ts"],
+      "next/link": ["./src/next/link.tsx"],
+      "next/navigation": ["./src/next/navigation.ts"],
+      "next/dynamic": ["./src/next/dynamic.tsx"],
+      "next/script": ["./src/next/script.tsx"],
+      "next/font/google": ["./src/next/font/google.ts"]
     }
   },
   "include": [
-    "next-env.d.ts",
+    "vite-env.d.ts",
     "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    "**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next",
+    "proxy.ts"
   ]
 }
