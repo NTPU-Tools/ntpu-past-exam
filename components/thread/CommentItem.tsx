@@ -164,6 +164,7 @@ const ReplyItem = ({
   const { toast } = useToast();
   const { userData } = userStore();
   const isLoggedIn = !isEmpty(userData);
+  const isSuperUser = userData?.is_super_user;
   const [liked, setLiked] = useState(reply.liked ?? false);
   const [likeCount, setLikeCount] = useState(reply.like_count);
   const [isLiking, setIsLiking] = useState(false);
@@ -255,7 +256,7 @@ const ReplyItem = ({
               <Heart className="h-3.5 w-3.5" />
             </span>
           )}
-          {isOwner && (
+          {(isOwner || isSuperUser) && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
@@ -331,6 +332,7 @@ const CommentItem = ({
   const { toast } = useToast();
   const { userData } = userStore();
   const isLoggedIn = !isEmpty(userData);
+  const isSuperUser = userData?.is_super_user;
   const [liked, setLiked] = useState(comment.liked ?? false);
   const [likeCount, setLikeCount] = useState(comment.like_count);
   const [isLiking, setIsLiking] = useState(false);
@@ -436,7 +438,7 @@ const CommentItem = ({
               <Heart className="h-4 w-4" />
             </span>
           )}
-          {isOwner && (
+          {(isOwner || isSuperUser) && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button

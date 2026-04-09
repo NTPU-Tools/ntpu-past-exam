@@ -50,6 +50,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
   const { toast } = useToast();
   const { userData } = userStore();
   const isLoggedIn = !isEmpty(userData);
+  const isSuperUser = userData?.is_super_user;
   const [liked, setLiked] = useState(thread.liked ?? false);
   const [likeCount, setLikeCount] = useState(thread.like_count);
   const [isLiking, setIsLiking] = useState(false);
@@ -125,7 +126,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
               匿名
             </Badge>
           )}
-          {thread.is_owner && (
+          {(thread.is_owner || isSuperUser) && (
             <div onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
