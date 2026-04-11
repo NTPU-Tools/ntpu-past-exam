@@ -63,7 +63,7 @@ const PDFViewer = ({ className, src }: Props) => {
               <Loader2 className="w-6 h-6 animate-spin" />
             </div>
           )}
-          className="max-h-full max-w-full relative overflow-hidden"
+          className="max-h-full max-w-full relative overflow-hidden group"
         >
           <AspectRatio ratio={1 / 1.4142}>
             <Fragment key={`${width}-${mainPanelWidth}`}>
@@ -80,7 +80,7 @@ const PDFViewer = ({ className, src }: Props) => {
             </Fragment>
           </AspectRatio>
           {/* Top navigation controls */}
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-background/80 backdrop-blur-md p-1 transition-opacity duration-300 opacity-100 md:opacity-0 md:hover:opacity-100 z-10">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-background/80 backdrop-blur-md p-1 transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
             <Button
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
@@ -102,7 +102,7 @@ const PDFViewer = ({ className, src }: Props) => {
             </Button>
           </div>
           {/* Download button */}
-          <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-md p-1 transition-opacity duration-300 opacity-100 md:opacity-0 md:hover:opacity-100 z-10">
+          <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-md p-1 transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100 z-10">
             <Tooltip>
               <TooltipTrigger asChild>
                 <a
