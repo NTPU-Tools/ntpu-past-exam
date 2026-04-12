@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     default: "NTPU 考古題",
     template: "%s - NTPU 考古題",
   },
+  icons: {
+    icon: "/favicon.svg",
+  },
 }
 
 export default function RootLayout({
