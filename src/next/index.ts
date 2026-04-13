@@ -5,4 +5,7 @@ export interface Metadata {
         default?: string
         template?: string
       }
+  icons?: {
+    icon?: string | string[]
+  }
 }
