@@ -133,28 +133,6 @@ const PDFViewer = ({ className, src }: Props) => {
                 />
               </Fragment>
             </AspectRatio>
-            {/* Pagination controls — only meaningful when react-pdf has loaded */}
-            <div className="absolute top-2 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 bg-background/80 p-1 opacity-100 backdrop-blur-md transition-opacity duration-300 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
-              <Button
-                onClick={() => setPage(page - 1)}
-                disabled={page === 1}
-                variant="outline"
-                size="icon"
-              >
-                <ChevronLeftIcon />
-              </Button>
-              <span className="px-1 text-xs text-muted-foreground tabular-nums">
-                {page} / {pageNum}
-              </span>
-              <Button
-                onClick={() => setPage(page + 1)}
-                disabled={page === pageNum}
-                variant="outline"
-                size="icon"
-              >
-                <ChevronRightIcon />
-              </Button>
-            </div>
           </Document>
         ) : (
           <iframe
@@ -162,6 +140,32 @@ const PDFViewer = ({ className, src }: Props) => {
             title="past-exam-file"
             className={cn("h-full w-full", className)}
           />
+        )}
+
+        {/* Pagination controls — rendered outside Document so they are never
+            hidden by react-pdf's internal loading state. */}
+        {!error && pageNum > 0 && (
+          <div className="absolute top-2 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 bg-background/80 p-1 opacity-100 backdrop-blur-md transition-opacity duration-300 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
+            <Button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              variant="outline"
+              size="icon"
+            >
+              <ChevronLeftIcon />
+            </Button>
+            <span className="px-1 text-xs text-muted-foreground tabular-nums">
+              {page} / {pageNum}
+            </span>
+            <Button
+              onClick={() => setPage(page + 1)}
+              disabled={page === pageNum}
+              variant="outline"
+              size="icon"
+            >
+              <ChevronRightIcon />
+            </Button>
+          </div>
         )}
 
         {/* Download button — rendered outside the error conditional so it is
