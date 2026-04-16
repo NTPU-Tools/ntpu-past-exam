@@ -36,12 +36,17 @@ const options = {
 const isTransientLoadError = (loadError: unknown) => {
   if (!(loadError instanceof Error)) return false
 
+  // PDF.js UnexpectedResponseException with status 0 means the fetch was
+  // cancelled at the network level (e.g. tab backgrounded on mobile).
+  if ((loadError as { status?: number }).status === 0) return true
+
   const errorText = `${loadError.name} ${loadError.message}`.toLowerCase()
 
   return (
     errorText.includes("abort") ||
     errorText.includes("cancel") ||
-    errorText.includes("interrupted")
+    errorText.includes("interrupted") ||
+    errorText.includes("failed to fetch") // Chrome: fetch cancelled / network error
   )
 }
 
@@ -59,6 +64,21 @@ const PDFViewer = ({ className, src }: Props) => {
     setPage(1)
     setPageNum(0)
   }, [src])
+
+  // When the user returns to this tab (e.g. after opening the PDF in a new
+  // tab), reset any error so react-pdf can retry loading automatically.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && error) {
+        setError(false)
+        setPage(1)
+        setPageNum(0)
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+  }, [error])
 
   const onDocumentLoadSuccess = ({
     numPages: nextNumPages,
@@ -83,85 +103,91 @@ const PDFViewer = ({ className, src }: Props) => {
       className="my-2 overflow-hidden border"
       ref={containerRef}
     >
-      {!error ? (
-        <Document
-          file={src}
-          options={options}
-          onLoadSuccess={onDocumentLoadSuccess}
-          onLoadError={onDocumentLoadError}
-          loading={() => (
-            <div className="flex h-full w-full items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
-          )}
-          className="group relative max-h-full max-w-full overflow-hidden"
-        >
-          <AspectRatio ratio={1 / 1.4142}>
-            <Fragment key={`${width}-${mainPanelWidth}`}>
-              <Page
-                pageNumber={page}
-                loading={() => (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <Loader2 className="h-6 w-6 animate-spin" />
-                  </div>
-                )}
-                className="h-full w-full"
-                width={width}
-              />
-            </Fragment>
-          </AspectRatio>
-          {/* Top navigation controls */}
-          <div className="absolute top-2 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 bg-background/80 p-1 opacity-100 backdrop-blur-md transition-opacity duration-300 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
-            <Button
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-              variant="outline"
-              size="icon"
-            >
-              <ChevronLeftIcon />
-            </Button>
-            <span className="px-1 text-xs text-muted-foreground tabular-nums">
-              {page} / {pageNum}
-            </span>
-            <Button
-              onClick={() => setPage(page + 1)}
-              disabled={page === pageNum}
-              variant="outline"
-              size="icon"
-            >
-              <ChevronRightIcon />
-            </Button>
-          </div>
-          {/* Download button */}
-          <div className="absolute top-2 right-2 z-10 bg-background/80 p-1 opacity-100 backdrop-blur-md transition-opacity duration-300 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <a
-                  href={src}
-                  download
-                  target="_blank"
-                  rel="noreferrer"
-                  className={cn(
-                    "group/button inline-flex size-8 shrink-0 items-center justify-center rounded-none border border-border bg-background text-foreground transition-all hover:bg-muted"
+      {/* Outer wrapper is the hover group so the download button (always
+          rendered below) can participate in the same group-hover logic. */}
+      <div className="group relative h-full w-full">
+        {!error ? (
+          <Document
+            file={src}
+            options={options}
+            onLoadSuccess={onDocumentLoadSuccess}
+            onLoadError={onDocumentLoadError}
+            loading={() => (
+              <div className="flex h-full w-full items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
+            )}
+            className="relative max-h-full max-w-full overflow-hidden"
+          >
+            <AspectRatio ratio={1 / 1.4142}>
+              <Fragment key={`${width}-${mainPanelWidth}`}>
+                <Page
+                  pageNumber={page}
+                  loading={() => (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    </div>
                   )}
-                >
-                  <VisuallyHidden>下載檔案</VisuallyHidden>
-                  <DownloadIcon className="size-4" />
-                </a>
-              </TooltipTrigger>
-              <TooltipContent side="left">
-                <p>下載檔案</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </Document>
-      ) : (
-        <iframe
-          src={src}
-          title="past-exam-file"
-          className={cn("h-full", className)}
-        />
-      )}
+                  className="h-full w-full"
+                  width={width}
+                />
+              </Fragment>
+            </AspectRatio>
+            {/* Pagination controls — only meaningful when react-pdf has loaded */}
+            <div className="absolute top-2 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 bg-background/80 p-1 opacity-100 backdrop-blur-md transition-opacity duration-300 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
+              <Button
+                onClick={() => setPage(page - 1)}
+                disabled={page === 1}
+                variant="outline"
+                size="icon"
+              >
+                <ChevronLeftIcon />
+              </Button>
+              <span className="px-1 text-xs text-muted-foreground tabular-nums">
+                {page} / {pageNum}
+              </span>
+              <Button
+                onClick={() => setPage(page + 1)}
+                disabled={page === pageNum}
+                variant="outline"
+                size="icon"
+              >
+                <ChevronRightIcon />
+              </Button>
+            </div>
+          </Document>
+        ) : (
+          <iframe
+            src={src}
+            title="past-exam-file"
+            className={cn("h-full w-full", className)}
+          />
+        )}
+
+        {/* Download button — rendered outside the error conditional so it is
+            always visible even when react-pdf falls back to the iframe. */}
+        <div className="absolute top-2 right-2 z-10 bg-background/80 p-1 opacity-100 backdrop-blur-md transition-opacity duration-300 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <a
+                href={src}
+                download
+                target="_blank"
+                rel="noreferrer"
+                className={cn(
+                  "inline-flex size-8 shrink-0 items-center justify-center rounded-none border border-border bg-background text-foreground transition-all hover:bg-muted"
+                )}
+              >
+                <VisuallyHidden>下載檔案</VisuallyHidden>
+                <DownloadIcon className="size-4" />
+              </a>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>下載檔案</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </div>
     </AspectRatio>
   )
 }
