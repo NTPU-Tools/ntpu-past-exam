@@ -54,6 +54,15 @@ const PDFViewer = ({ className, src }: Props) => {
   const [pageNum, setPageNum] = useState(0)
   const [page, setPage] = useState(1)
   const [error, setError] = useState(false)
+  // Tracks whether the PDF fetch was cancelled/aborted (e.g. tab backgrounded
+  // on mobile) without setting the hard error flag.  Used to know we need to
+  // force a retry when the user returns to the tab.
+  const [loadAborted, setLoadAborted] = useState(false)
+  // Incrementing this key forces <Document> to unmount+remount, which is
+  // necessary when react-pdf is internally stuck after an aborted fetch (the
+  // component never unmounted via the error-branch, so a key change is the
+  // only way to make it restart the load).
+  const [retryKey, setRetryKey] = useState(0)
   const { mainPanelWidth } = globalUiStateStore()
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -61,24 +70,41 @@ const PDFViewer = ({ className, src }: Props) => {
 
   useEffect(() => {
     setError(false)
+    setLoadAborted(false)
     setPage(1)
     setPageNum(0)
   }, [src])
 
   // When the user returns to this tab (e.g. after opening the PDF in a new
-  // tab), reset any error so react-pdf can retry loading automatically.
+  // tab), reset any error or aborted load so react-pdf can retry loading.
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible" && error) {
+      if (document.visibilityState === "visible" && (error || loadAborted)) {
         setError(false)
+        setLoadAborted(false)
         setPage(1)
         setPageNum(0)
+        setRetryKey((k) => k + 1)
       }
     }
     document.addEventListener("visibilitychange", handleVisibilityChange)
     return () =>
       document.removeEventListener("visibilitychange", handleVisibilityChange)
-  }, [error])
+  }, [error, loadAborted])
+
+  // Handle the race condition where onLoadError fires *after* the page has
+  // already become visible again (e.g. the browser resumes JS and reports the
+  // aborted fetch only after the visibilitychange event).  In that case the
+  // visibilitychange handler ran while loadAborted was still false, so we need
+  // to trigger the retry here instead.
+  useEffect(() => {
+    if (loadAborted && document.visibilityState === "visible") {
+      setLoadAborted(false)
+      setPage(1)
+      setPageNum(0)
+      setRetryKey((k) => k + 1)
+    }
+  }, [loadAborted])
 
   const onDocumentLoadSuccess = ({
     numPages: nextNumPages,
@@ -86,11 +112,16 @@ const PDFViewer = ({ className, src }: Props) => {
     numPages: number
   }) => {
     setError(false)
+    setLoadAborted(false)
     setPageNum(nextNumPages)
   }
 
   const onDocumentLoadError = (loadError: unknown) => {
     if (isTransientLoadError(loadError)) {
+      // Mark the load as aborted so we know to retry when the user returns,
+      // but do NOT set the hard error flag (which would replace the PDF viewer
+      // with the iframe fallback and hide pagination while the tab is open).
+      setLoadAborted(true)
       return
     }
 
@@ -108,6 +139,7 @@ const PDFViewer = ({ className, src }: Props) => {
       <div className="group relative h-full w-full">
         {!error ? (
           <Document
+            key={retryKey}
             file={src}
             options={options}
             onLoadSuccess={onDocumentLoadSuccess}
