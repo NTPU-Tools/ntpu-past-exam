@@ -83,7 +83,6 @@ const PDFViewer = ({ className, src }: Props) => {
         setError(false)
         setLoadAborted(false)
         setPage(1)
-        setPageNum(0)
         setRetryKey((k) => k + 1)
       }
     }
@@ -101,7 +100,6 @@ const PDFViewer = ({ className, src }: Props) => {
     if (loadAborted && document.visibilityState === "visible") {
       setLoadAborted(false)
       setPage(1)
-      setPageNum(0)
       setRetryKey((k) => k + 1)
     }
   }, [loadAborted])
