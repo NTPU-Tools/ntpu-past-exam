@@ -1,5 +1,6 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +16,7 @@ import {
 import { VisuallyHidden as VisuallyHiddenPrimitive } from "radix-ui"
 const VisuallyHidden = VisuallyHiddenPrimitive.Root
 import { Loader2 } from "lucide-react"
-import { Fragment, useEffect, useRef, useState } from "react"
+import { Fragment, useCallback, useEffect, useRef, useState } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
 import "react-pdf/dist/Page/AnnotationLayer.css"
 import "react-pdf/dist/Page/TextLayer.css"
@@ -46,14 +47,52 @@ const isTransientLoadError = (loadError: unknown) => {
     errorText.includes("abort") ||
     errorText.includes("cancel") ||
     errorText.includes("interrupted") ||
-    errorText.includes("failed to fetch") // Chrome: fetch cancelled / network error
+    errorText.includes("failed to fetch") || // Chrome: fetch cancelled / network error
+    errorText.includes("load failed") || // iOS Safari: generic network / CORS cache error
+    errorText.includes("network error") || // Firefox: network-level failure
+    errorText.includes("worker") // PDF.js worker destroyed after tab suspension / BFCache restore
   )
+}
+
+const defaultDownloadFilename = "past-exam.pdf"
+
+const getFilenameFromContentDisposition = (contentDisposition: string | null) => {
+  if (!contentDisposition) return null
+
+  const utf8FilenameMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i)
+  if (utf8FilenameMatch?.[1]) {
+    const encodedFilename = utf8FilenameMatch[1].trim().replace(/^["']|["']$/g, "")
+
+    try {
+      return decodeURIComponent(encodedFilename)
+    } catch {
+      return encodedFilename
+    }
+  }
+
+  const asciiFilenameMatch = contentDisposition.match(/filename="?([^";]+)"?/i)
+  return asciiFilenameMatch?.[1]?.trim() ?? null
+}
+
+const getFilenameFromSrc = (fileUrl: string) => {
+  try {
+    const pathname = new URL(fileUrl, window.location.href).pathname
+    const filename = pathname.split("/").pop()
+
+    if (!filename) return defaultDownloadFilename
+
+    const decodedFilename = decodeURIComponent(filename)
+    return decodedFilename || defaultDownloadFilename
+  } catch {
+    return defaultDownloadFilename
+  }
 }
 
 const PDFViewer = ({ className, src }: Props) => {
   const [pageNum, setPageNum] = useState(0)
   const [page, setPage] = useState(1)
   const [error, setError] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   // Tracks whether the PDF fetch was cancelled/aborted (e.g. tab backgrounded
   // on mobile) without setting the hard error flag.  Used to know we need to
   // force a retry when the user returns to the tab.
@@ -64,6 +103,7 @@ const PDFViewer = ({ className, src }: Props) => {
   // only way to make it restart the load).
   const [retryKey, setRetryKey] = useState(0)
   const { mainPanelWidth } = globalUiStateStore()
+  const { toast } = useToast()
 
   const containerRef = useRef<HTMLDivElement>(null)
   const { width = 0 } = useResizeObserver({ ref: containerRef as any })
@@ -73,6 +113,12 @@ const PDFViewer = ({ className, src }: Props) => {
   // again, so the error can arrive when visibilityState is already "visible"
   // and the visibilitychange handler has already run without seeing an error.
   const backgroundedRef = useRef(false)
+  // Retry budget for errors that occur after a background/foreground cycle.
+  // Set to MAX_BACKGROUND_RETRIES each time the tab is hidden; decremented on
+  // each post-background error even after backgroundedRef is consumed so that
+  // consecutive failures (e.g. retry also aborted) are also treated as transient.
+  const backgroundedRetryCountRef = useRef(0)
+  const MAX_BACKGROUND_RETRIES = 4
 
   useEffect(() => {
     setError(false)
@@ -90,6 +136,7 @@ const PDFViewer = ({ className, src }: Props) => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
         backgroundedRef.current = true
+        backgroundedRetryCountRef.current = MAX_BACKGROUND_RETRIES
       } else if (document.visibilityState === "visible" && (error || loadAborted)) {
         setError(false)
         setLoadAborted(false)
@@ -115,34 +162,100 @@ const PDFViewer = ({ className, src }: Props) => {
     }
   }, [loadAborted])
 
+  // When the browser restores this page from the Back/Forward Cache (BFCache),
+  // visibilitychange may not fire.  Re-arm the backgrounded refs and force a
+  // retry so any stale error or dead PDF.js worker is recovered from.
+  useEffect(() => {
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (!e.persisted) return
+      backgroundedRef.current = true
+      backgroundedRetryCountRef.current = MAX_BACKGROUND_RETRIES
+      setError(false)
+      setLoadAborted(false)
+      setPage(1)
+      setRetryKey((k) => k + 1)
+    }
+    window.addEventListener("pageshow", handlePageShow)
+    return () => window.removeEventListener("pageshow", handlePageShow)
+  }, [])
+
   const onDocumentLoadSuccess = ({
     numPages: nextNumPages,
   }: {
     numPages: number
   }) => {
     backgroundedRef.current = false
+    backgroundedRetryCountRef.current = 0
     setError(false)
     setLoadAborted(false)
     setPageNum(nextNumPages)
   }
 
   const onDocumentLoadError = (loadError: unknown) => {
-    // Treat the error as transient if it looks like a network abort OR if the
-    // tab was backgrounded before the error arrived.  The latter handles the
-    // iOS/Android race where JS resumes only after the tab is visible again,
-    // so the error fires when visibilityState is already "visible" and the
-    // visibilitychange handler has already run without triggering a retry.
-    // Clear backgroundedRef after consuming it so a second consecutive failure
-    // is judged on its own merits.
+    // Treat the error as transient if it looks like a network abort, if the tab
+    // was backgrounded before the error arrived, OR if we still have retry budget
+    // from a recent backgrounding event.  The budget covers consecutive failures
+    // on retry (e.g. the retry fetch is also aborted, or a CORS-cache-poisoned
+    // response is served) without letting a genuinely broken URL loop forever.
     const wasBackgrounded = backgroundedRef.current
-    if (isTransientLoadError(loadError) || wasBackgrounded) {
+    const hasBudget = backgroundedRetryCountRef.current > 0
+    if (isTransientLoadError(loadError) || wasBackgrounded || hasBudget) {
       backgroundedRef.current = false
+      if (hasBudget) backgroundedRetryCountRef.current--
       setLoadAborted(true)
       return
     }
 
     setError(true)
   }
+
+  const handleDownload = useCallback(async () => {
+    if (isDownloading) return
+
+    setIsDownloading(true)
+
+    try {
+      const response = await fetch(src, {
+        mode: "cors",
+        credentials: "omit",
+        cache: "reload",
+      })
+
+      if (!response.ok) {
+        throw new Error(`Download failed with status ${response.status}`)
+      }
+
+      const blob = await response.blob()
+      const contentDisposition = response.headers.get("content-disposition")
+      const filename =
+        getFilenameFromContentDisposition(contentDisposition) ??
+        getFilenameFromSrc(src)
+
+      const objectUrl = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = objectUrl
+      link.download = filename
+      link.rel = "noreferrer"
+
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000)
+
+      if (error) {
+        setError(false)
+        setLoadAborted(false)
+        setPage(1)
+        setRetryKey((k) => k + 1)
+      }
+    } catch (downloadError) {
+      console.error("Failed to download PDF file", downloadError)
+      toast({ title: "下載失敗", variant: "error" })
+    } finally {
+      setIsDownloading(false)
+    }
+  }, [error, isDownloading, src, toast])
 
   return (
     <AspectRatio
@@ -221,21 +334,24 @@ const PDFViewer = ({ className, src }: Props) => {
         <div className="absolute top-2 right-2 z-10 bg-background/80 p-1 opacity-100 backdrop-blur-md transition-opacity duration-300 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
           <Tooltip>
             <TooltipTrigger asChild>
-              <a
-                href={src}
-                download
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={handleDownload}
+                disabled={isDownloading}
                 className={cn(
-                  "inline-flex size-8 shrink-0 items-center justify-center rounded-none border border-border bg-background text-foreground transition-all hover:bg-muted"
+                  "inline-flex size-8 shrink-0 items-center justify-center rounded-none border border-border bg-background text-foreground transition-all hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
                 )}
               >
-                <VisuallyHidden>下載檔案</VisuallyHidden>
-                <DownloadIcon className="size-4" />
-              </a>
+                <VisuallyHidden>{isDownloading ? "下載中" : "下載檔案"}</VisuallyHidden>
+                {isDownloading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <DownloadIcon className="size-4" />
+                )}
+              </button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>下載檔案</p>
+              <p>{isDownloading ? "下載中..." : "下載檔案"}</p>
             </TooltipContent>
           </Tooltip>
         </div>
