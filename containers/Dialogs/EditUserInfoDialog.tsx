@@ -29,11 +29,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { editUserInfoSchema } from "@/schemas/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { filter, forEach, get, map, set } from "lodash-es";
+import { filter, get, map } from "lodash-es";
 import { useQueryState } from "@/hooks/useQueryState";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import * as z from "zod";
 
 const EditUserInfoDialog = () => {
@@ -43,8 +43,13 @@ const EditUserInfoDialog = () => {
 
   const dialogOpen = getParam("open_edit_user_info_dialog") === "true";
 
-  const { data, mutate } = useSWR(dialogOpen ? `me` : null, () =>
-    instance.get("/users/me"),
+  const { data } = useSWR(
+    dialogOpen ? "user-me" : null,
+    () => instance.get("/users/me"),
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+    },
   );
 
   const { data: departmentsData } = useSWR(
@@ -55,6 +60,8 @@ const EditUserInfoDialog = () => {
   const form = useForm<z.infer<typeof editUserInfoSchema>>({
     resolver: zodResolver(editUserInfoSchema as any),
     defaultValues: {
+      name: "",
+      major: "",
       note: "",
     },
   });
@@ -67,20 +74,42 @@ const EditUserInfoDialog = () => {
 
   const onSubmit = async (values: z.infer<typeof editUserInfoSchema>) => {
     try {
-      set(values, "school_id", data.username);
-      set(
-        values,
-        "major",
+      setIsLoading(true);
+
+      const schoolDepartment =
         get(
           filter(departmentsData, (d) => d.id === values.major),
           "[0].name",
-        ) ?? " ",
+        ) ?? "";
+
+      const payload = {
+        ...values,
+        school_id: data?.username,
+        major: schoolDepartment,
+      };
+
+      await instance.putForm("/users/update/me", payload);
+
+      await mutate(
+        "user-me",
+        (current: any) => {
+          const base = current ?? data;
+          if (!base) return base;
+
+          return {
+            ...base,
+            readable_name: values.name ?? "",
+            school_department: schoolDepartment,
+            note: values.note ?? "",
+          };
+        },
+        { revalidate: false },
       );
-      await instance.putForm("/users/update/me", values);
+
       toast({
         title: "修改成功",
       });
-      mutate();
+
       closeEditUserInfoDialog();
     } catch (e) {
       toast({
@@ -93,26 +122,18 @@ const EditUserInfoDialog = () => {
   };
 
   useEffect(() => {
-    if (data && departmentsData) {
-      forEach(data, (value, key) => {
-        if (key === "school_department") {
-          form.setValue(
-            "major",
-            get(
-              filter(departmentsData, (d) => d.name === value),
-              "[0].id",
-            ) ?? " ",
-          );
-        }
-        if (key === "readable_name") {
-          form.setValue("name", value);
-        }
-        if (key === "note") {
-          form.setValue("note", value ?? "");
-        }
-      });
-    }
-  }, [data, departmentsData, form]);
+    if (!dialogOpen || !data || !departmentsData) return;
+
+    form.reset({
+      name: data.readable_name ?? "",
+      major:
+        get(
+          filter(departmentsData, (d) => d.name === data.school_department),
+          "[0].id",
+        ) ?? "",
+      note: data.note ?? "",
+    });
+  }, [dialogOpen, data, departmentsData, form]);
 
   return (
     <Dialog
@@ -203,7 +224,7 @@ const EditUserInfoDialog = () => {
               取消
             </Button>
           </DialogClose>
-          <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading}>
+          <Button onClick={form.handleSubmit(onSubmit)} disabled={isLoading || !data}>
             {isLoading ? <Loader2 className="animate-spin" /> : null}
             儲存
           </Button>
