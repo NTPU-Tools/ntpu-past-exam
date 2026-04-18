@@ -29,7 +29,7 @@ function SiteHeader() {
   const accessToken = getCookie("ntpu-past-exam-access-token");
   const shouldFetch = accessToken && !isLoginPage;
   const { data, isLoading } = useSWR(
-    shouldFetch ? `me` : null,
+    shouldFetch ? "user-me" : null,
     () => instance.get("/users/me"),
     { refreshInterval: 1000 * 60 },
   );
