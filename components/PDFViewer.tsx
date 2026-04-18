@@ -67,6 +67,12 @@ const PDFViewer = ({ className, src }: Props) => {
 
   const containerRef = useRef<HTMLDivElement>(null)
   const { width = 0 } = useResizeObserver({ ref: containerRef as any })
+  // Set to true when the tab is hidden (e.g. user opens download in new tab).
+  // Lets onDocumentLoadError treat any error as transient if it fires after a
+  // backgrounding event — iOS/Android may delay JS until the tab is visible
+  // again, so the error can arrive when visibilityState is already "visible"
+  // and the visibilitychange handler has already run without seeing an error.
+  const backgroundedRef = useRef(false)
 
   useEffect(() => {
     setError(false)
@@ -77,9 +83,14 @@ const PDFViewer = ({ className, src }: Props) => {
 
   // When the user returns to this tab (e.g. after opening the PDF in a new
   // tab), reset any error or aborted load so react-pdf can retry loading.
+  // Also record when the tab is hidden so onDocumentLoadError can treat
+  // post-background errors as transient even if they arrive after the tab
+  // is visible again (iOS/Android delays JS until the tab resurfaces).
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible" && (error || loadAborted)) {
+      if (document.visibilityState === "hidden") {
+        backgroundedRef.current = true
+      } else if (document.visibilityState === "visible" && (error || loadAborted)) {
         setError(false)
         setLoadAborted(false)
         setPage(1)
@@ -109,16 +120,23 @@ const PDFViewer = ({ className, src }: Props) => {
   }: {
     numPages: number
   }) => {
+    backgroundedRef.current = false
     setError(false)
     setLoadAborted(false)
     setPageNum(nextNumPages)
   }
 
   const onDocumentLoadError = (loadError: unknown) => {
-    if (isTransientLoadError(loadError)) {
-      // Mark the load as aborted so we know to retry when the user returns,
-      // but do NOT set the hard error flag (which would replace the PDF viewer
-      // with the iframe fallback and hide pagination while the tab is open).
+    // Treat the error as transient if it looks like a network abort OR if the
+    // tab was backgrounded before the error arrived.  The latter handles the
+    // iOS/Android race where JS resumes only after the tab is visible again,
+    // so the error fires when visibilityState is already "visible" and the
+    // visibilitychange handler has already run without triggering a retry.
+    // Clear backgroundedRef after consuming it so a second consecutive failure
+    // is judged on its own merits.
+    const wasBackgrounded = backgroundedRef.current
+    if (isTransientLoadError(loadError) || wasBackgrounded) {
+      backgroundedRef.current = false
       setLoadAborted(true)
       return
     }
