@@ -103,8 +103,10 @@ const EditUserInfoDialog = () => {
             note: values.note ?? "",
           };
         },
-        { revalidate: false },
+        { revalidate: true },
       );
+
+      await mutate("departments-status");
 
       toast({
         title: "修改成功",

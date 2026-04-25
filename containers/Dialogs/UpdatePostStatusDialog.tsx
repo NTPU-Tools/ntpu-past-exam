@@ -120,6 +120,9 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
       });
       mutate(`${params.admin_department_id}-pending-posts`);
       mutate(`post-${get("edit_post_detail_id")}`);
+      if (postData?.course_id) {
+        mutate(`course-${postData.course_id}`);
+      }
       closePostDetailDialog();
     } catch (e) {
       toast({

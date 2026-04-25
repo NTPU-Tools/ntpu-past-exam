@@ -17,11 +17,12 @@ import { filter, flatMap } from "lodash-es";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Clock, Loader2, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 
 function PageClient() {
   const [applyLoading, setApplyLoading] = useState(false);
+  const lastRedirectedDept = useRef<string | undefined>(undefined);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { get, setParams, removeParams } = useQueryState();
@@ -43,7 +44,10 @@ function PageClient() {
     const userDepartment = data.visible.find(
       (dept: { name: string }) => dept.name === userData.school_department,
     );
-    if (userDepartment) router.replace(`/${userDepartment.id}`);
+    if (userDepartment && userDepartment.id !== lastRedirectedDept.current) {
+      lastRedirectedDept.current = userDepartment.id;
+      router.replace(`/${userDepartment.id}`);
+    }
   }, [userData, data]);
 
   const invisible_department = data

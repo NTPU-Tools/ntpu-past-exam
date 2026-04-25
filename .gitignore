@@ -40,5 +40,8 @@ next-env.d.ts
 # claude code
 .claude/
 
+# opencode
+.opencode/
+
 # playwright cli
 .playwright-cli/

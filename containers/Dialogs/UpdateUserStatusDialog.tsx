@@ -89,6 +89,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
         title: "操作成功",
       });
       mutate(`${params.admin_department_id}-members`);
+      mutate("departments-admin");
     } catch (e) {
       toast({
         title: "操作失敗",

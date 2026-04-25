@@ -77,7 +77,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       toast({
         title: "操作成功",
       });
-      mutate("all-courses");
+      mutate(`${params.admin_department_id}-courses`);
       setAddCourseOpen(false);
     } catch (e) {
       toast({
