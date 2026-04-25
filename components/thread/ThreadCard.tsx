@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { cn, formatDate } from "@/lib/utils";
+import { swrKeys } from "@/lib/swr-keys";
 import userStore from "@/store/userStore";
 import { isEmpty } from "lodash-es";
 import { Heart, Trash2 } from "lucide-react";
@@ -70,7 +71,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
       );
       setLiked(res.liked);
       setLikeCount(res.thread.like_count);
-      mutate(`threads-${courseId}`);
+      mutate(swrKeys.threads(courseId));
     } catch {
       toast({ title: "操作失敗", variant: "error" });
     } finally {
@@ -84,7 +85,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
     try {
       setIsDeleting(true);
       await instance.delete(`/threads/${thread.id}`);
-      mutate(`threads-${courseId}`);
+      mutate(swrKeys.threads(courseId));
       setDeleted(true);
     } catch {
       toast({ title: "刪除失敗", variant: "error" });

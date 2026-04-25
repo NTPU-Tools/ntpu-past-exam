@@ -14,6 +14,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyP } from "@/components/ui/typography";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { constant, times } from "lodash-es";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
@@ -24,7 +25,7 @@ function Page() {
   const { get, setParams, removeParams } = useQueryState();
 
   const { data, isLoading } = useSWR(
-    `${departmentId}-bulletins`,
+    swrKeys.departmentBulletins(departmentId),
     () => instance.get(`/departments/${departmentId}/bulletins`),
   );
 
@@ -32,7 +33,7 @@ function Page() {
   const dialogOpen = !!bulletinDetailId && data;
 
   const { data: bulletinDetail, isLoading: isDetailLoading } = useSWR(
-    dialogOpen ? `bulletin-${bulletinDetailId}` : null,
+    dialogOpen ? swrKeys.bulletin(bulletinDetailId) : null,
     () => instance.get(`/bulletins/${bulletinDetailId}`),
   );
 

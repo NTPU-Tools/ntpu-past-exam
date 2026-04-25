@@ -31,6 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { filter, get, map } from "lodash-es";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
@@ -43,8 +44,8 @@ const EditUserInfoDialog = () => {
 
   const dialogOpen = getParam("open_edit_user_info_dialog") === "true";
 
-  const { data } = useSWR(
-    dialogOpen ? "user-me" : null,
+  const { data, mutate: mutateUser } = useSWR(
+    dialogOpen ? swrKeys.userMe() : null,
     () => instance.get("/users/me"),
     {
       revalidateIfStale: false,
@@ -53,7 +54,7 @@ const EditUserInfoDialog = () => {
   );
 
   const { data: departmentsData } = useSWR(
-    dialogOpen ? "all-departments" : null,
+    dialogOpen ? swrKeys.allDepartments() : null,
     () => instance.get("/departments"),
   );
 
@@ -90,8 +91,7 @@ const EditUserInfoDialog = () => {
 
       await instance.putForm("/users/update/me", payload);
 
-      await mutate(
-        "user-me",
+      await mutateUser(
         (current: any) => {
           const base = current ?? data;
           if (!base) return base;
@@ -106,7 +106,7 @@ const EditUserInfoDialog = () => {
         { revalidate: true },
       );
 
-      await mutate("departments-status");
+      await mutate(swrKeys.departmentsStatus());
 
       toast({
         title: "修改成功",

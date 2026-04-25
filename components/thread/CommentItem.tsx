@@ -24,6 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { createCommentSchema } from "@/schemas/thread";
 import { cn, formatDate } from "@/lib/utils";
+import { swrKeys } from "@/lib/swr-keys";
 import userStore from "@/store/userStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isEmpty } from "lodash-es";
@@ -93,8 +94,8 @@ const ReplyForm = ({
       await instance.postForm(`/threads/${threadId}/comments`, formData);
       toast({ title: "回覆成功" });
       form.reset();
-      mutate(`thread-comments-${threadId}`);
-      mutate(`comment-${rootCommentId}`);
+      mutate(swrKeys.threadComments(threadId));
+      mutate(swrKeys.comment(rootCommentId));
       onSuccess();
     } catch {
       toast({ title: "回覆失敗", variant: "error" });
@@ -196,7 +197,7 @@ const ReplyItem = ({
     try {
       setIsDeleting(true);
       await instance.delete(`/threads/comments/${reply.id}`);
-      mutate(`comment-${rootCommentId}`);
+      mutate(swrKeys.comment(rootCommentId));
       setDeleted(true);
     } catch {
       toast({ title: "刪除失敗", variant: "error" });
@@ -343,9 +344,9 @@ const CommentItem = ({
 
   const isOwner = comment.is_owner;
 
-  const { data: commentDetail, isLoading: isLoadingReplies } =
+  const { data: commentDetail, isLoading: isLoadingReplies, mutate: mutateComment } =
     useSWR<ThreadCommentDetail>(
-      showReplies ? `comment-${comment.id}` : null,
+      showReplies ? swrKeys.comment(comment.id) : null,
       () => instance.get(`/threads/comments/${comment.id}`),
     );
 
@@ -359,7 +360,7 @@ const CommentItem = ({
       }>(`/threads/comments/${comment.id}/like`);
       setLiked(res.liked);
       setLikeCount(res.comment.like_count);
-      mutate(`thread-comments-${threadId}`);
+      mutate(swrKeys.threadComments(threadId));
     } catch {
       toast({ title: "操作失敗", variant: "error" });
     } finally {
@@ -372,7 +373,7 @@ const CommentItem = ({
     try {
       setIsDeleting(true);
       await instance.delete(`/threads/comments/${comment.id}`);
-      mutate(`thread-comments-${threadId}`);
+      mutate(swrKeys.threadComments(threadId));
       setDeleted(true);
     } catch {
       toast({ title: "刪除失敗", variant: "error" });

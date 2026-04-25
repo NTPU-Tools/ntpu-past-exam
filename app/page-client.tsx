@@ -13,6 +13,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { filter, flatMap } from "lodash-es";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,13 +29,13 @@ function PageClient() {
   const { get, setParams, removeParams } = useQueryState();
   const { toast } = useToast();
 
-  const { data, isLoading } = useSWR("departments-status", () =>
+  const { data, isLoading } = useSWR(swrKeys.departmentsStatus(), () =>
     instance.get("/departments/status"),
   );
-  const { data: allDepartments } = useSWR("all-departments", () =>
+  const { data: allDepartments } = useSWR(swrKeys.allDepartments(), () =>
     instance.get("/departments"),
   );
-  const { data: userData } = useSWR("user-me", () =>
+  const { data: userData } = useSWR(swrKeys.userMe(), () =>
     instance.get("/users/me").catch(() => null),
   );
 
@@ -67,7 +68,7 @@ function PageClient() {
       setApplyLoading(true);
       await instance.post(`/departments/${department_id}/join-request/send`);
       toast({ title: "申請成功", variant: "success" });
-      mutate("departments-status");
+      mutate(swrKeys.departmentsStatus());
       closeApplyDepartmentDialog();
     } catch (error) {
       toast({ title: "申請失敗", variant: "error" });

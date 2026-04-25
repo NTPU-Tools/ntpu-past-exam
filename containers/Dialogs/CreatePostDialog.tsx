@@ -39,6 +39,7 @@ import { Loader2 } from "lucide-react";
 import { forEach, head, map } from "lodash-es";
 import { useParams, usePathname } from "next/navigation";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
@@ -60,7 +61,7 @@ const CreatePostDialog = () => {
 
   const { data: departmentData } = useSWR(
     params.department_id
-      ? `department-${params.department_id}`
+      ? swrKeys.department(params.department_id as string)
       : null,
     () => instance.get(`/departments/${params.department_id}`),
   );
@@ -116,7 +117,7 @@ const CreatePostDialog = () => {
       toast({
         title: "新增成功",
       });
-      mutate(`course-${values.course_id}`);
+      mutate(swrKeys.course(values.course_id));
       closeCreatePostDialog();
     } catch (e) {
       toast({

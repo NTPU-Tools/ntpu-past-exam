@@ -31,6 +31,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { createThreadSchema } from "@/schemas/thread";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -137,7 +138,7 @@ const CreateThreadDialog = () => {
 
       await instance.postForm(`/threads/${courseId}`, formData);
       toast({ title: "發文成功" });
-      mutate(`threads-${courseId}`);
+      mutate(swrKeys.threads(courseId));
       closeDialog();
     } catch {
       toast({ title: "發文失敗", variant: "error" });

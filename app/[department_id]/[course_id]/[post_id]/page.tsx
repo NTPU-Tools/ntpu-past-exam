@@ -10,6 +10,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatRelative, subHours } from "date-fns";
 import { zhTW } from "date-fns/locale";
+import { swrKeys } from "@/lib/swr-keys";
 import { map } from "lodash-es";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
@@ -21,7 +22,7 @@ const PostPage = () => {
     data: post,
     isLoading,
     error,
-  } = useSWR(postId ? `post-${postId}` : null, () =>
+  } = useSWR(postId ? swrKeys.post(postId) : null, () =>
     instance.get(`/posts/${postId}`),
   );
 

@@ -22,6 +22,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { map } from "lodash-es";
 import { useParams } from "next/navigation";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { FC, useState } from "react";
 import useSWR, { mutate } from "swr";
 
@@ -38,9 +39,9 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
     !!get("edit_post_detail_id") &&
     get("open_edit_post_detail_dialog") === "true";
 
-  const { data, isLoading: isRootLoading } = useSWR(
+  const { data, isLoading: isRootLoading, mutate: mutatePendingPosts } = useSWR(
     dialogOpen && params.admin_department_id
-      ? `${params.admin_department_id}-pending-posts`
+      ? swrKeys.departmentPendingPosts(params.admin_department_id as string)
       : null,
     () =>
       instance.get(
@@ -48,9 +49,9 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
       ),
   );
 
-  const { data: postData } = useSWR(
+  const { data: postData, mutate: mutatePost } = useSWR(
     dialogOpen && postDetailDialogOpen
-      ? `post-${get("edit_post_detail_id")}`
+      ? swrKeys.post(get("edit_post_detail_id") as string)
       : null,
     () => instance.get(`/posts/${get("edit_post_detail_id")}`),
   );
@@ -118,10 +119,10 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
       toast({
         title: "操作成功",
       });
-      mutate(`${params.admin_department_id}-pending-posts`);
-      mutate(`post-${get("edit_post_detail_id")}`);
+      mutatePendingPosts();
+      mutatePost();
       if (postData?.course_id) {
-        mutate(`course-${postData.course_id}`);
+        mutate(swrKeys.course(postData.course_id));
       }
       closePostDetailDialog();
     } catch (e) {

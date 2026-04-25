@@ -16,16 +16,6 @@ const instance = axios.create({
   withCredentials: true,
 });
 
-instance.interceptors.request.use((config) => {
-  if (config.method?.toLowerCase() === "get") {
-    config.headers = config.headers || {};
-    config.headers["Cache-Control"] =
-      "no-cache, no-store, must-revalidate";
-    config.headers["Pragma"] = "no-cache";
-  }
-  return config;
-});
-
 instance.interceptors.response.use(
   (response) => response.data as any,
   (error) => {
