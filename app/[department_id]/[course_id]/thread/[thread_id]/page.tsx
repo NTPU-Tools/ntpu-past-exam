@@ -23,6 +23,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { createCommentSchema } from "@/schemas/thread";
 import userStore from "@/store/userStore";
 import { cn, formatDate, parseUTC } from "@/lib/utils";
+import { swrKeys } from "@/lib/swr-keys";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isEmpty } from "lodash-es";
 import { ArrowLeft, SendHorizontal, Trash2 } from "lucide-react";
@@ -73,7 +74,7 @@ const ThreadDetailPage = () => {
     data: thread,
     isLoading: isLoadingThread,
     error,
-  } = useSWR(validThreadId ? `thread-detail-${validThreadId}` : null, () =>
+  } = useSWR(validThreadId ? swrKeys.threadDetail(validThreadId) : null, () =>
     instance.get(`/threads/detail/${validThreadId}`),
   );
 
@@ -82,7 +83,7 @@ const ThreadDetailPage = () => {
     isLoading: isLoadingComments,
     mutate: mutateComments,
   } = useSWR<ThreadComment[]>(
-    validThreadId ? `thread-comments-${validThreadId}` : null,
+    validThreadId ? swrKeys.threadComments(validThreadId) : null,
     () => instance.get(`/threads/${validThreadId}/comments`),
   );
 
@@ -97,7 +98,7 @@ const ThreadDetailPage = () => {
       setIsDeleting(true);
       await instance.delete(`/threads/${validThreadId}`);
       toast({ title: "刪除成功" });
-      mutate(`threads-${courseId}`);
+      await mutate(swrKeys.threads(courseId!));
       router.replace(`/${departmentId}/${courseId}/thread`);
     } catch {
       toast({ title: "刪除失敗", variant: "error" });

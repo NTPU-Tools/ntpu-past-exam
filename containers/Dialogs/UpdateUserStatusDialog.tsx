@@ -25,6 +25,7 @@ import {
 import { createColumnHelper } from "@tanstack/react-table";
 import { useParams } from "next/navigation";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { FC } from "react";
 import useSWR, { mutate } from "swr";
 
@@ -38,17 +39,17 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
 
   const dialogOpen = get("open_edit_member_dialog") === "true";
 
-  const { data: membersData, isLoading } = useSWR(
+  const { data: membersData, isLoading, mutate: mutateMembers } = useSWR(
     dialogOpen && params.admin_department_id
-      ? `${params.admin_department_id}-members`
+      ? swrKeys.departmentMembers(params.admin_department_id as string)
       : null,
     () =>
       instance.get(`/departments/${params.admin_department_id}/members`),
   );
 
-  const { data: pendingData } = useSWR(
+  const { data: pendingData, mutate: mutatePending } = useSWR(
     dialogOpen && params.admin_department_id
-      ? `${params.admin_department_id}-pending`
+      ? swrKeys.departmentPending(params.admin_department_id as string)
       : null,
     () =>
       instance.get(
@@ -88,7 +89,8 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       toast({
         title: "操作成功",
       });
-      mutate(`${params.admin_department_id}-members`);
+      await mutateMembers();
+      await mutate(swrKeys.adminDepartments());
     } catch (e) {
       toast({
         title: "操作失敗",
@@ -102,8 +104,8 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       await instance.put(
         `/departments/join-request/${params.admin_department_id}/approve/${id}`,
       );
-      mutate(`${params.admin_department_id}-members`);
-      mutate(`${params.admin_department_id}-pending`);
+      await mutateMembers();
+      await mutatePending();
       toast({
         title: "操作成功",
       });

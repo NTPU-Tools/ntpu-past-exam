@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyBlockquote } from "@/components/ui/typography";
 import { useQueryState } from "@/hooks/useQueryState";
 import userStore from "@/store/userStore";
+import { swrKeys } from "@/lib/swr-keys";
 import { constant, isEmpty, times } from "lodash-es";
 import { ArrowLeft, PenSquare } from "lucide-react";
 import Link from "next/link";
@@ -30,14 +31,14 @@ const ThreadListPage = () => {
     isLoading,
     error,
   } = useSWR<{ threads: Thread[]; total: number }>(
-    courseId ? `threads-${courseId}` : null,
+    courseId ? swrKeys.threads(courseId) : null,
     () => instance.get(`/threads/${courseId}`),
   );
 
   const threads = threadsData?.threads;
 
   const { data: courseData } = useSWR(
-    courseId ? `course-${courseId}` : null,
+    courseId ? swrKeys.course(courseId) : null,
     () => instance.get(`/courses/${courseId}`),
   );
 

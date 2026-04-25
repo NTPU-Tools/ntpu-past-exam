@@ -26,6 +26,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       <SWRConfig
         value={{
+          revalidateOnFocus: false,
+          revalidateOnReconnect: true,
           errorRetryInterval: 500,
           errorRetryCount: 5,
         }}

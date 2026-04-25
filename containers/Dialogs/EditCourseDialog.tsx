@@ -33,9 +33,10 @@ import { Loader2 } from "lucide-react";
 import { map, set } from "lodash-es";
 import { useParams } from "next/navigation";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import * as z from "zod";
 
 interface pageProps {}
@@ -53,9 +54,9 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
 
   const dialogOpen = get("open_edit_course_dialog") === "true";
 
-  const { data, isLoading } = useSWR(
+  const { data, isLoading, mutate: mutateCourses } = useSWR(
     dialogOpen && params.admin_department_id
-      ? `${params.admin_department_id}-courses`
+      ? swrKeys.departmentCourses(params.admin_department_id as string)
       : null,
     () =>
       instance.get(`/departments/${params.admin_department_id}/courses`),
@@ -70,14 +71,17 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
     try {
       setAddCourseLoading(true);
 
-      await instance.postForm(
+      const newCourse = await instance.postForm(
         `/courses/${params.admin_department_id}`,
         values,
       );
       toast({
         title: "操作成功",
       });
-      mutate("all-courses");
+      await mutateCourses(
+        (current: any) => [...(current || []), newCourse],
+        { revalidate: false },
+      );
       setAddCourseOpen(false);
     } catch (e) {
       toast({

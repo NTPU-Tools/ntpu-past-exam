@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { TypographySmall } from "@/components/ui/typography";
 import useDepartmentCourse from "@/hooks/useDepartmentCourse";
 import { cn } from "@/lib/utils";
+import { swrKeys } from "@/lib/swr-keys";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";
 import { map } from "lodash-es";
 import Link, { LinkProps } from "next/link";
@@ -60,7 +61,7 @@ export function MobileNav() {
     !isAdminPage,
   );
 
-  const { data: visibleDepartment } = useSWR("visible-departments", () =>
+  const { data: visibleDepartment } = useSWR(swrKeys.visibleDepartments(), () =>
     instance.get("/departments/visible"),
   );
 

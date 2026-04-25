@@ -5,6 +5,7 @@ import { PageHeader, PageHeaderHeading } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { constant, times } from "lodash-es";
 import { MessageSquare } from "lucide-react";
 import Link from "next/link";
@@ -21,12 +22,12 @@ const CoursePage = () => {
     data: courseData,
     isLoading,
     error,
-  } = useSWR(courseId ? `course-${courseId}` : null, () =>
+  } = useSWR(courseId ? swrKeys.course(courseId) : null, () =>
     instance.get(`/courses/${courseId}`),
   );
 
   const { data: departmentData } = useSWR(
-    departmentId ? `department-${departmentId}` : null,
+    departmentId ? swrKeys.department(departmentId) : null,
     () => instance.get(`/departments/${departmentId}`),
   );
 

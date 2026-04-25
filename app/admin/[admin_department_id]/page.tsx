@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { TypographyH1 } from "@/components/ui/typography";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
 
@@ -19,7 +20,7 @@ const AdminDashboard = () => {
   const { setParams } = useQueryState();
 
   const { data } = useSWR(
-    adminDepartmentId ? `department-${adminDepartmentId}` : null,
+    adminDepartmentId ? swrKeys.department(adminDepartmentId) : null,
     () => instance.get(`/departments/${adminDepartmentId}`),
   );
 

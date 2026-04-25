@@ -1,4 +1,5 @@
 import instance from "@/api-client/instance";
+import { swrKeys } from "@/lib/swr-keys";
 import { groupBy, sortBy } from "lodash-es";
 import useSWR, { SWRResponse } from "swr";
 
@@ -20,7 +21,7 @@ const useDepartmentCourse = (
   }[];
 } => {
   const swrState = useSWR(
-    departmentId && shouldFetch ? `${departmentId}-courses` : null,
+    departmentId && shouldFetch ? swrKeys.departmentCourses(departmentId as string) : null,
     () => instance.get(`/departments/${departmentId}/courses`),
   );
 

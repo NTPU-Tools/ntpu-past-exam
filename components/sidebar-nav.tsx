@@ -1,6 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import useDepartmentCourse from "@/hooks/useDepartmentCourse";
 import { cn } from "@/lib/utils";
+import { swrKeys } from "@/lib/swr-keys";
 import { head, map } from "lodash-es";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -64,7 +65,7 @@ function SidebarNav() {
   const departmentId = params.department_id as string;
 
   const { data: departmentData } = useSWR(
-    departmentId ? `department-${departmentId}` : null,
+    departmentId ? swrKeys.department(departmentId) : null,
     () => instance.get(`/departments/${departmentId}`),
   );
 

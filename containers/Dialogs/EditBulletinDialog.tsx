@@ -25,10 +25,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useParams } from "next/navigation";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import { Loader2 } from "lucide-react";
 import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import * as z from "zod";
 
 interface pageProps {}
@@ -46,9 +47,9 @@ const EditBulletinDialog: FC<pageProps> = () => {
 
   const dialogOpen = get("open_edit_bulletin_dialog") === "true";
 
-  const { data, isLoading } = useSWR(
+  const { data, isLoading, mutate: mutateBulletins } = useSWR(
     dialogOpen && params.admin_department_id
-      ? `${params.admin_department_id}-bulletins`
+      ? swrKeys.departmentBulletins(params.admin_department_id as string)
       : null,
     () =>
       instance.get(
@@ -64,14 +65,17 @@ const EditBulletinDialog: FC<pageProps> = () => {
   const addBulletin = async (values: z.infer<typeof addBulletinSchema>) => {
     try {
       setAddBulletinLoading(true);
-      await instance.postForm(
+      const newBulletin = await instance.postForm(
         `/bulletins/${params.admin_department_id}`,
         values,
       );
       toast({
         title: "操作成功",
       });
-      mutate(`${params.admin_department_id}-bulletins`);
+      await mutateBulletins(
+        (current: any) => [...(current || []), newBulletin],
+        { revalidate: false },
+      );
       setAddBulletinOpen(false);
     } catch (e) {
       toast({

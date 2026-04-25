@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useQueryState } from "@/hooks/useQueryState";
+import { swrKeys } from "@/lib/swr-keys";
 import useSWR from "swr";
 
 function SiteHeader() {
@@ -29,12 +30,12 @@ function SiteHeader() {
   const accessToken = getCookie("ntpu-past-exam-access-token");
   const shouldFetch = accessToken && !isLoginPage;
   const { data, isLoading } = useSWR(
-    shouldFetch ? "user-me" : null,
+    shouldFetch ? swrKeys.userMe() : null,
     () => instance.get("/users/me"),
     { refreshInterval: 1000 * 60 },
   );
   const { data: adminScopes } = useSWR(
-    shouldFetch ? `departments-admin` : null,
+    shouldFetch ? swrKeys.adminDepartments() : null,
     () => instance.get("/users/me/departments-admin"),
   );
 
