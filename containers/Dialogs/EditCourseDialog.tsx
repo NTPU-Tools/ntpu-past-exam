@@ -71,14 +71,17 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
     try {
       setAddCourseLoading(true);
 
-      await instance.postForm(
+      const newCourse = await instance.postForm(
         `/courses/${params.admin_department_id}`,
         values,
       );
       toast({
         title: "操作成功",
       });
-      mutateCourses();
+      await mutateCourses(
+        (current: any) => [...(current || []), newCourse],
+        { revalidate: false },
+      );
       setAddCourseOpen(false);
     } catch (e) {
       toast({

@@ -65,14 +65,17 @@ const EditBulletinDialog: FC<pageProps> = () => {
   const addBulletin = async (values: z.infer<typeof addBulletinSchema>) => {
     try {
       setAddBulletinLoading(true);
-      await instance.postForm(
+      const newBulletin = await instance.postForm(
         `/bulletins/${params.admin_department_id}`,
         values,
       );
       toast({
         title: "操作成功",
       });
-      mutateBulletins();
+      await mutateBulletins(
+        (current: any) => [...(current || []), newBulletin],
+        { revalidate: false },
+      );
       setAddBulletinOpen(false);
     } catch (e) {
       toast({

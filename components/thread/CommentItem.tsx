@@ -94,8 +94,8 @@ const ReplyForm = ({
       await instance.postForm(`/threads/${threadId}/comments`, formData);
       toast({ title: "回覆成功" });
       form.reset();
-      mutate(swrKeys.threadComments(threadId));
-      mutate(swrKeys.comment(rootCommentId));
+      await mutate(swrKeys.threadComments(threadId));
+      await mutate(swrKeys.comment(rootCommentId));
       onSuccess();
     } catch {
       toast({ title: "回覆失敗", variant: "error" });
@@ -197,7 +197,7 @@ const ReplyItem = ({
     try {
       setIsDeleting(true);
       await instance.delete(`/threads/comments/${reply.id}`);
-      mutate(swrKeys.comment(rootCommentId));
+      await mutate(swrKeys.comment(rootCommentId));
       setDeleted(true);
     } catch {
       toast({ title: "刪除失敗", variant: "error" });
@@ -360,7 +360,7 @@ const CommentItem = ({
       }>(`/threads/comments/${comment.id}/like`);
       setLiked(res.liked);
       setLikeCount(res.comment.like_count);
-      mutate(swrKeys.threadComments(threadId));
+      await mutate(swrKeys.threadComments(threadId));
     } catch {
       toast({ title: "操作失敗", variant: "error" });
     } finally {
@@ -373,7 +373,7 @@ const CommentItem = ({
     try {
       setIsDeleting(true);
       await instance.delete(`/threads/comments/${comment.id}`);
-      mutate(swrKeys.threadComments(threadId));
+      await mutate(swrKeys.threadComments(threadId));
       setDeleted(true);
     } catch {
       toast({ title: "刪除失敗", variant: "error" });

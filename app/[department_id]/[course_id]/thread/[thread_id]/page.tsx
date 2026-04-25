@@ -98,7 +98,7 @@ const ThreadDetailPage = () => {
       setIsDeleting(true);
       await instance.delete(`/threads/${validThreadId}`);
       toast({ title: "刪除成功" });
-      mutate(swrKeys.threads(courseId!));
+      await mutate(swrKeys.threads(courseId!));
       router.replace(`/${departmentId}/${courseId}/thread`);
     } catch {
       toast({ title: "刪除失敗", variant: "error" });

@@ -117,7 +117,7 @@ const CreatePostDialog = () => {
       toast({
         title: "新增成功",
       });
-      mutate(swrKeys.course(values.course_id));
+      await mutate(swrKeys.course(values.course_id));
       closeCreatePostDialog();
     } catch (e) {
       toast({

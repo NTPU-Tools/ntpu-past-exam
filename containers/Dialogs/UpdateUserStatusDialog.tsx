@@ -89,8 +89,8 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       toast({
         title: "操作成功",
       });
-      mutateMembers();
-      mutate(swrKeys.adminDepartments());
+      await mutateMembers();
+      await mutate(swrKeys.adminDepartments());
     } catch (e) {
       toast({
         title: "操作失敗",
@@ -104,8 +104,8 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       await instance.put(
         `/departments/join-request/${params.admin_department_id}/approve/${id}`,
       );
-      mutateMembers();
-      mutatePending();
+      await mutateMembers();
+      await mutatePending();
       toast({
         title: "操作成功",
       });

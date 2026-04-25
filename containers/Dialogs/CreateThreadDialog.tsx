@@ -138,7 +138,7 @@ const CreateThreadDialog = () => {
 
       await instance.postForm(`/threads/${courseId}`, formData);
       toast({ title: "發文成功" });
-      mutate(swrKeys.threads(courseId));
+      await mutate(swrKeys.threads(courseId));
       closeDialog();
     } catch {
       toast({ title: "發文失敗", variant: "error" });

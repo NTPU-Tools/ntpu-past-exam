@@ -89,22 +89,9 @@ const EditUserInfoDialog = () => {
         major: schoolDepartment,
       };
 
-      await instance.putForm("/users/update/me", payload);
+      const updatedUser = await instance.putForm("/users/update/me", payload);
 
-      await mutateUser(
-        (current: any) => {
-          const base = current ?? data;
-          if (!base) return base;
-
-          return {
-            ...base,
-            readable_name: values.name ?? "",
-            school_department: schoolDepartment,
-            note: values.note ?? "",
-          };
-        },
-        { revalidate: true },
-      );
+      await mutateUser(updatedUser, { revalidate: false });
 
       await mutate(swrKeys.departmentsStatus());
 

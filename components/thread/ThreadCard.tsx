@@ -71,7 +71,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
       );
       setLiked(res.liked);
       setLikeCount(res.thread.like_count);
-      mutate(swrKeys.threads(courseId));
+      await mutate(swrKeys.threads(courseId));
     } catch {
       toast({ title: "操作失敗", variant: "error" });
     } finally {
@@ -85,7 +85,7 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
     try {
       setIsDeleting(true);
       await instance.delete(`/threads/${thread.id}`);
-      mutate(swrKeys.threads(courseId));
+      await mutate(swrKeys.threads(courseId));
       setDeleted(true);
     } catch {
       toast({ title: "刪除失敗", variant: "error" });

@@ -68,7 +68,7 @@ function PageClient() {
       setApplyLoading(true);
       await instance.post(`/departments/${department_id}/join-request/send`);
       toast({ title: "申請成功", variant: "success" });
-      mutate(swrKeys.departmentsStatus());
+      await mutate(swrKeys.departmentsStatus());
       closeApplyDepartmentDialog();
     } catch (error) {
       toast({ title: "申請失敗", variant: "error" });

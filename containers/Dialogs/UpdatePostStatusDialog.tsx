@@ -110,7 +110,7 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
   const updatePostStatus = async ({ status }: { status: string }) => {
     try {
       setIsLoading(true);
-      await instance.putForm(
+      const updatedPost = await instance.putForm(
         `/posts/status/${params.admin_department_id}/${get("edit_post_detail_id")}`,
         {
           status,
@@ -119,10 +119,10 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
       toast({
         title: "操作成功",
       });
-      mutatePendingPosts();
-      mutatePost();
+      await mutatePost(updatedPost, { revalidate: false });
+      await mutatePendingPosts();
       if (postData?.course_id) {
-        mutate(swrKeys.course(postData.course_id));
+        await mutate(swrKeys.course(postData.course_id));
       }
       closePostDetailDialog();
     } catch (e) {
