@@ -98,9 +98,12 @@ function SidebarNav() {
     <div className="rounded-r-2xl border border-sidebar-border/60 bg-sidebar/70 px-2 py-3">
       {departmentData && (
         <div className="mb-6 pl-3 pr-2">
-          <p className="font-heading font-black text-[15px] tracking-tight text-sidebar-fg-active">
+          <Link
+            href={`/${departmentId}`}
+            className="font-heading font-black text-[15px] tracking-tight text-sidebar-fg-active hover:text-primary transition-colors"
+          >
             {departmentData.name}
-          </p>
+          </Link>
           <div className="w-9 h-[3px] bg-primary mt-2" />
         </div>
       )}
