@@ -9,11 +9,18 @@ const instance = axios.create({
   headers: {
     "Content-Type": "application/json",
     timeout: 1000,
-    authorization: `Bearer ${getCookie("ntpu-past-exam-access-token")}`,
   },
   // @ts-ignore
   isTokenRefreshing: false,
   withCredentials: true,
+});
+
+instance.interceptors.request.use((config) => {
+  const token = getCookie("ntpu-past-exam-access-token");
+  if (token) {
+    config.headers.authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 instance.interceptors.response.use(
