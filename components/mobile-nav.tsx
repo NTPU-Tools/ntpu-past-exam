@@ -13,6 +13,7 @@ import { TypographySmall } from "@/components/ui/typography";
 import useDepartmentCourse from "@/hooks/useDepartmentCourse";
 import { cn } from "@/lib/utils";
 import { swrKeys } from "@/lib/swr-keys";
+import userStore from "@/store/userStore";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";
 import { map } from "lodash-es";
 import Link, { LinkProps } from "next/link";
@@ -53,6 +54,9 @@ export function MobileNav() {
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const { userData } = userStore();
+
+  const showEmptyCourses = userData?.show_empty_courses ?? true;
 
   const isAdminPage = pathname.includes("admin");
 
@@ -116,32 +120,38 @@ export function MobileNav() {
         <ScrollArea className="my-4 h-[calc(100dvh-8rem)] pb-10 pl-6">
           {isAdminPage ? null : (
             <div className="flex flex-col space-y-2">
-              {map(data, (courses) => (
-                <div
-                  key={courses[0].category}
-                  className="flex flex-col space-y-3 pt-6"
-                >
-                  <h4 className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-muted-foreground sticky top-0 z-10 bg-background py-1">
-                    {courses[0].category}
-                  </h4>
-                  {map(
-                    courses.sort((a, b) =>
-                      a.name.localeCompare(b.name, "zh-Hant"),
-                    ),
-                    (course) => (
-                      <React.Fragment key={course.id}>
-                        <MobileLink
-                          href={`/${params.department_id}/${course.id}`}
-                          onOpenChange={setOpen}
-                          className="text-sm text-muted-foreground hover:text-foreground transition-colors py-0.5"
-                        >
-                          {course.name}
-                        </MobileLink>
-                      </React.Fragment>
-                    ),
-                  )}
-                </div>
-              ))}
+              {map(data, (courses) => {
+                const filteredCourses = showEmptyCourses
+                  ? courses
+                  : courses.filter((c) => c.has_posts);
+                if (!filteredCourses.length) return null;
+                return (
+                  <div
+                    key={courses[0].category}
+                    className="flex flex-col space-y-3 pt-6"
+                  >
+                    <h4 className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-muted-foreground sticky top-0 z-10 bg-background py-1">
+                      {courses[0].category}
+                    </h4>
+                    {map(
+                      [...filteredCourses].sort((a, b) =>
+                        a.name.localeCompare(b.name, "zh-Hant"),
+                      ),
+                      (course) => (
+                        <React.Fragment key={course.id}>
+                          <MobileLink
+                            href={`/${params.department_id}/${course.id}`}
+                            onOpenChange={setOpen}
+                            className="text-sm text-muted-foreground hover:text-foreground transition-colors py-0.5"
+                          >
+                            {course.name}
+                          </MobileLink>
+                        </React.Fragment>
+                      ),
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </ScrollArea>

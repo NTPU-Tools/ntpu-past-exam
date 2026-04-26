@@ -1,12 +1,13 @@
+import instance from "@/api-client/instance";
 import { Skeleton } from "@/components/ui/skeleton";
 import useDepartmentCourse from "@/hooks/useDepartmentCourse";
 import { cn } from "@/lib/utils";
 import { swrKeys } from "@/lib/swr-keys";
+import userStore from "@/store/userStore";
 import { head, map } from "lodash-es";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import useSWR from "swr";
-import instance from "@/api-client/instance";
 
 interface SidebarNavItem {
   title?: string;
@@ -63,6 +64,9 @@ function SidebarNav() {
   const params = useParams();
   const isAdminPage = pathname.includes("admin");
   const departmentId = params.department_id as string;
+  const { userData } = userStore();
+
+  const showEmptyCourses = userData?.show_empty_courses ?? true;
 
   const { data: departmentData } = useSWR(
     departmentId ? swrKeys.department(departmentId) : null,
@@ -109,23 +113,29 @@ function SidebarNav() {
       )}
       {data?.length ? (
         <div className="space-y-6">
-          {map(data, (courses) => (
-            <div key={head(courses)?.category}>
-              <h4 className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-sidebar-heading pl-3">
-                {head(courses)?.category}
-              </h4>
-              <SidebarNavItems
-                items={map(
-                  courses.sort((a, b) => a.name.localeCompare(b.name, "zh-Hant")),
-                  (course) => ({
-                    title: course.name,
-                    href: `/${departmentId}/${course.id}`,
-                  }),
-                )}
-                pathname={pathname}
-              />
-            </div>
-          ))}
+          {map(data, (courses) => {
+            const filteredCourses = showEmptyCourses
+              ? courses
+              : courses.filter((c) => c.has_posts);
+            if (!filteredCourses.length) return null;
+            return (
+              <div key={head(courses)?.category}>
+                <h4 className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-sidebar-heading pl-3">
+                  {head(courses)?.category}
+                </h4>
+                <SidebarNavItems
+                  items={map(
+                    [...filteredCourses].sort((a, b) => a.name.localeCompare(b.name, "zh-Hant")),
+                    (course) => ({
+                      title: course.name,
+                      href: `/${departmentId}/${course.id}`,
+                    }),
+                  )}
+                  pathname={pathname}
+                />
+              </div>
+            );
+          })}
         </div>
       ) : null}
     </div>
