@@ -9,13 +9,14 @@ const useDepartmentCourse = (
 ): SWRResponse<
   {
     category: string;
-
+    has_posts?: boolean;
     id: string;
     name: string;
   }[][]
 > & {
   allCourses: {
     category: string;
+    has_posts?: boolean;
     id: string;
     name: string;
   }[];
