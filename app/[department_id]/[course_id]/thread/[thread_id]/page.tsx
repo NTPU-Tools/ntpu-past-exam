@@ -187,8 +187,8 @@ const ThreadDetailPage = () => {
   return (
     <div className="min-h-[inherit] flex flex-col max-w-3xl mx-auto">
       <div className="flex items-center gap-1 pt-2 pb-3 px-1">
-        <Button variant="ghost" size="icon" aria-label="返回討論列表" asChild>
-          <Link href={`/${departmentId}/${courseId}/thread`}>
+        <Button variant="ghost" size="icon" aria-label="返回課程頁面" asChild>
+          <Link href={`/${departmentId}/${courseId}`}>
             <ArrowLeft className="h-5 w-5" />
           </Link>
         </Button>
