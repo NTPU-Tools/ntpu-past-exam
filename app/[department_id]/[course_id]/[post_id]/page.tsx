@@ -28,7 +28,7 @@ const PostPage = () => {
 
   if (error?.response?.status === 404) {
     return (
-      <div className="min-h-[inherit] flex flex-col relative top-0 ">
+      <div className="min-h-[inherit] flex flex-col relative top-0 max-w-3xl mx-auto">
         <PageHeader>
           <PageHeaderHeading>找不到頁面</PageHeaderHeading>
         </PageHeader>
@@ -38,7 +38,7 @@ const PostPage = () => {
 
   if (isLoading || !post) {
     return (
-      <div>
+      <div className="max-w-3xl mx-auto">
         <PageHeader>
           <Skeleton className="h-12 w-[200px]" />
         </PageHeader>
@@ -67,7 +67,7 @@ const PostPage = () => {
   }
 
   return (
-    <div className="min-h-[inherit] flex flex-col relative top-0 ">
+    <div className="min-h-[inherit] flex flex-col relative top-0 max-w-3xl mx-auto">
       <PageHeader>
         <PageHeaderHeading>{post?.title}</PageHeaderHeading>
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mt-2">

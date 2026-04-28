@@ -80,19 +80,19 @@ export function MobileNav() {
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left">
-        <div className="flex flex-col gap-2">
+      <SheetContent side="left" className="px-0">
+        <div className="flex flex-col gap-3 px-5 pt-6 pb-3">
           <MobileLink
             href="/"
-            className="flex items-center"
+            className="flex items-center gap-1"
             onOpenChange={setOpen}
           >
-            <span className="font-bold">
-              NTPU 考古題{" "}
-              {process.env.NEXT_PUBLIC_GIT_BRANCH !== "main" && (
-                <TypographySmall>測試環境 - 請勿拿來日常使用！</TypographySmall>
-              )}
+            <span className="font-heading font-black text-[15px] tracking-tight">
+              NTPU 考古題
             </span>
+            {process.env.NEXT_PUBLIC_GIT_BRANCH !== "main" && (
+              <span className="text-[9px] text-destructive font-bold ml-1 uppercase tracking-wider">dev</span>
+            )}
           </MobileLink>
           {params?.department_id && (
             <Select
@@ -103,7 +103,7 @@ export function MobileNav() {
                 router.push(`/${value}`);
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger className="h-8 text-xs">
                 <SelectValue placeholder="請選擇社群" />
               </SelectTrigger>
               <SelectContent>
@@ -117,7 +117,7 @@ export function MobileNav() {
             </Select>
           )}
         </div>
-        <ScrollArea className="my-4 h-[calc(100dvh-8rem)] pb-10 pl-6">
+        <ScrollArea className="h-[calc(100dvh-10rem)] px-5 pb-10">
           {isAdminPage ? null : (
             <div className="flex flex-col space-y-2">
               {map(data, (courses) => {

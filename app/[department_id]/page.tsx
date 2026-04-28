@@ -39,7 +39,7 @@ function Page() {
 
   if (isLoading) {
     return (
-      <div>
+      <div className="max-w-3xl mx-auto">
         <PageHeader>
           <Skeleton className="h-9 w-[140px]" />
         </PageHeader>
@@ -54,7 +54,7 @@ function Page() {
 
   return (
     <>
-      <div>
+      <div className="max-w-3xl mx-auto">
         <PageHeader>
           <PageHeaderHeading>公告</PageHeaderHeading>
         </PageHeader>

@@ -146,7 +146,7 @@ const ThreadDetailPage = () => {
 
   if (error?.response?.status === 404) {
     return (
-      <div className="min-h-[inherit] flex flex-col items-center justify-center p-8">
+      <div className="min-h-[inherit] flex flex-col items-center justify-center p-8 max-w-3xl mx-auto">
         <p className="text-muted-foreground">找不到這篇討論</p>
         <Link
           href={`/${departmentId}/${courseId}/thread`}
@@ -160,7 +160,7 @@ const ThreadDetailPage = () => {
 
   if (isLoadingThread || (!thread && !error)) {
     return (
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 max-w-3xl mx-auto">
         <Skeleton className="h-8 w-3/4" />
         <Skeleton className="h-4 w-1/2" />
         <Skeleton className="h-4 w-full" />
@@ -172,7 +172,7 @@ const ThreadDetailPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-[inherit] flex flex-col items-center justify-center p-8">
+      <div className="min-h-[inherit] flex flex-col items-center justify-center p-8 max-w-3xl mx-auto">
         <p className="text-muted-foreground">載入失敗，請稍後再試</p>
       </div>
     );
@@ -185,7 +185,7 @@ const ThreadDetailPage = () => {
   const threadDate = formatDate(thread.create_time as string);
 
   return (
-    <div className="min-h-[inherit] flex flex-col">
+    <div className="min-h-[inherit] flex flex-col max-w-3xl mx-auto">
       <div className="flex items-center gap-1 pt-2 pb-3 px-1">
         <Button variant="ghost" size="icon" aria-label="返回討論列表" asChild>
           <Link href={`/${departmentId}/${courseId}/thread`}>
