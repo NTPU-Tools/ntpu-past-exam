@@ -6,7 +6,7 @@ import SidebarNav from "@/components/sidebar-nav";
 import SiteFooter from "@/components/site-footer";
 import dynamic from "next/dynamic"; // [R2-4]
 import { usePathname } from "next/navigation";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useEffect } from "react";
 import { useMediaQuery, useLocalStorage } from "usehooks-ts";
 
 interface PageProps { // [R1-4]
@@ -42,6 +42,12 @@ const Layout: FC<PageProps> = ({ children }) => { // [R2-4]
     pathname === "/login" || pathname === "/" || pathname.startsWith("/admin"); // [R1-1]
 
   const [sidebarRatio, setSidebarRatio] = useLocalStorage("ntpu-sidebar-ratio", 0.17);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const el = document.querySelector<HTMLElement>("[data-main-scroll]");
+    if (el) el.scrollTop = 0;
+  }, [pathname]);
 
   if (isSimplePage) {
     const needsContainer = pathname.startsWith("/admin"); // [R2-3]
