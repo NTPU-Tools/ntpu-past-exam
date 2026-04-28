@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import instance from "@/api-client/instance";
 import { PageHeader, PageHeaderHeading } from "@/components/PageHeader";
 import ThreadList from "@/components/thread/ThreadList";
@@ -221,6 +221,18 @@ const CoursePage = () => {
 
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const selectedPostId = get("post");
+  const examScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = examScrollRef.current;
+    if (!el) return;
+    const viewport = el.querySelector<HTMLElement>("[data-radix-scroll-area-viewport]");
+    if (viewport) {
+      viewport.scrollTop = 0;
+    } else {
+      el.scrollTop = 0;
+    }
+  }, [selectedPostId]);
 
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: "course-page-split",
@@ -290,6 +302,7 @@ const CoursePage = () => {
           onLayoutChanged={onLayoutChanged}
         >
           <ResizablePanel id="exam-list" order={1} defaultSize={55} minSize={30}>
+            <div ref={examScrollRef} className="h-full">
             <ScrollArea className="h-full pr-4">
               <ExamPanelContent
                 selectedPostId={selectedPostId}
@@ -304,6 +317,7 @@ const CoursePage = () => {
                 setParams={setParams}
               />
             </ScrollArea>
+            </div>
           </ResizablePanel>
 
           <ResizableHandle withHandle />
@@ -320,12 +334,12 @@ const CoursePage = () => {
           </ResizablePanel>
         </ResizablePanelGroup>
       ) : (
-        <div className="flex-1 min-h-0 overflow-auto space-y-8">
+        <div ref={examScrollRef} className="flex-1 min-h-0 overflow-auto space-y-8">
           <div>
             <ExamPanelContent
               selectedPostId={selectedPostId}
-              onSelectPost={setSelectedPostId}
-              onBack={() => setSelectedPostId(null)}
+              onSelectPost={(id) => setParams({ post: id })}
+              onBack={() => removeParams("post")}
               courseData={courseData}
               departmentData={departmentData}
               deptError={deptError}

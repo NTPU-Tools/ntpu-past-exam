@@ -186,6 +186,7 @@ export function ResizableSplit({
       <div
         className="min-w-0 min-h-0 overflow-auto flex flex-col"
         style={{ flex: `${1 - ratio} 1 0%` }}
+        data-main-scroll=""
       >
         {children[1]}
       </div>
