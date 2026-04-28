@@ -199,6 +199,7 @@ const ReplyItem = ({
       await instance.delete(`/threads/comments/${reply.id}`);
       await mutate(swrKeys.comment(rootCommentId));
       setDeleted(true);
+      toast({ title: "刪除成功" });
     } catch {
       toast({ title: "刪除失敗", variant: "error" });
     } finally {
@@ -375,6 +376,7 @@ const CommentItem = ({
       await instance.delete(`/threads/comments/${comment.id}`);
       await mutate(swrKeys.threadComments(threadId));
       setDeleted(true);
+      toast({ title: "刪除成功" });
     } catch {
       toast({ title: "刪除失敗", variant: "error" });
     } finally {

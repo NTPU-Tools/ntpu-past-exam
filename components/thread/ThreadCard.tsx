@@ -94,6 +94,7 @@ const ThreadCard = ({ thread, courseId, onClick }: ThreadCardProps) => {
       await instance.delete(`/threads/${thread.id}`);
       await mutate(swrKeys.threads(courseId));
       setDeleted(true);
+      toast({ title: "刪除成功" });
     } catch {
       toast({ title: "刪除失敗", variant: "error" });
     } finally {
