@@ -14,21 +14,21 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 const PAGE_SIZE = 20;
-const SKELETON_COUNT = 5; // [R2-3]
+const SKELETON_COUNT = 5;
 
 interface ThreadListProps {
   courseId: string;
   showHeader?: boolean;
-} // [R1-2]
+  onSelectThread?: (threadId: string) => void;
+}
 
-const ThreadList = ({ courseId, showHeader = true }: ThreadListProps) => { // [R1-2]
-  const { userData } = userStore();
+const ThreadList = ({ courseId, showHeader = true, onSelectThread }: ThreadListProps) => {
+  const userData = userStore((s) => s.userData);
   const { setParams } = useQueryState();
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-
-  useEffect(() => { // [R1-3]
-    setVisibleCount(PAGE_SIZE); // [R1-3]
-  }, [courseId]); // [R1-3]
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [courseId]);
 
   const {
     data: threadsData,
@@ -49,7 +49,7 @@ const ThreadList = ({ courseId, showHeader = true }: ThreadListProps) => { // [R
     );
   }
 
-  if (isLoading) { // [R2-1]
+  if (isLoading) {
     return (
       <div>
         {showHeader && (
@@ -58,7 +58,7 @@ const ThreadList = ({ courseId, showHeader = true }: ThreadListProps) => { // [R
           </div>
         )}
         <div className="grid grid-cols-1 gap-4">
-          {times(SKELETON_COUNT).map((_, index) => ( // [R2-3]
+          {times(SKELETON_COUNT, (index) => (
             <Skeleton className="h-[120px] w-full" key={index} />
           ))}
         </div>
@@ -87,11 +87,12 @@ const ThreadList = ({ courseId, showHeader = true }: ThreadListProps) => { // [R
       <div className="grid grid-cols-1 gap-4">
         {threads?.length ? (
           <>
-            {threads.slice(0, visibleCount).map((thread: Thread) => (
+            {threads.slice(0, visibleCount).map((thread) => (
               <ThreadCard
                 key={thread.id}
                 thread={thread}
                 courseId={courseId}
+                onClick={onSelectThread ? () => onSelectThread(thread.id) : undefined} // [R2-2]
               />
             ))}
             {visibleCount < (threadsData?.total ?? 0) && (

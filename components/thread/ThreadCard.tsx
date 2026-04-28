@@ -22,7 +22,7 @@ import { isEmpty } from "lodash-es";
 import { Heart, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { mutate } from "swr";
 
 export interface Thread {
@@ -37,16 +37,16 @@ export interface Thread {
   is_anonymous: boolean;
   image_url?: string | null;
   create_time: string;
-  updated_time: string;
   course_id: string;
 }
 
 interface ThreadCardProps {
   thread: Thread;
   courseId: string;
+  onClick?: () => void;
 }
 
-const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
+const ThreadCard = ({ thread, courseId, onClick }: ThreadCardProps) => {
   const params = useParams();
   const { toast } = useToast();
   const { userData } = userStore();
@@ -60,12 +60,18 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
 
   const displayName = thread.is_anonymous ? "匿名" : thread.owner_name;
 
-  const handleLike = async (e: React.MouseEvent) => {
+  // [R3-1] mountedRef removed — React 18+ safely ignores state updates on unmounted components
+
+  const isLikingRef = useRef(false);
+  const isDeletingRef = useRef(false);
+
+  const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isLiking) return;
+    if (isLikingRef.current) return;
     try {
       setIsLiking(true);
+      isLikingRef.current = true;
       const res = await instance.post<{ liked: boolean; thread: Thread }>(
         `/threads/${thread.id}/like`,
       );
@@ -76,14 +82,15 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
       toast({ title: "操作失敗", variant: "error" });
     } finally {
       setIsLiking(false);
+      isLikingRef.current = false;
     }
-  };
+  }, [thread.id, courseId, toast]);
 
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (isDeleting) return;
+  const handleDelete = useCallback(async () => { // [R3-2]
+    if (isDeletingRef.current) return;
     try {
       setIsDeleting(true);
+      isDeletingRef.current = true;
       await instance.delete(`/threads/${thread.id}`);
       await mutate(swrKeys.threads(courseId));
       setDeleted(true);
@@ -91,25 +98,30 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
       toast({ title: "刪除失敗", variant: "error" });
     } finally {
       setIsDeleting(false);
+      isDeletingRef.current = false;
     }
-  };
+  }, [thread.id, courseId, toast]);
 
   const formattedDate = formatDate(thread.create_time);
 
-  const href = `/${params?.department_id}/${courseId}/thread/${thread.id}`;
+  const departmentId = String(params?.department_id ?? ""); // [R3-3]
+  const href = `/${departmentId}/${courseId}/thread/${thread.id}`;
 
   if (deleted) return null;
 
-  return (
-    <Link href={href}>
+  const card = (
     <Card
-      className="hover:bg-muted transition-colors"
+      className={cn(
+        "hover:bg-muted transition-colors",
+        onClick && "cursor-pointer",
+      )}
+      onClick={onClick}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <Avatar className="h-8 w-8 shrink-0">
             <AvatarFallback className="text-xs">
-              {displayName.slice(0, 1)}
+              {[...displayName][0]}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
@@ -191,8 +203,13 @@ const ThreadCard = ({ thread, courseId }: ThreadCardProps) => {
         )}
       </div>
     </Card>
-    </Link>
   );
+
+  if (onClick) {
+    return card;
+  }
+
+  return <Link href={href}>{card}</Link>;
 };
 
 export default ThreadCard;
