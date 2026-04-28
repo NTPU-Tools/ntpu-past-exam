@@ -17,11 +17,12 @@ import { useQueryState } from "@/hooks/useQueryState";
 import { swrKeys } from "@/lib/swr-keys";
 import { times } from "lodash-es";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import useSWR from "swr";
 import { useMediaQuery } from "usehooks-ts";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import PostDetail from "@/components/PostDetail";
+import { cn } from "@/lib/utils";
 
 interface Post {
   id: string;
@@ -49,6 +50,8 @@ function ExamListContent({
   departmentId,
   courseId,
   setParams: setQueryParams,
+  selectedPostId,
+  onSelectPost,
 }: {
   courseData: CourseResponse;
   departmentData?: DepartmentResponse;
@@ -57,21 +60,27 @@ function ExamListContent({
   departmentId: string;
   courseId: string;
   setParams: (params: Record<string, string>) => void;
+  selectedPostId?: string | null;
+  onSelectPost?: (id: string) => void;
 }) {
   const postCount = courseData.posts?.length ?? 0;
 
-  if (postCount > 0) {
+  if (courseData.posts && postCount > 0) {
     return (
       <div>
         {courseData.posts.map((post: Post) => (
-          <Link
-            href={`/${departmentId}/${courseId}/${post.id}`}
+          <button
             key={post.id}
-            className="flex items-baseline justify-between py-3.5 border-b border-border text-sm font-medium hover:text-primary transition-colors group"
+            type="button"
+            onClick={() => onSelectPost?.(post.id)}
+            className={cn(
+              "flex items-baseline justify-between py-3.5 border-b border-border text-sm font-medium hover:text-primary transition-colors group w-full text-left",
+              selectedPostId === post.id && "text-primary"
+            )}
           >
             <span>{post.title}</span>
             <span className="text-[11px] text-muted-foreground/20 group-hover:text-primary font-mono transition-colors shrink-0 ml-4">&rarr;</span>
-          </Link>
+          </button>
         ))}
       </div>
     );
@@ -96,6 +105,47 @@ function ExamListContent({
         <span className="text-muted-foreground">尚無通過審核的考古題。</span>
       )}
     </p>
+  );
+}
+
+function ExamPanelContent({
+  selectedPostId,
+  onSelectPost,
+  onBack,
+  courseData,
+  departmentData,
+  deptError,
+  isDeptLoading,
+  departmentId,
+  courseId,
+  setParams,
+}: {
+  selectedPostId: string | null;
+  onSelectPost: (id: string) => void;
+  onBack: () => void;
+  courseData: CourseResponse;
+  departmentData?: DepartmentResponse;
+  deptError?: Error;
+  isDeptLoading: boolean;
+  departmentId: string;
+  courseId: string;
+  setParams: (params: Record<string, string>) => void;
+}) {
+  if (selectedPostId) {
+    return <PostDetail postId={selectedPostId} onBack={onBack} />;
+  }
+  return (
+    <ExamListContent
+      courseData={courseData}
+      departmentData={departmentData}
+      deptError={deptError}
+      isDeptLoading={isDeptLoading}
+      departmentId={departmentId}
+      courseId={courseId}
+      setParams={setParams}
+      selectedPostId={selectedPostId}
+      onSelectPost={onSelectPost}
+    />
   );
 }
 
@@ -137,7 +187,7 @@ const CoursePage = () => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const params = useParams();
-  const { setParams } = useQueryState();
+  const { setParams, get, removeParams } = useQueryState();
   const courseId = params.course_id as string | undefined;
   const departmentId = params.department_id as string | undefined;
 
@@ -170,6 +220,7 @@ const CoursePage = () => {
   );
 
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+  const selectedPostId = get("post");
 
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: "course-page-split",
@@ -240,7 +291,10 @@ const CoursePage = () => {
         >
           <ResizablePanel id="exam-list" order={1} defaultSize={55} minSize={30}>
             <ScrollArea className="h-full pr-4">
-              <ExamListContent
+              <ExamPanelContent
+                selectedPostId={selectedPostId}
+                onSelectPost={(id) => setParams({ post: id })}
+                onBack={() => removeParams("post")}
                 courseData={courseData}
                 departmentData={departmentData}
                 deptError={deptError}
@@ -268,7 +322,10 @@ const CoursePage = () => {
       ) : (
         <div className="flex-1 min-h-0 overflow-auto space-y-8">
           <div>
-            <ExamListContent
+            <ExamPanelContent
+              selectedPostId={selectedPostId}
+              onSelectPost={setSelectedPostId}
+              onBack={() => setSelectedPostId(null)}
               courseData={courseData}
               departmentData={departmentData}
               deptError={deptError}
@@ -280,6 +337,7 @@ const CoursePage = () => {
           </div>
           <ThreadPanelContent
             selectedThreadId={selectedThreadId}
+            onSelectThread={setSelectedThreadId}
             onBack={() => setSelectedThreadId(null)}
             courseId={courseId}
           />
