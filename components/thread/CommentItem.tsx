@@ -28,6 +28,7 @@ import { swrKeys } from "@/lib/swr-keys";
 import userStore from "@/store/userStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isEmpty } from "lodash-es";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CornerDownLeft, Heart, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -129,18 +130,27 @@ const ReplyForm = ({
             </FormItem>
           )}
         />
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            size="sm"
-            onClick={form.handleSubmit(onSubmit)}
-            disabled={isLoading}
-          >
-            送出
-          </Button>
-          <Button size="sm" variant="outline" onClick={onCancel} type="button">
-            取消
-          </Button>
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+            <Checkbox
+              checked={form.watch("is_anonymous")}
+              onCheckedChange={(v) => form.setValue("is_anonymous", Boolean(v))}
+            />
+            匿名留言
+          </label>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              size="sm"
+              onClick={form.handleSubmit(onSubmit)}
+              disabled={isLoading}
+            >
+              送出
+            </Button>
+            <Button size="sm" variant="outline" onClick={onCancel} type="button">
+              取消
+            </Button>
+          </div>
         </div>
       </form>
     </Form>
