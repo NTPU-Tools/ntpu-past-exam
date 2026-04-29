@@ -198,6 +198,11 @@ const PostDetail = ({ postId, onBack }: PostDetailProps) => {
           </>
         )}
       </div>
+      {post?.content && (
+        <p className="mt-3 text-sm text-foreground whitespace-pre-wrap">
+          {post.content}
+        </p>
+      )}
       <div className="mt-4">
         {post?.files &&
           post.files.map((fileLink: string) => (
