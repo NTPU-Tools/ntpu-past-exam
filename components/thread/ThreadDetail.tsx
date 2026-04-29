@@ -26,6 +26,7 @@ import { cn, formatDate, parseUTC } from "@/lib/utils";
 import { swrKeys } from "@/lib/swr-keys";
 import { zodResolver } from "@hookform/resolvers/zod";
 import isEmpty from "lodash-es/isEmpty";
+import { Checkbox } from "@/components/ui/checkbox";
 import { SendHorizontal, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
@@ -144,10 +145,10 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
     isSubmittingRef.current = true;
     setIsSubmitting(true);
     try {
-      await instance.post(`/threads/${validThreadId}/comments`, {
-        content: values.content,
-        is_anonymous: values.is_anonymous ?? false,
-      });
+      const formData = new FormData();
+      formData.set("content", values.content);
+      formData.set("is_anonymous", String(values.is_anonymous ?? false));
+      await instance.postForm(`/threads/${validThreadId}/comments`, formData);
       toast({ title: "留言成功" });
       form.reset();
       mutateComments();
@@ -309,26 +310,35 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
       )}
 
       {!isEmpty(userData) ? (
-        <div className="sticky bottom-0 z-40 bg-background border-t border-border px-4 py-3 flex items-center gap-3">
-          <Textarea
-            placeholder="輸入訊息..."
-            className="flex-1 bg-muted min-h-0 h-10 resize-none py-2.5"
-            {...form.register("content", { disabled: isSubmitting })} // [R2-2]
-          />
+        <div className="sticky bottom-0 z-40 bg-background border-t border-border px-4 py-3 space-y-2">
+          <div className="flex items-center gap-3">
+            <Textarea
+              placeholder="輸入訊息..."
+              className="flex-1 bg-muted min-h-0 h-10 resize-none py-2.5"
+              {...form.register("content", { disabled: isSubmitting })} // [R2-2]
+            />
 
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="送出留言"
-            className="shrink-0 text-muted-foreground"
-            disabled={isSubmitting}
-            onClick={form.handleSubmit(onSubmitComment, () => {
-              const err = form.formState.errors.content?.message;
-              toast({ title: err || "請輸入留言內容", variant: "error" }); // [R2-1]
-            })}
-          >
-            <SendHorizontal className="h-5 w-5" />
-          </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="送出留言"
+              className="shrink-0 text-muted-foreground"
+              disabled={isSubmitting}
+              onClick={form.handleSubmit(onSubmitComment, () => {
+                const err = form.formState.errors.content?.message;
+                toast({ title: err || "請輸入留言內容", variant: "error" }); // [R2-1]
+              })}
+            >
+              <SendHorizontal className="h-5 w-5" />
+            </Button>
+          </div>
+          <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+            <Checkbox
+              checked={form.watch("is_anonymous")}
+              onCheckedChange={(v) => form.setValue("is_anonymous", Boolean(v))}
+            />
+            匿名留言
+          </label>
         </div>
       ) : (
         <div className="sticky bottom-0 z-40 bg-background border-t border-border px-4 py-3 text-center text-sm text-muted-foreground">
