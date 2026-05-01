@@ -37,6 +37,7 @@ function SiteHeader() {
   const { setParams } = useQueryState();
   const [preferenceOpen, setPreferenceOpen] = useState(false);
   const [draftShowEmpty, setDraftShowEmpty] = useState(true);
+  const [draftDefaultAnonymous, setDraftDefaultAnonymous] = useState(false);
   const [prefSaving, setPrefSaving] = useState(false);
   const isLoginPage = pathname === "/login";
   const accessToken = getCookie("ntpu-past-exam-access-token");
@@ -69,6 +70,7 @@ function SiteHeader() {
 
   const openPreferenceDialog = () => {
     setDraftShowEmpty(userData?.show_empty_courses ?? true);
+    setDraftDefaultAnonymous(userData?.default_is_anonymous ?? false);
     setPreferenceOpen(true);
   };
 
@@ -77,8 +79,13 @@ function SiteHeader() {
       setPrefSaving(true);
       const result = await instance.put("/users/me/preferences", {
         show_empty_courses: draftShowEmpty,
+        default_is_anonymous: draftDefaultAnonymous,
       });
-      const updated = { ...userData, show_empty_courses: result.show_empty_courses };
+      const updated = {
+        ...userData,
+        show_empty_courses: result.show_empty_courses,
+        default_is_anonymous: result.default_is_anonymous,
+      };
       setUserData(updated);
       mutate(swrKeys.userMe(), updated, false);
       setPreferenceOpen(false);
@@ -191,6 +198,15 @@ function SiteHeader() {
             <Switch
               checked={draftShowEmpty}
               onCheckedChange={setDraftShowEmpty}
+              size="sm"
+              disabled={prefSaving}
+            />
+          </div>
+          <div className="flex items-center justify-between py-2">
+            <span className="text-sm">預設匿名上傳</span>
+            <Switch
+              checked={draftDefaultAnonymous}
+              onCheckedChange={setDraftDefaultAnonymous}
               size="sm"
               disabled={prefSaving}
             />

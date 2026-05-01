@@ -40,10 +40,11 @@ import { forEach, head, map } from "lodash-es";
 import { useParams, usePathname } from "next/navigation";
 import { useQueryState } from "@/hooks/useQueryState";
 import { swrKeys } from "@/lib/swr-keys";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import * as z from "zod";
+import userStore from "@/store/userStore";
 
 const CreatePostDialog = () => {
   const { toast } = useToast();
@@ -51,6 +52,8 @@ const CreatePostDialog = () => {
   const pathname = usePathname();
   const params = useParams();
   const { get, removeParams } = useQueryState();
+  const { userData } = userStore();
+  const open = get("open_create_post_dialog") === "true";
 
   const isAdminPage = pathname.includes("admin");
 
@@ -72,6 +75,12 @@ const CreatePostDialog = () => {
       files: null,
     },
   });
+
+  useEffect(() => {
+    if (open && userData) {
+      form.setValue("is_anonymous", userData?.default_is_anonymous ?? false);
+    }
+  }, [open, userData, form]);
 
   const {
     fields: fileFields,

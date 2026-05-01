@@ -30,7 +30,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { isEmpty } from "lodash-es";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CornerDownLeft, Heart, Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import * as z from "zod";
@@ -76,11 +76,23 @@ const ReplyForm = ({
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const isLoadingRef = useRef(false);
+  const hasSetAnonymous = useRef(false);
+  const { userData } = userStore();
 
   const form = useForm<z.infer<typeof createCommentSchema>>({
     resolver: zodResolver(createCommentSchema),
-    defaultValues: { content: "", is_anonymous: false },
+    defaultValues: {
+      content: "",
+      is_anonymous: userData?.default_is_anonymous ?? false,
+    },
   });
+
+  useEffect(() => {
+    if (userData && !hasSetAnonymous.current) {
+      form.setValue("is_anonymous", userData?.default_is_anonymous ?? false);
+      hasSetAnonymous.current = true;
+    }
+  }, [userData, form]);
 
   const onSubmit = async (values: z.infer<typeof createCommentSchema>) => {
     if (isLoadingRef.current) return;

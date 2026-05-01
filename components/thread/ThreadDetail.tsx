@@ -29,7 +29,7 @@ import isEmpty from "lodash-es/isEmpty";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SendHorizontal, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import * as z from "zod";
@@ -73,6 +73,7 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
   // [R1-6] isSubmitting drives UI disabled state; isSubmittingRef guards re-entrancy in closures
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
+  const hasSetAnonymous = useRef(false);
 
   const validThreadId = threadId && UUID_RE.test(threadId) ? threadId : null;
 
@@ -95,8 +96,18 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
 
   const form = useForm<z.infer<typeof createCommentSchema>>({
     resolver: zodResolver(createCommentSchema),
-    defaultValues: { content: "", is_anonymous: false },
+    defaultValues: {
+      content: "",
+      is_anonymous: userData?.default_is_anonymous ?? false,
+    },
   });
+
+  useEffect(() => {
+    if (userData && !hasSetAnonymous.current) {
+      form.setValue("is_anonymous", userData?.default_is_anonymous ?? false);
+      hasSetAnonymous.current = true;
+    }
+  }, [userData, form]);
 
   const sortedComments = useMemo(() => {
     if (!comments) return [];
