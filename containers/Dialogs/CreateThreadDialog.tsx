@@ -33,10 +33,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryState } from "@/hooks/useQueryState";
 import { swrKeys } from "@/lib/swr-keys";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { mutate } from "swr";
 import * as z from "zod";
+import userStore from "@/store/userStore";
 
 const GUIDELINES = [
   {
@@ -109,6 +110,8 @@ const CreateThreadDialog = () => {
   const params = useParams();
   const { get, removeParams } = useQueryState();
   const courseId = params.course_id as string | undefined;
+  const { userData } = userStore();
+  const open = get("open_create_thread_dialog") === "true";
 
   const form = useForm<z.infer<typeof createThreadSchema>>({
     resolver: zodResolver(createThreadSchema),
@@ -119,6 +122,12 @@ const CreateThreadDialog = () => {
       image: null,
     },
   });
+
+  useEffect(() => {
+    if (open && userData) {
+      form.setValue("is_anonymous", userData?.default_is_anonymous ?? false);
+    }
+  }, [open, userData, form]);
 
   function closeDialog() {
     form.reset();
