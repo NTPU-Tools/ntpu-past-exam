@@ -2,11 +2,13 @@
 /node_modules
 /.pnp
 .pnp.*
+.pnpm-store/
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+
 
 # testing
 /coverage
