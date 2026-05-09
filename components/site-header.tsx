@@ -101,7 +101,6 @@ function SiteHeader() {
 
   if (isLoading) {
     return (
-      // [R2-2]
       <header className="sticky h-12 top-0 z-50 w-full bg-header-bg border-b" style={{ ["--header-height" as string]: "3rem" }}>
         <div className="h-full flex items-center justify-between px-4">
           <div className="animate-pulse bg-muted h-4 w-[100px]" />
@@ -114,7 +113,6 @@ function SiteHeader() {
   }
 
   return (
-    // [R2-2]
     <>
       <header className="sticky top-0 z-50 w-full bg-header-bg border-b" style={{ ["--header-height" as string]: "3rem" }}>
         <div className="h-12 flex items-center justify-between px-4">

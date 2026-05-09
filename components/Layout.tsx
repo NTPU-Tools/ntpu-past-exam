@@ -4,13 +4,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResizableSplit } from "@/components/ResizableSplit";
 import SidebarNav from "@/components/sidebar-nav";
 import SiteFooter from "@/components/site-footer";
-import dynamic from "next/dynamic"; // [R2-4]
-import { usePathname } from "next/navigation";
+import dynamic from "next/dynamic";import { usePathname } from "next/navigation";
 import { FC, ReactNode, useEffect } from "react";
 import { useMediaQuery, useLocalStorage } from "usehooks-ts";
 
-interface PageProps { // [R1-4]
-  children: ReactNode;
+interface PageProps {  children: ReactNode;
 }
 
 const TailwindIndicator = dynamic(
@@ -20,7 +18,7 @@ const TailwindIndicator = dynamic(
 const TailwindIndicatorDynamic =
   process.env.NODE_ENV === "production" ? () => null : TailwindIndicator;
 const SiteHeader = dynamic(() => import("@/components/site-header"), {
-  // [R1-2] Client-only: uses client-side auth/navigation hooks
+// Client-only: uses client-side auth/navigation hooks
   ssr: false,
   loading: () => (
     <header className="sticky h-12 top-0 z-50 w-full bg-header-bg border-b">
@@ -34,13 +32,11 @@ const SiteHeader = dynamic(() => import("@/components/site-header"), {
   ),
 });
 
-const Layout: FC<PageProps> = ({ children }) => { // [R2-4]
-  const pathname = usePathname();
+const Layout: FC<PageProps> = ({ children }) => {  const pathname = usePathname();
   const isDesktop = useMediaQuery("(min-width: 768px)", { defaultValue: true });
 
   const isSimplePage =
-    pathname === "/login" || pathname === "/" || pathname.startsWith("/admin"); // [R1-1]
-
+    pathname === "/login" || pathname === "/" || pathname.startsWith("/admin");
   const [sidebarRatio, setSidebarRatio] = useLocalStorage("ntpu-sidebar-ratio", 0.17);
 
   useEffect(() => {
@@ -50,8 +46,7 @@ const Layout: FC<PageProps> = ({ children }) => { // [R2-4]
   }, [pathname]);
 
   if (isSimplePage) {
-    const needsContainer = pathname.startsWith("/admin"); // [R2-3]
-    return (
+    const needsContainer = pathname.startsWith("/admin");    return (
       <div className="relative flex min-h-screen flex-col">
         <SiteHeader />
         <div className="flex-1">

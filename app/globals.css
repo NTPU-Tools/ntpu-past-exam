@@ -99,9 +99,14 @@
     --sidebar-ring: oklch(0.90 0.005 75);
 }
 
+:root {
+  --font-sans-fallback: ui-sans-serif, system-ui, sans-serif;
+}
+
 @theme inline {
-    --font-sans: var(--font-sans);
-    --font-heading: var(--font-heading);
+    
+    --font-sans: var(--font-sans, var(--font-sans-fallback));
+    --font-heading: var(--font-heading, var(--font-sans, var(--font-sans-fallback)));
     --color-header-bg: var(--header-bg);
     --color-header-foreground: var(--header-foreground);
     --color-sidebar-bg: var(--sidebar-bg);
@@ -152,6 +157,80 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Animation easing tokens */
+:root {
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* Entrance keyframes */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes heart-pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  60% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Utility classes */
+.animate-fade-in-up {
+  animation: fade-in-up 500ms var(--ease-out-quart) both;
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 400ms var(--ease-out-quart) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 300ms var(--ease-out-quart) both;
+}
+
+.animate-scale-in {
+  animation: scale-in 300ms var(--ease-out-quart) both;
+}
+
+.animate-heart-pop {
+  animation: heart-pop 400ms var(--ease-out-quart);
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 300ms var(--ease-out-quart) both;
+}
+
+/* Button press micro-interaction */
+.btn-press {
+  transition: transform 100ms var(--ease-out-quart);
+}
+.btn-press:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -164,5 +243,20 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-tight;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-heart-pop {
+    animation: none !important;
   }
 }

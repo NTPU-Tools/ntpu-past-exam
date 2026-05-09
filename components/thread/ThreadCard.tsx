@@ -22,7 +22,7 @@ import { isEmpty } from "lodash-es";
 import { Heart, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { mutate } from "swr";
 
 export interface Thread {
@@ -60,15 +60,19 @@ const ThreadCard = ({ thread, courseId, onClick }: ThreadCardProps) => {
 
   const displayName = thread.is_anonymous ? "匿名" : thread.owner_name;
 
-  // [R3-1] mountedRef removed — React 18+ safely ignores state updates on unmounted components
 
   const isLikingRef = useRef(false);
   const isDeletingRef = useRef(false);
+  const likeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const [animatingLike, setAnimatingLike] = useState(false);
 
+  useEffect(() => () => clearTimeout(likeTimerRef.current), []);
   const handleLike = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (isLikingRef.current) return;
+    const wasLiked = liked;
+    setAnimatingLike(true);
     try {
       setIsLiking(true);
       isLikingRef.current = true;
@@ -77,17 +81,21 @@ const ThreadCard = ({ thread, courseId, onClick }: ThreadCardProps) => {
       );
       setLiked(res.liked);
       setLikeCount(res.thread.like_count);
-      await mutate(swrKeys.threads(courseId));
     } catch {
-      toast({ title: "操作失敗", variant: "error" });
+      toast({ title: "操作失敗", variant: "error" }); 
     } finally {
       setIsLiking(false);
       isLikingRef.current = false;
+      if (!wasLiked) {
+        clearTimeout(likeTimerRef.current);        likeTimerRef.current = setTimeout(() => setAnimatingLike(false), 400);
+      } else {
+        setAnimatingLike(false);
+      }
     }
-  }, [thread.id, courseId, toast]);
+    mutate(swrKeys.threads(courseId)).catch(() => {}); 
+  }, [thread.id, courseId, toast, liked]);
 
-  const handleDelete = useCallback(async () => { // [R3-2]
-    if (isDeletingRef.current) return;
+  const handleDelete = useCallback(async () => {    if (isDeletingRef.current) return;
     try {
       setIsDeleting(true);
       isDeletingRef.current = true;
@@ -105,15 +113,14 @@ const ThreadCard = ({ thread, courseId, onClick }: ThreadCardProps) => {
 
   const formattedDate = formatDate(thread.create_time);
 
-  const departmentId = String(params?.department_id ?? ""); // [R3-3]
-  const href = `/${departmentId}/${courseId}/thread/${thread.id}`;
+  const departmentId = String(params?.department_id ?? "");  const href = `/${departmentId}/${courseId}/thread/${thread.id}`;
 
   if (deleted) return null;
 
   const card = (
     <Card
       className={cn(
-        "hover:bg-muted transition-colors",
+        "hover:bg-muted transition-all duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] hover:shadow-sm",
         onClick && "cursor-pointer",
       )}
       onClick={onClick}
@@ -192,7 +199,7 @@ const ThreadCard = ({ thread, courseId, onClick }: ThreadCardProps) => {
             onClick={handleLike}
             disabled={isLiking}
           >
-            <Heart className={cn("h-4 w-4", liked && "fill-current")} />
+            <Heart className={cn("h-4 w-4", liked && "fill-current", animatingLike && "animate-heart-pop")} />
             <span className="text-xs">{likeCount}</span>
           </Button>
         )}

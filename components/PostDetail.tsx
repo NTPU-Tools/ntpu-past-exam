@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { swrKeys } from "@/lib/swr-keys";
 import userStore from "@/store/userStore";
-import { formatRelative, subHours } from "date-fns";
+import { formatRelative } from "date-fns";
 import { zhTW } from "date-fns/locale";
 import { isEmpty } from "lodash-es";
 import { ArrowLeft, Trash2 } from "lucide-react";
@@ -72,12 +72,11 @@ const PostDetail = ({ postId, onBack }: PostDetailProps) => {
               posts: currentData.posts?.filter((p: any) => p.id !== postId),
             };
           },
-          { revalidate: false },
+          undefined,
         );
       }
 
-      // 清除 post 详情缓存，避免 404
-      mutate(swrKeys.post(postId), undefined, { revalidate: false });
+      mutate(swrKeys.post(postId), undefined, undefined);
 
       toast({ title: "刪除成功" });
       onBack?.();
@@ -125,17 +124,17 @@ const PostDetail = ({ postId, onBack }: PostDetailProps) => {
   }
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <div className="flex items-start justify-between gap-2">
         {onBack && (
           <div className="flex items-center gap-1 pb-3">
             <Button
               variant="ghost"
               size="icon"
-              aria-label="返回考古題列表"
+              className="group"              aria-label="返回考古題列表"
               onClick={onBack}
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-5 w-5 transition-transform duration-200 group-hover:-translate-x-0.5" />
             </Button>
           </div>
         )}
@@ -173,23 +172,15 @@ const PostDetail = ({ postId, onBack }: PostDetailProps) => {
           </div>
         )}
       </div>
-      <h1 className="text-lg font-bold">{post?.title}</h1>
-      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mt-2">
+      <h1 className="text-lg font-bold animate-fade-in-up">{post?.title}</h1>
+      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mt-2 animate-fade-in" style={{ animationDelay: "100ms" }}>
         <span>{post?.owner_name}</span>
         {!post?.is_migrate && (
           <>
             <span className="text-border">·</span>
             <span>
               {formatRelative(
-                new Date(
-                  subHours(new Date(post?.create_time), 8).toLocaleString(
-                    "en-US",
-                    {
-                      timeZone: "Europe/London",
-                    },
-                  ),
-                ),
-                new Date(),
+                new Date(post?.create_time),                new Date(),
                 {
                   locale: zhTW,
                 },
@@ -199,11 +190,11 @@ const PostDetail = ({ postId, onBack }: PostDetailProps) => {
         )}
       </div>
       {post?.content && (
-        <p className="mt-3 text-sm text-foreground whitespace-pre-wrap">
+        <p className="mt-3 text-sm text-foreground whitespace-pre-wrap animate-fade-in" style={{ animationDelay: "150ms" }}>
           {post.content}
         </p>
       )}
-      <div className="mt-4">
+      <div className="mt-4 animate-fade-in" style={{ animationDelay: "200ms" }}>
         {post?.files &&
           post.files.map((fileLink: string) => (
             <PDFViewer key={fileLink} src={fileLink} className="w-full" />

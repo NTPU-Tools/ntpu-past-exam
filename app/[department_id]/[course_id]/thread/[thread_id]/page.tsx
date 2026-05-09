@@ -18,9 +18,7 @@ const ThreadDetailPage = () => {
   const departmentId = Array.isArray(params.department_id) ? params.department_id[0] : params.department_id;
 
   const validThreadId = threadId && uuidRe.test(threadId) ? threadId : null;
-  const validDepartmentId = departmentId || null; // [R2-2]
-  const validCourseId = courseId || null; // [R2-2]
-
+  const validDepartmentId = departmentId || null;  const validCourseId = courseId || null;
   const backHref = validDepartmentId && validCourseId ? `/${validDepartmentId}/${validCourseId}` : "/";
   const afterDeleteHref = validDepartmentId && validCourseId ? `/${validDepartmentId}/${validCourseId}/thread` : "/";
 

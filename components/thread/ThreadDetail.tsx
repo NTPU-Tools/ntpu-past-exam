@@ -70,7 +70,7 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>("all");
-  // [R1-6] isSubmitting drives UI disabled state; isSubmittingRef guards re-entrancy in closures
+// isSubmitting drives UI disabled state; isSubmittingRef guards re-entrancy in closures
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
   const hasSetAnonymous = useRef(false);
@@ -121,7 +121,7 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
         (a, b) =>
           parseUTC(b.create_time).getTime() - parseUTC(a.create_time).getTime(),
       );
-    return [...comments]; // [R1-4] Defensive copy to protect SWR cache from mutation
+    return [...comments];// Defensive copy to protect SWR cache from mutation
   }, [comments, sortMode]);
 
   if (!validThreadId) {
@@ -135,7 +135,7 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
       await instance.delete(`/threads/${validThreadId}`);
       toast({ title: "刪除成功" });
       if (courseId) {
-        await mutate(swrKeys.threads(courseId)); // [R1-5] Await mutation before navigation
+        await mutate(swrKeys.threads(courseId));// Await mutation before navigation
       }
       if (onDeleteSuccess) {
         onDeleteSuccess();
@@ -267,9 +267,7 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
               alt="討論圖片"
               className="w-full object-contain"
               referrerPolicy="no-referrer"
-              loading="lazy" // [R1-3]
-              decoding="async" // [R1-3]
-            />
+              loading="lazy"              decoding="async"            />
           )}
         </CardContent>
       </Card>
@@ -326,8 +324,7 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
             <Textarea
               placeholder="輸入訊息..."
               className="flex-1 bg-muted min-h-0 h-10 resize-none py-2.5"
-              {...form.register("content", { disabled: isSubmitting })} // [R2-2]
-            />
+              {...form.register("content", { disabled: isSubmitting })}            />
 
             <Button
               variant="ghost"
@@ -337,8 +334,7 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
               disabled={isSubmitting}
               onClick={form.handleSubmit(onSubmitComment, () => {
                 const err = form.formState.errors.content?.message;
-                toast({ title: err || "請輸入留言內容", variant: "error" }); // [R2-1]
-              })}
+                toast({ title: err || "請輸入留言內容", variant: "error" });              })}
             >
               <SendHorizontal className="h-5 w-5" />
             </Button>

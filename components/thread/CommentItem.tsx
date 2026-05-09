@@ -194,11 +194,15 @@ const ReplyItem = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [deleted, setDeleted] = useState(false);
-
+  const [animatingLike, setAnimatingLike] = useState(false);
+  const likeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => () => clearTimeout(likeTimerRef.current), []);
   const isOwner = reply.is_owner;
 
   const handleLike = async () => {
     if (isLiking) return;
+    const wasLiked = liked;
+    setAnimatingLike(true);
     try {
       setIsLiking(true);
       const res = await instance.post<{
@@ -209,8 +213,13 @@ const ReplyItem = ({
       setLikeCount(res.comment.like_count);
     } catch {
       toast({ title: "操作失敗", variant: "error" });
+      
     } finally {
       setIsLiking(false);
+      if (!wasLiked) {
+        clearTimeout(likeTimerRef.current);        likeTimerRef.current = setTimeout(() => setAnimatingLike(false), 400);      } else {
+        setAnimatingLike(false);
+      }
     }
   };
 
@@ -273,7 +282,7 @@ const ReplyItem = ({
               onClick={handleLike}
               disabled={isLiking}
             >
-              <Heart className={cn("h-3.5 w-3.5", liked && "fill-current")} />
+              <Heart className={cn("h-3.5 w-3.5", liked && "fill-current", animatingLike && "animate-heart-pop")} />
             </Button>
           ) : (
             <span className="h-7 w-7 flex items-center justify-center text-muted-foreground">
@@ -364,7 +373,9 @@ const CommentItem = ({
   const [deleted, setDeleted] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
-
+  const [animatingLike, setAnimatingLike] = useState(false);
+  const likeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => () => clearTimeout(likeTimerRef.current), []);
   const isOwner = comment.is_owner;
 
   const { data: commentDetail, isLoading: isLoadingReplies, mutate: mutateComment } =
@@ -375,6 +386,8 @@ const CommentItem = ({
 
   const handleLike = async () => {
     if (isLiking) return;
+    const wasLiked = liked;
+    setAnimatingLike(true);
     try {
       setIsLiking(true);
       const res = await instance.post<{
@@ -383,12 +396,17 @@ const CommentItem = ({
       }>(`/threads/comments/${comment.id}/like`);
       setLiked(res.liked);
       setLikeCount(res.comment.like_count);
-      await mutate(swrKeys.threadComments(threadId));
     } catch {
       toast({ title: "操作失敗", variant: "error" });
+      
     } finally {
       setIsLiking(false);
+      if (!wasLiked) {
+        clearTimeout(likeTimerRef.current);        likeTimerRef.current = setTimeout(() => setAnimatingLike(false), 400);      } else {
+        setAnimatingLike(false);
+      }
     }
+    mutate(swrKeys.threadComments(threadId)).catch(() => {}); 
   };
 
   const handleDelete = async () => {
@@ -456,7 +474,7 @@ const CommentItem = ({
               onClick={handleLike}
               disabled={isLiking}
             >
-              <Heart className={cn("h-4 w-4", liked && "fill-current")} />
+              <Heart className={cn("h-4 w-4", liked && "fill-current", animatingLike && "animate-heart-pop")} />
             </Button>
           ) : (
             <span className="h-8 w-8 flex items-center justify-center text-muted-foreground">
@@ -500,7 +518,7 @@ const CommentItem = ({
       {showToggleButton && (
         <button
           type="button"
-          className="text-xs text-muted-foreground ml-10 mt-1.5 hover:text-foreground transition-colors"
+          className="text-xs text-muted-foreground ml-10 mt-1.5 hover:text-foreground transition-all duration-200"
           onClick={() => setShowReplies((v) => !v)}
         >
           {showReplies ? "— 收起回覆" : "— 查看留言"}
@@ -524,7 +542,7 @@ const CommentItem = ({
       )}
 
       {showReplies && (
-        <div className="ml-6 mt-1 border-l border-border pl-3">
+        <div className="ml-6 mt-1 border-l border-border pl-3 animate-fade-in">
           {isLoadingReplies ? (
             <div className="space-y-2 py-2">
               <Skeleton className="h-4 w-3/4" />

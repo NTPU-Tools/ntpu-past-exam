@@ -49,7 +49,7 @@ function PageClient() {
       lastRedirectedDept.current = userDepartment.id;
       router.replace(`/${userDepartment.id}`);
     }
-  }, [userData, data]);
+  }, [userData, data, searchParams]); 
 
   const invisible_department = data
     ? filter(
@@ -95,27 +95,28 @@ function PageClient() {
   return (
     <div className="min-h-[calc(100dvh-3rem)]">
       <div className="w-full max-w-lg mx-auto px-8 pt-20 pb-12">
-        <h1 className="font-heading text-5xl sm:text-6xl font-black tracking-tighter leading-[1.05] mb-14">
+        <h1 className="font-heading text-5xl sm:text-6xl font-black tracking-tighter leading-[1.05] mb-14 animate-fade-in-down">
           選擇社群
         </h1>
 
         {data?.visible?.length > 0 && (
           <div>
-            {data.visible.map((dept: any) => (
+            {data.visible.map((dept: any, i: number) => (
               <Link
                 key={dept.id}
                 href={`/${dept.id}`}
-                className="flex items-center justify-between py-5 border-b border-border group"
+                className="flex items-center justify-between py-5 border-b border-border group animate-fade-in-up"
+                style={{ animationDelay: `${i * 80}ms` }}
               >
                 <span className="text-xl font-semibold tracking-tight group-hover:text-primary transition-colors">{dept.name}</span>
-                <span className="text-sm text-muted-foreground/20 group-hover:text-primary font-mono transition-colors">&rarr;</span>
+                <span className="text-sm text-muted-foreground/20 group-hover:text-primary font-mono transition-all duration-200 group-hover:translate-x-1">&rarr;</span>
               </Link>
             ))}
           </div>
         )}
 
         {data?.pending?.length > 0 && (
-          <div className="mt-14">
+          <div className="mt-14 animate-fade-in-up" style={{ animationDelay: `${(data.visible?.length ?? 0) * 80 + 100}ms` }}>
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">等待審核</p>
             {data.pending.map((dept: any) => (
               <div
@@ -130,7 +131,7 @@ function PageClient() {
         )}
 
         {invisible_department?.length > 0 && (
-          <div className="mt-14">
+          <div className="mt-14 animate-fade-in-up" style={{ animationDelay: `${(data.visible?.length ?? 0) * 80 + ((data.pending?.length ?? 0) > 0 ? 200 : 100)}ms` }}> 
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">其他社群</p>
             {invisible_department.map((dept: any) => (
               <button
