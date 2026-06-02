@@ -45,5 +45,7 @@ next-env.d.ts
 # opencode
 .opencode/
 
+.agents/
+
 # playwright cli
 .playwright-cli/

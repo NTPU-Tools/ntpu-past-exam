@@ -195,7 +195,7 @@ const ReplyItem = ({
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [deleted, setDeleted] = useState(false);
   const [animatingLike, setAnimatingLike] = useState(false);
-  const likeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const likeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(likeTimerRef.current), []);
   const isOwner = reply.is_owner;
 
@@ -374,7 +374,7 @@ const CommentItem = ({
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [animatingLike, setAnimatingLike] = useState(false);
-  const likeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const likeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(likeTimerRef.current), []);
   const isOwner = comment.is_owner;
 

@@ -63,7 +63,7 @@ const ThreadCard = ({ thread, courseId, onClick }: ThreadCardProps) => {
 
   const isLikingRef = useRef(false);
   const isDeletingRef = useRef(false);
-  const likeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const likeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [animatingLike, setAnimatingLike] = useState(false);
 
   useEffect(() => () => clearTimeout(likeTimerRef.current), []);
