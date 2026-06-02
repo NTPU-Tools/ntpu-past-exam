@@ -1,4 +1,5 @@
 import instance from "@/api-client/instance";
+import { AutoLinkText } from "@/components/AutoLinkText";
 import { DataTable } from "@/components/ClientPaginationDataTable";
 import { Button } from "@/components/ui/button";
 import {
@@ -98,7 +99,11 @@ const EditBulletinDialog: FC<pageProps> = () => {
     usersCol.accessor("content", {
       header: "內容",
       size: 120,
-      cell: (props) => <span>{props.getValue()}</span>,
+      cell: (props) => (
+        <span className="whitespace-pre-wrap">
+          <AutoLinkText text={String(props.getValue() ?? "")} />
+        </span>
+      ),
     }),
   ];
 

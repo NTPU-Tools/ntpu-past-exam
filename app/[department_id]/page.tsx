@@ -1,6 +1,7 @@
 "use client";
 
 import instance from "@/api-client/instance";
+import { AutoLinkText } from "@/components/AutoLinkText";
 import { PageHeader, PageHeaderHeading } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -130,7 +131,9 @@ function Page() {
                 <Skeleton className="h-4 w-36" />
               </div>
             ) : (
-              <TypographyP>{bulletinDetail?.content}</TypographyP>
+              <TypographyP>
+                <AutoLinkText text={bulletinDetail?.content ?? ""} />
+              </TypographyP>
             )}
           </div>
 
