@@ -31,7 +31,7 @@ function SidebarNavItems({ items, pathname }: SidebarNavItemsProps) {
             key={item.href || item.title || index} 
             href={item.href}
             className={cn(
-              "group flex items-center gap-2 rounded-r-lg pl-3 pr-3 py-2 text-[14px] border-l-2 transition-all duration-200 ease-[cubic-bezier(0.25,1,0.5,1)]",
+              "group flex items-center gap-2 rounded-r-lg pl-3 pr-3 py-2 text-[14px] border-l-2 transition-[color,background-color,border-color,transform] duration-150 ease-[cubic-bezier(0.25,1,0.5,1)]",
               pathname === item.href || pathname?.startsWith(item.href + '/') 
                 ? "border-primary bg-sidebar-accent text-sidebar-fg-active font-semibold"
                 : "border-transparent text-sidebar-fg hover:bg-sidebar-accent hover:text-sidebar-fg-active hover:border-sidebar-border hover:translate-x-0.5",
@@ -41,7 +41,7 @@ function SidebarNavItems({ items, pathname }: SidebarNavItemsProps) {
           >
             <span className="truncate">{item.title}</span>
             {item.label && (
-              <span className="ml-auto text-[10px] font-bold text-primary opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0">
+              <span className="ml-auto text-[10px] font-bold text-primary opacity-0 -translate-x-2 transition-[opacity,transform] duration-150 group-hover:opacity-100 group-hover:translate-x-0">
                 {item.label}
               </span>
             )}

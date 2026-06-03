@@ -120,7 +120,7 @@ const ThreadCard = ({ thread, courseId, onClick }: ThreadCardProps) => {
   const card = (
     <Card
       className={cn(
-        "hover:bg-muted transition-all duration-200 ease-[cubic-bezier(0.25,1,0.5,1)] hover:shadow-sm",
+        "hover:bg-muted transition-[background-color,box-shadow] duration-150 ease-[cubic-bezier(0.25,1,0.5,1)] hover:shadow-sm",
         onClick && "cursor-pointer",
       )}
       onClick={onClick}

@@ -87,19 +87,18 @@ const ThreadList = ({ courseId, showHeader = true, onSelectThread }: ThreadListP
       <div className="grid grid-cols-1 gap-4">
         {threads?.length ? (
           <>
-            {threads.slice(0, visibleCount).map((thread, i) => (
-              <div key={thread.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 60}ms` }}>
+            {threads.slice(0, visibleCount).map((thread) => (
               <ThreadCard
+                key={thread.id}
                 thread={thread}
                 courseId={courseId}
-                onClick={onSelectThread ? () => onSelectThread(thread.id) : undefined}              />
-              </div>
+                onClick={onSelectThread ? () => onSelectThread(thread.id) : undefined}
+              />
             ))}
             {visibleCount < (threadsData?.total ?? 0) && (
               <Button
                 variant="outline"
-                className="w-full animate-fade-in"
-                style={{ animationDelay: `${Math.min(visibleCount, threadsData?.total ?? 0) * 60}ms` }}
+                className="w-full"
                 onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
               >
                 載入更多

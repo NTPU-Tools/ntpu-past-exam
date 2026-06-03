@@ -64,16 +64,15 @@ function ExamListContent({
   if (courseData.posts && postCount > 0) {
     return (
       <div>
-        {courseData.posts.map((post: Post, i: number) => (
+        {courseData.posts.map((post: Post) => (
           <button
             key={post.id}
             type="button"
             onClick={() => onSelectPost?.(post.id)}
             className={cn(
-              "flex items-baseline justify-between py-3.5 border-b border-border text-sm font-medium hover:text-primary transition-colors group w-full text-left animate-fade-in-up",
+              "flex items-baseline justify-between py-3.5 border-b border-border text-sm font-medium hover:text-primary transition-colors group w-full text-left",
               selectedPostId === post.id && "text-primary"
             )}
-            style={{ animationDelay: `${i * 60}ms` }}
           >
             <span>{post.title}</span>
             <span className="text-[11px] text-muted-foreground/20 group-hover:text-primary font-mono shrink-0 ml-4 group-hover:translate-x-1 transition-[color,transform] duration-200">&rarr;</span>

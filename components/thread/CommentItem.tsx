@@ -518,7 +518,7 @@ const CommentItem = ({
       {showToggleButton && (
         <button
           type="button"
-          className="text-xs text-muted-foreground ml-10 mt-1.5 hover:text-foreground transition-all duration-200"
+          className="text-xs text-muted-foreground ml-10 mt-1.5 hover:text-foreground transition-colors duration-150"
           onClick={() => setShowReplies((v) => !v)}
         >
           {showReplies ? "— 收起回覆" : "— 查看留言"}

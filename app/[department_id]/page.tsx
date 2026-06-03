@@ -80,13 +80,12 @@ function Page() {
         {data?.length ? (
           <div>
             
-            {data.map((bulletin: Bulletin, idx: number) => {
+            {data.map((bulletin: Bulletin) => {
               return (
               <button
                 type="button"
-                className="w-full text-left py-4 border-b border-border transition-all duration-200 hover:text-primary group animate-fade-in-up"
+                className="w-full text-left py-4 border-b border-border transition-colors duration-150 hover:text-primary group"
                 key={bulletin.id}
-                style={{ animationDelay: `${idx * 80}ms` }}
                 onClick={() => {
                   setParams({ bulletin_detail_dialog: bulletin.id });
                 }}

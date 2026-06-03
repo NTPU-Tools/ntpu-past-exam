@@ -106,17 +106,17 @@ function PageClient() {
                 key={dept.id}
                 href={`/${dept.id}`}
                 className="flex items-center justify-between py-5 border-b border-border group animate-fade-in-up"
-                style={{ animationDelay: `${i * 80}ms` }}
+                style={{ animationDelay: `${Math.min(i * 50, 150)}ms` }}
               >
                 <span className="text-xl font-semibold tracking-tight group-hover:text-primary transition-colors">{dept.name}</span>
-                <span className="text-sm text-muted-foreground/20 group-hover:text-primary font-mono transition-all duration-200 group-hover:translate-x-1">&rarr;</span>
+                <span className="text-sm text-muted-foreground/20 group-hover:text-primary font-mono transition-[color,transform] duration-150 group-hover:translate-x-1">&rarr;</span>
               </Link>
             ))}
           </div>
         )}
 
         {data?.pending?.length > 0 && (
-          <div className="mt-14 animate-fade-in-up" style={{ animationDelay: `${(data.visible?.length ?? 0) * 80 + 100}ms` }}>
+          <div className="mt-14 animate-fade-in-up" style={{ animationDelay: `${Math.min((data.visible?.length ?? 0) * 50 + 80, 180)}ms` }}>
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">等待審核</p>
             {data.pending.map((dept: any) => (
               <div
@@ -131,7 +131,7 @@ function PageClient() {
         )}
 
         {invisible_department?.length > 0 && (
-          <div className="mt-14 animate-fade-in-up" style={{ animationDelay: `${(data.visible?.length ?? 0) * 80 + ((data.pending?.length ?? 0) > 0 ? 200 : 100)}ms` }}> 
+          <div className="mt-14 animate-fade-in-up" style={{ animationDelay: `${Math.min((data.visible?.length ?? 0) * 50 + ((data.pending?.length ?? 0) > 0 ? 120 : 80), 180)}ms` }}>
             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">其他社群</p>
             {invisible_department.map((dept: any) => (
               <button

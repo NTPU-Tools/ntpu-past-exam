@@ -200,15 +200,15 @@
 
 /* Utility classes */
 .animate-fade-in-up {
-  animation: fade-in-up 500ms var(--ease-out-quart) both;
+  animation: fade-in-up 260ms var(--ease-out-quart) both;
 }
 
 .animate-fade-in-down {
-  animation: fade-in-down 400ms var(--ease-out-quart) both;
+  animation: fade-in-down 240ms var(--ease-out-quart) both;
 }
 
 .animate-fade-in {
-  animation: fade-in 300ms var(--ease-out-quart) both;
+  animation: fade-in 180ms var(--ease-out-quart) both;
 }
 
 .animate-scale-in {
@@ -252,8 +252,10 @@
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
     scroll-behavior: auto !important;
   }
   .animate-heart-pop {
