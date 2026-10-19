@@ -1,0 +1,11 @@
+.env
+.env.*
+.claude
+.git
+.gitignore
+.next
+.opencode
+.pnpm-store
+dist
+node_modules
+*.tsbuildinfo

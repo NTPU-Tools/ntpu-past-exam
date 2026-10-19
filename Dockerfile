@@ -1,0 +1,33 @@
+FROM node:22-alpine AS builder
+
+RUN corepack enable && corepack prepare pnpm@10.32.1 --activate
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+
+ARG NEXT_PUBLIC_API_ORIGIN
+ARG NEXT_PUBLIC_GOOGLE_LOGIN_CLIENT_ID
+ARG NEXT_PUBLIC_GA_MEASUREMENT_ID
+ARG NEXT_PUBLIC_CLARITY_MEASUREMENT_ID
+ARG NEXT_PUBLIC_GIT_BRANCH=main
+
+ENV NEXT_PUBLIC_API_ORIGIN=$NEXT_PUBLIC_API_ORIGIN \
+    NEXT_PUBLIC_GOOGLE_LOGIN_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_LOGIN_CLIENT_ID \
+    NEXT_PUBLIC_GA_MEASUREMENT_ID=$NEXT_PUBLIC_GA_MEASUREMENT_ID \
+    NEXT_PUBLIC_CLARITY_MEASUREMENT_ID=$NEXT_PUBLIC_CLARITY_MEASUREMENT_ID \
+    NEXT_PUBLIC_GIT_BRANCH=$NEXT_PUBLIC_GIT_BRANCH
+
+RUN test -n "$NEXT_PUBLIC_API_ORIGIN" \
+    && test -n "$NEXT_PUBLIC_GOOGLE_LOGIN_CLIENT_ID" \
+    && pnpm build
+
+FROM nginxinc/nginx-unprivileged:1.27-alpine
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 8080
