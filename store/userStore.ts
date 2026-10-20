@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 interface UserStore {
   userData: any;
+  // eslint-disable-next-line no-unused-vars
   setUserData: (data: any) => void;
 }
 

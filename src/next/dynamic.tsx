@@ -10,9 +10,7 @@ type DynamicOptions = {
   ssr?: boolean
 }
 
-export default function dynamic<
-  TProps extends object = Record<string, never>,
->(
+export default function dynamic<TProps extends object = {}>(
   loader: Loader<TProps>,
   options?: DynamicOptions,
 ) {

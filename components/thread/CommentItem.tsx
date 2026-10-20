@@ -1,4 +1,4 @@
-import instance from "@/api-client/instance"
+import instance from "@/api-client/instance";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,60 +9,60 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/components/ui/use-toast"
-import { createCommentSchema } from "@/schemas/thread"
-import { formatDate } from "@/lib/date"
-import { cn } from "@/lib/utils"
-import { swrKeys } from "@/lib/swr-keys"
-import userStore from "@/store/userStore"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { isEmpty } from "lodash-es"
-import { Checkbox } from "@/components/ui/checkbox"
-import { CornerDownLeft, Heart, Trash2 } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
-import { useForm } from "react-hook-form"
-import useSWR, { mutate } from "swr"
-import * as z from "zod"
+} from "@/components/ui/form";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { createCommentSchema } from "@/schemas/thread";
+import { cn, formatDate } from "@/lib/utils";
+import { swrKeys } from "@/lib/swr-keys";
+import userStore from "@/store/userStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { isEmpty } from "lodash-es";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CornerDownLeft, Heart, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import useSWR, { mutate } from "swr";
+import * as z from "zod";
 
 export interface ThreadComment {
-  id: string
-  thread_id: string
-  parent_comment_id?: string | null
-  content: string
-  owner_id: string
-  owner_name: string
-  is_anonymous: boolean
-  is_owner: boolean
-  like_count: number
-  reply_count?: number
-  liked: boolean
-  create_time: string
-  updated_time: string
+  id: string;
+  thread_id: string;
+  parent_comment_id?: string | null;
+  content: string;
+  owner_id: string;
+  owner_name: string;
+  is_anonymous: boolean;
+  is_owner: boolean;
+  like_count: number;
+  reply_count?: number;
+  liked: boolean;
+  create_time: string;
+  updated_time: string;
 }
 
 export interface ThreadCommentDetail extends ThreadComment {
-  replies?: ThreadCommentDetail[]
+  replies?: ThreadCommentDetail[];
 }
 
+
 interface ReplyFormProps {
-  threadId: string
-  parentCommentId: string
-  rootCommentId: string
-  replyToUserName?: string
-  onSuccess: () => void
-  onCancel: () => void
+  threadId: string;
+  parentCommentId: string;
+  rootCommentId: string;
+  replyToUserName?: string;
+  onSuccess: () => void;
+  onCancel: () => void;
 }
 
 const ReplyForm = ({
@@ -73,11 +73,11 @@ const ReplyForm = ({
   onSuccess,
   onCancel,
 }: ReplyFormProps) => {
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
-  const isLoadingRef = useRef(false)
-  const hasSetAnonymous = useRef(false)
-  const { userData } = userStore()
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const isLoadingRef = useRef(false);
+  const hasSetAnonymous = useRef(false);
+  const { userData } = userStore();
 
   const form = useForm<z.infer<typeof createCommentSchema>>({
     resolver: zodResolver(createCommentSchema),
@@ -85,38 +85,38 @@ const ReplyForm = ({
       content: "",
       is_anonymous: userData?.default_is_anonymous ?? false,
     },
-  })
+  });
 
   useEffect(() => {
     if (userData && !hasSetAnonymous.current) {
-      form.setValue("is_anonymous", userData?.default_is_anonymous ?? false)
-      hasSetAnonymous.current = true
+      form.setValue("is_anonymous", userData?.default_is_anonymous ?? false);
+      hasSetAnonymous.current = true;
     }
-  }, [userData, form])
+  }, [userData, form]);
 
   const onSubmit = async (values: z.infer<typeof createCommentSchema>) => {
-    if (isLoadingRef.current) return
-    isLoadingRef.current = true
-    setIsLoading(true)
+    if (isLoadingRef.current) return;
+    isLoadingRef.current = true;
+    setIsLoading(true);
     try {
-      const formData = new FormData()
-      formData.set("content", values.content)
-      formData.set("is_anonymous", String(values.is_anonymous ?? false))
-      formData.set("parent_comment_id", parentCommentId)
+      const formData = new FormData();
+      formData.set("content", values.content);
+      formData.set("is_anonymous", String(values.is_anonymous ?? false));
+      formData.set("parent_comment_id", parentCommentId);
 
-      await instance.postForm(`/threads/${threadId}/comments`, formData)
-      toast({ title: "回覆成功" })
-      form.reset()
-      await mutate(swrKeys.threadComments(threadId))
-      await mutate(swrKeys.comment(rootCommentId))
-      onSuccess()
+      await instance.postForm(`/threads/${threadId}/comments`, formData);
+      toast({ title: "回覆成功" });
+      form.reset();
+      await mutate(swrKeys.threadComments(threadId));
+      await mutate(swrKeys.comment(rootCommentId));
+      onSuccess();
     } catch {
-      toast({ title: "回覆失敗", variant: "error" })
+      toast({ title: "回覆失敗", variant: "error" });
     } finally {
-      isLoadingRef.current = false
-      setIsLoading(false)
+      isLoadingRef.current = false;
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Form {...form}>
@@ -143,7 +143,7 @@ const ReplyForm = ({
           )}
         />
         <div className="flex items-center justify-between">
-          <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground select-none">
+          <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
             <Checkbox
               checked={form.watch("is_anonymous")}
               onCheckedChange={(v) => form.setValue("is_anonymous", Boolean(v))}
@@ -159,28 +159,23 @@ const ReplyForm = ({
             >
               送出
             </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={onCancel}
-              type="button"
-            >
+            <Button size="sm" variant="outline" onClick={onCancel} type="button">
               取消
             </Button>
           </div>
         </div>
       </form>
     </Form>
-  )
-}
+  );
+};
 
-const MAX_INDENT_DEPTH = 3
+const MAX_INDENT_DEPTH = 3;
 
 interface ReplyItemProps {
-  reply: ThreadCommentDetail
-  threadId: string
-  rootCommentId: string
-  depth?: number
+  reply: ThreadCommentDetail;
+  threadId: string;
+  rootCommentId: string;
+  depth?: number;
 }
 
 const ReplyItem = ({
@@ -189,80 +184,81 @@ const ReplyItem = ({
   rootCommentId,
   depth = 0,
 }: ReplyItemProps) => {
-  const { toast } = useToast()
-  const { userData } = userStore()
-  const isLoggedIn = !isEmpty(userData)
-  const isSuperUser = userData?.is_super_user
-  const [liked, setLiked] = useState(reply.liked ?? false)
-  const [isLiking, setIsLiking] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [showReplyForm, setShowReplyForm] = useState(false)
-  const [deleted, setDeleted] = useState(false)
-  const [animatingLike, setAnimatingLike] = useState(false)
-  const likeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  )
-  useEffect(() => () => clearTimeout(likeTimerRef.current), [])
-  const isOwner = reply.is_owner
+  const { toast } = useToast();
+  const { userData } = userStore();
+  const isLoggedIn = !isEmpty(userData);
+  const isSuperUser = userData?.is_super_user;
+  const [liked, setLiked] = useState(reply.liked ?? false);
+  const [likeCount, setLikeCount] = useState(reply.like_count);
+  const [isLiking, setIsLiking] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showReplyForm, setShowReplyForm] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+  const [animatingLike, setAnimatingLike] = useState(false);
+  const likeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(likeTimerRef.current), []);
+  const isOwner = reply.is_owner;
 
   const handleLike = async () => {
-    if (isLiking) return
-    const wasLiked = liked
-    setAnimatingLike(true)
+    if (isLiking) return;
+    const wasLiked = liked;
+    setAnimatingLike(true);
     try {
-      setIsLiking(true)
+      setIsLiking(true);
       const res = await instance.post<{
-        liked: boolean
-        comment: ThreadComment
-      }>(`/threads/comments/${reply.id}/like`)
-      setLiked(res.liked)
+        liked: boolean;
+        comment: ThreadComment;
+      }>(`/threads/comments/${reply.id}/like`);
+      setLiked(res.liked);
+      setLikeCount(res.comment.like_count);
     } catch {
-      toast({ title: "操作失敗", variant: "error" })
+      toast({ title: "操作失敗", variant: "error" });
+      
     } finally {
-      setIsLiking(false)
+      setIsLiking(false);
       if (!wasLiked) {
-        clearTimeout(likeTimerRef.current)
-        likeTimerRef.current = setTimeout(() => setAnimatingLike(false), 400)
-      } else {
-        setAnimatingLike(false)
+        clearTimeout(likeTimerRef.current);        likeTimerRef.current = setTimeout(() => setAnimatingLike(false), 400);      } else {
+        setAnimatingLike(false);
       }
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (isDeleting) return
+    if (isDeleting) return;
     try {
-      setIsDeleting(true)
-      await instance.delete(`/threads/comments/${reply.id}`)
-      await mutate(swrKeys.comment(rootCommentId))
-      setDeleted(true)
-      toast({ title: "刪除成功" })
+      setIsDeleting(true);
+      await instance.delete(`/threads/comments/${reply.id}`);
+      await mutate(swrKeys.comment(rootCommentId));
+      setDeleted(true);
+      toast({ title: "刪除成功" });
     } catch {
-      toast({ title: "刪除失敗", variant: "error" })
+      toast({ title: "刪除失敗", variant: "error" });
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
-  if (deleted) return null
+  if (deleted) return null;
 
-  const displayName = reply.is_anonymous ? "匿名" : reply.owner_name
-  const initials = displayName.slice(0, 1)
-  const date = formatDate(reply.create_time)
+  const displayName = reply.is_anonymous ? "匿名" : reply.owner_name;
+  const initials = displayName.slice(0, 1);
+  const date = formatDate(reply.create_time);
 
   return (
     <div className="py-2">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <Avatar className="h-7 w-7 shrink-0">
-            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+            <AvatarFallback className="text-xs">
+              {initials}
+            </AvatarFallback>
           </Avatar>
-          <span className="text-sm leading-none font-semibold">
+          <span className="text-sm font-semibold leading-none">
             {displayName}
           </span>
           <span className="text-xs text-muted-foreground">{date}</span>
         </div>
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           {isLoggedIn && (
             <Button
               variant="ghost"
@@ -281,21 +277,15 @@ const ReplyItem = ({
               aria-label={liked ? "取消喜歡" : "喜歡"}
               className={cn(
                 "h-7 w-7",
-                liked && "text-red-500 hover:text-red-600"
+                liked && "text-red-500 hover:text-red-600",
               )}
               onClick={handleLike}
               disabled={isLiking}
             >
-              <Heart
-                className={cn(
-                  "h-3.5 w-3.5",
-                  liked && "fill-current",
-                  animatingLike && "animate-heart-pop"
-                )}
-              />
+              <Heart className={cn("h-3.5 w-3.5", liked && "fill-current", animatingLike && "animate-heart-pop")} />
             </Button>
           ) : (
-            <span className="flex h-7 w-7 items-center justify-center text-muted-foreground">
+            <span className="h-7 w-7 flex items-center justify-center text-muted-foreground">
               <Heart className="h-3.5 w-3.5" />
             </span>
           )}
@@ -315,16 +305,11 @@ const ReplyItem = ({
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>確定要刪除這則回覆嗎？</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    此操作無法復原。
-                  </AlertDialogDescription>
+                  <AlertDialogDescription>此操作無法復原。</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>取消</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                  >
+                  <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
                     刪除
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -334,12 +319,12 @@ const ReplyItem = ({
         </div>
       </div>
 
-      <p className="mt-1 ml-9 text-sm whitespace-pre-wrap text-foreground/80">
+      <p className="text-sm mt-1 ml-9 whitespace-pre-wrap text-foreground/80">
         {reply.content}
       </p>
 
       {showReplyForm && (
-        <div className="mt-2 ml-9">
+        <div className="ml-9 mt-2">
           <ReplyForm
             threadId={threadId}
             parentCommentId={reply.id}
@@ -352,13 +337,7 @@ const ReplyItem = ({
       )}
 
       {reply.replies && reply.replies.length > 0 && (
-        <div
-          className={
-            depth < MAX_INDENT_DEPTH
-              ? "mt-1 ml-6 border-l border-border pl-3"
-              : "mt-1"
-          }
-        >
+        <div className={depth < MAX_INDENT_DEPTH ? "ml-6 mt-1 border-l border-border pl-3" : "mt-1"}>
           {reply.replies.map((subReply) => (
             <ReplyItem
               key={subReply.id}
@@ -371,103 +350,107 @@ const ReplyItem = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 interface CommentItemProps {
-  comment: ThreadComment
-  threadId: string
+  comment: ThreadComment;
+  threadId: string;
 }
 
-const CommentItem = ({ comment, threadId }: CommentItemProps) => {
-  const { toast } = useToast()
-  const { userData } = userStore()
-  const isLoggedIn = !isEmpty(userData)
-  const isSuperUser = userData?.is_super_user
-  const [liked, setLiked] = useState(comment.liked ?? false)
-  const [isLiking, setIsLiking] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [deleted, setDeleted] = useState(false)
-  const [showReplies, setShowReplies] = useState(false)
-  const [showReplyForm, setShowReplyForm] = useState(false)
-  const [animatingLike, setAnimatingLike] = useState(false)
-  const likeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  )
-  useEffect(() => () => clearTimeout(likeTimerRef.current), [])
-  const isOwner = comment.is_owner
+const CommentItem = ({
+  comment,
+  threadId,
+}: CommentItemProps) => {
+  const { toast } = useToast();
+  const { userData } = userStore();
+  const isLoggedIn = !isEmpty(userData);
+  const isSuperUser = userData?.is_super_user;
+  const [liked, setLiked] = useState(comment.liked ?? false);
+  const [likeCount, setLikeCount] = useState(comment.like_count);
+  const [isLiking, setIsLiking] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+  const [showReplies, setShowReplies] = useState(false);
+  const [showReplyForm, setShowReplyForm] = useState(false);
+  const [animatingLike, setAnimatingLike] = useState(false);
+  const likeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(likeTimerRef.current), []);
+  const isOwner = comment.is_owner;
 
-  const { data: commentDetail, isLoading: isLoadingReplies } =
+  const { data: commentDetail, isLoading: isLoadingReplies, mutate: mutateComment } =
     useSWR<ThreadCommentDetail>(
       showReplies ? swrKeys.comment(comment.id) : null,
-      () => instance.get(`/threads/comments/${comment.id}`)
-    )
+      () => instance.get(`/threads/comments/${comment.id}`),
+    );
 
   const handleLike = async () => {
-    if (isLiking) return
-    const wasLiked = liked
-    setAnimatingLike(true)
+    if (isLiking) return;
+    const wasLiked = liked;
+    setAnimatingLike(true);
     try {
-      setIsLiking(true)
+      setIsLiking(true);
       const res = await instance.post<{
-        liked: boolean
-        comment: ThreadComment
-      }>(`/threads/comments/${comment.id}/like`)
-      setLiked(res.liked)
-      await mutate(swrKeys.threadComments(threadId))
+        liked: boolean;
+        comment: ThreadComment;
+      }>(`/threads/comments/${comment.id}/like`);
+      setLiked(res.liked);
+      setLikeCount(res.comment.like_count);
     } catch {
-      toast({ title: "操作失敗", variant: "error" })
+      toast({ title: "操作失敗", variant: "error" });
+      
     } finally {
-      setIsLiking(false)
+      setIsLiking(false);
       if (!wasLiked) {
-        clearTimeout(likeTimerRef.current)
-        likeTimerRef.current = setTimeout(() => setAnimatingLike(false), 400)
-      } else {
-        setAnimatingLike(false)
+        clearTimeout(likeTimerRef.current);        likeTimerRef.current = setTimeout(() => setAnimatingLike(false), 400);      } else {
+        setAnimatingLike(false);
       }
     }
-  }
+    mutate(swrKeys.threadComments(threadId)).catch(() => {}); 
+  };
 
   const handleDelete = async () => {
-    if (isDeleting) return
+    if (isDeleting) return;
     try {
-      setIsDeleting(true)
-      await instance.delete(`/threads/comments/${comment.id}`)
-      await mutate(swrKeys.threadComments(threadId))
-      setDeleted(true)
-      toast({ title: "刪除成功" })
+      setIsDeleting(true);
+      await instance.delete(`/threads/comments/${comment.id}`);
+      await mutate(swrKeys.threadComments(threadId));
+      setDeleted(true);
+      toast({ title: "刪除成功" });
     } catch {
-      toast({ title: "刪除失敗", variant: "error" })
+      toast({ title: "刪除失敗", variant: "error" });
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
-  const replies = commentDetail?.replies ?? []
-  const hasReplies = replies.length > 0
+  const replies = commentDetail?.replies ?? [];
+  const hasReplies = replies.length > 0;
   const showToggleButton =
-    (comment.reply_count ?? 0) > 0 || hasReplies || showReplies
+    (comment.reply_count ?? 0) > 0 || hasReplies || showReplies;
 
-  if (deleted) return null
+  if (deleted) return null;
 
-  const displayName = comment.is_anonymous ? "匿名" : comment.owner_name
-  const initials = displayName.slice(0, 1)
-  const date = formatDate(comment.create_time)
+  const displayName = comment.is_anonymous ? "匿名" : comment.owner_name;
+  const initials = displayName.slice(0, 1);
+  const date = formatDate(comment.create_time);
 
   return (
-    <div className="border-b border-border py-3 last:border-b-0">
+    <div className="py-3 border-b border-border last:border-b-0">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <Avatar className="h-8 w-8 shrink-0">
-            <AvatarFallback className="text-sm">{initials}</AvatarFallback>
+            <AvatarFallback className="text-sm">
+              {initials}
+            </AvatarFallback>
           </Avatar>
-          <span className="text-sm leading-none font-semibold">
+          <span className="text-sm font-semibold leading-none">
             {displayName}
           </span>
           <span className="text-xs text-muted-foreground">{date}</span>
         </div>
 
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           {isLoggedIn && (
             <Button
               variant="ghost"
@@ -486,21 +469,15 @@ const CommentItem = ({ comment, threadId }: CommentItemProps) => {
               aria-label={liked ? "取消喜歡" : "喜歡"}
               className={cn(
                 "h-8 w-8",
-                liked && "text-red-500 hover:text-red-600"
+                liked && "text-red-500 hover:text-red-600",
               )}
               onClick={handleLike}
               disabled={isLiking}
             >
-              <Heart
-                className={cn(
-                  "h-4 w-4",
-                  liked && "fill-current",
-                  animatingLike && "animate-heart-pop"
-                )}
-              />
+              <Heart className={cn("h-4 w-4", liked && "fill-current", animatingLike && "animate-heart-pop")} />
             </Button>
           ) : (
-            <span className="flex h-8 w-8 items-center justify-center text-muted-foreground">
+            <span className="h-8 w-8 flex items-center justify-center text-muted-foreground">
               <Heart className="h-4 w-4" />
             </span>
           )}
@@ -520,16 +497,11 @@ const CommentItem = ({ comment, threadId }: CommentItemProps) => {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>確定要刪除這則留言嗎？</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    此操作無法復原。
-                  </AlertDialogDescription>
+                  <AlertDialogDescription>此操作無法復原。</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>取消</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                  >
+                  <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
                     刪除
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -539,14 +511,14 @@ const CommentItem = ({ comment, threadId }: CommentItemProps) => {
         </div>
       </div>
 
-      <p className="mt-1.5 ml-10 text-sm whitespace-pre-wrap">
+      <p className="text-sm mt-1.5 ml-10 whitespace-pre-wrap">
         {comment.content}
       </p>
 
       {showToggleButton && (
         <button
           type="button"
-          className="mt-1.5 ml-10 text-xs text-muted-foreground transition-colors duration-150 hover:text-foreground"
+          className="text-xs text-muted-foreground ml-10 mt-1.5 hover:text-foreground transition-colors duration-150"
           onClick={() => setShowReplies((v) => !v)}
         >
           {showReplies ? "— 收起回覆" : "— 查看留言"}
@@ -554,15 +526,15 @@ const CommentItem = ({ comment, threadId }: CommentItemProps) => {
       )}
 
       {showReplyForm && (
-        <div className="mt-2 ml-10">
+        <div className="ml-10 mt-2">
           <ReplyForm
             threadId={threadId}
             parentCommentId={comment.id}
             rootCommentId={comment.id}
             replyToUserName={comment.is_anonymous ? "匿名" : comment.owner_name}
             onSuccess={() => {
-              setShowReplyForm(false)
-              setShowReplies(true)
+              setShowReplyForm(false);
+              setShowReplies(true);
             }}
             onCancel={() => setShowReplyForm(false)}
           />
@@ -570,7 +542,7 @@ const CommentItem = ({ comment, threadId }: CommentItemProps) => {
       )}
 
       {showReplies && (
-        <div className="animate-fade-in mt-1 ml-6 border-l border-border pl-3">
+        <div className="ml-6 mt-1 border-l border-border pl-3 animate-fade-in">
           {isLoadingReplies ? (
             <div className="space-y-2 py-2">
               <Skeleton className="h-4 w-3/4" />
@@ -589,7 +561,7 @@ const CommentItem = ({ comment, threadId }: CommentItemProps) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default CommentItem
+export default CommentItem;

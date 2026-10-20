@@ -293,7 +293,7 @@ const CoursePage = () => {
           defaultLayout={defaultLayout}
           onLayoutChanged={onLayoutChanged}
         >
-          <ResizablePanel id="exam-list" defaultSize={55} minSize={30}>
+          <ResizablePanel id="exam-list" order={1} defaultSize={55} minSize={30}>
             <div ref={examScrollRef} className="h-full">
             <ScrollArea className="h-full pr-4">
               <ExamPanelContent
@@ -312,7 +312,7 @@ const CoursePage = () => {
 
           <ResizableHandle withHandle />
 
-          <ResizablePanel id="thread-panel" defaultSize={45} minSize={30}>
+          <ResizablePanel id="thread-panel" order={2} defaultSize={45} minSize={30}>
             <ScrollArea className="h-full pl-4">
               <ThreadPanelContent
                 selectedThreadId={selectedThreadId}

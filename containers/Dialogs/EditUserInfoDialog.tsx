@@ -100,7 +100,7 @@ const EditUserInfoDialog = () => {
       });
 
       closeEditUserInfoDialog();
-    } catch {
+    } catch (e) {
       toast({
         title: "修改失敗",
         variant: "error",

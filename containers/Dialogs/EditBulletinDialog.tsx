@@ -28,12 +28,14 @@ import { useParams } from "next/navigation";
 import { useQueryState } from "@/hooks/useQueryState";
 import { swrKeys } from "@/lib/swr-keys";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
 import * as z from "zod";
 
-const EditBulletinDialog = () => {
+interface pageProps {}
+
+const EditBulletinDialog: FC<pageProps> = () => {
   const [addBulletinLoading, setAddBulletinLoading] = useState(false);
   const [addBulletinOpen, setAddBulletinOpen] = useState(false);
   const params = useParams();
@@ -76,7 +78,7 @@ const EditBulletinDialog = () => {
         { revalidate: false },
       );
       setAddBulletinOpen(false);
-    } catch {
+    } catch (e) {
       toast({
         title: "操作失敗",
         variant: "error",

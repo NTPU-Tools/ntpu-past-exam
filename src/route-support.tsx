@@ -1,27 +1,9 @@
 import { ReactNode, useEffect, useState } from "react"
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom"
-import instance, { refreshSession } from "@/api-client/instance"
-import { clearAccessToken, getAccessToken } from "@/api-client/session"
-import { RouteLoading } from "@/components/RouteLoading"
+import { getCookie } from "@/utils/cookie"
 import { useDocumentTitle } from "@/hooks/useDocumentTitle"
-import { isUnknownTopLevelRoute } from "./route-paths"
 
-interface DepartmentTitleResponse {
-  name?: string
-}
-
-interface CourseTitleResponse {
-  course?: { name?: string }
-}
-
-interface PostTitleResponse {
-  title?: string
-}
-
-interface VerificationResponse {
-  admin?: string[]
-  visible_departments?: string[]
-}
+const API = process.env.NEXT_PUBLIC_API_ORIGIN
 
 function applyTitle(title?: string) {
   if (title) {
@@ -31,7 +13,7 @@ function applyTitle(title?: string) {
   document.title = "NTPU 考古題"
 }
 
-function useFetchedTitle<T>(url?: string) {
+function useFetchedTitle<T = any>(url?: string) {
   const [data, setData] = useState<T>()
 
   useEffect(() => {
@@ -42,8 +24,12 @@ function useFetchedTitle<T>(url?: string) {
       return
     }
 
-    instance
-      .get<T>(url)
+    const accessToken = getCookie("ntpu-past-exam-access-token")
+
+    fetch(url, {
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    })
+      .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!active) return
         setData(data)
@@ -76,8 +62,8 @@ export function StaticTitle({
 export function DepartmentTitleLayout() {
   const { department_id } = useParams()
 
-  const data = useFetchedTitle<DepartmentTitleResponse>(
-    department_id ? `/departments/${department_id}` : undefined,
+  const data = useFetchedTitle(
+    department_id ? `${API}/departments/${department_id}` : undefined,
   )
 
   useEffect(() => {
@@ -90,9 +76,7 @@ export function DepartmentTitleLayout() {
 export function CourseTitleLayout() {
   const { course_id } = useParams()
 
-  const data = useFetchedTitle<CourseTitleResponse>(
-    course_id ? `/courses/${course_id}` : undefined,
-  )
+  const data = useFetchedTitle(course_id ? `${API}/courses/${course_id}` : undefined)
 
   useEffect(() => {
     applyTitle(data?.course?.name)
@@ -104,9 +88,7 @@ export function CourseTitleLayout() {
 export function PostTitleLayout({ children }: { children: ReactNode }) {
   const { post_id } = useParams()
 
-  const data = useFetchedTitle<PostTitleResponse>(
-    post_id ? `/posts/${post_id}` : undefined,
-  )
+  const data = useFetchedTitle(post_id ? `${API}/posts/${post_id}` : undefined)
 
   useEffect(() => {
     applyTitle(data?.title)
@@ -118,10 +100,8 @@ export function PostTitleLayout({ children }: { children: ReactNode }) {
 export function AdminTitleLayout({ children }: { children: ReactNode }) {
   const { admin_department_id } = useParams()
 
-  const data = useFetchedTitle<DepartmentTitleResponse>(
-    admin_department_id
-      ? `/departments/${admin_department_id}`
-      : undefined,
+  const data = useFetchedTitle(
+    admin_department_id ? `${API}/departments/${admin_department_id}` : undefined,
   )
 
   useEffect(() => {
@@ -141,24 +121,48 @@ export function AppGuard({ children }: { children: ReactNode }) {
 
     async function verify() {
       const pathname = location.pathname
-      setIsChecking(true)
+      const accessToken = getCookie("ntpu-past-exam-access-token")
+
+      if (pathname === "/login") {
+        if (!accessToken) {
+          if (active) setIsChecking(false)
+          return
+        }
+
+        try {
+          const response = await fetch(`${API}/verify-token`, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          })
+
+          if (response.ok) {
+            navigate("/", { replace: true })
+            return
+          }
+        } catch {
+          // fall through and allow the login page to render
+        }
+
+        if (active) setIsChecking(false)
+        return
+      }
 
       if (pathname === "/admin") {
         navigate("/", { replace: true })
         return
       }
 
+      if (!accessToken) {
+        navigate("/login", { replace: true })
+        return
+      }
+
       try {
-        if (!getAccessToken()) {
-          await refreshSession()
-        }
-        if (!active) return
+        const response = await fetch(`${API}/verify-token`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
 
-        const data = await instance.get<VerificationResponse>("/verify-token")
-        if (!active) return
-
-        if (pathname === "/login") {
-          navigate("/", { replace: true })
+        if (!response.ok) {
+          navigate("/login", { replace: true })
           return
         }
 
@@ -167,10 +171,7 @@ export function AppGuard({ children }: { children: ReactNode }) {
           return
         }
 
-        if (isUnknownTopLevelRoute(pathname)) {
-          if (active) setIsChecking(false)
-          return
-        }
+        const data = await response.json()
 
         if (pathname.startsWith("/admin/")) {
           const departmentId = pathname.split("/admin/")[1]
@@ -191,14 +192,6 @@ export function AppGuard({ children }: { children: ReactNode }) {
 
         if (active) setIsChecking(false)
       } catch {
-        if (!active) return
-        clearAccessToken()
-
-        if (pathname === "/login") {
-          if (active) setIsChecking(false)
-          return
-        }
-
         navigate("/login", { replace: true })
       }
     }
@@ -211,7 +204,7 @@ export function AppGuard({ children }: { children: ReactNode }) {
   }, [location.pathname, navigate])
 
   if (isChecking) {
-    return <RouteLoading />
+    return <div className="min-h-screen bg-background" />
   }
 
   return <>{children}</>

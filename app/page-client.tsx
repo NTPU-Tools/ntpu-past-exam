@@ -70,7 +70,7 @@ function PageClient() {
       toast({ title: "申請成功", variant: "success" });
       await mutate(swrKeys.departmentsStatus());
       closeApplyDepartmentDialog();
-    } catch {
+    } catch (error) {
       toast({ title: "申請失敗", variant: "error" });
     } finally {
       setApplyLoading(false);

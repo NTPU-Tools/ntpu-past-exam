@@ -1,3 +1,8 @@
+/* eslint-disable no-use-before-define */
+
+/* eslint-disable no-shadow */
+
+/* eslint-disable default-case */
 // Inspired by react-hot-toast library
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 import * as React from "react";
@@ -12,6 +17,13 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement;
 };
 
+const actionTypes = {
+  ADD_TOAST: "ADD_TOAST",
+  UPDATE_TOAST: "UPDATE_TOAST",
+  DISMISS_TOAST: "DISMISS_TOAST",
+  REMOVE_TOAST: "REMOVE_TOAST",
+} as const;
+
 let count = 0;
 
 function genId() {
@@ -19,12 +31,7 @@ function genId() {
   return count.toString();
 }
 
-type ActionType = {
-  ADD_TOAST: "ADD_TOAST";
-  UPDATE_TOAST: "UPDATE_TOAST";
-  DISMISS_TOAST: "DISMISS_TOAST";
-  REMOVE_TOAST: "REMOVE_TOAST";
-};
+type ActionType = typeof actionTypes;
 
 type Action =
   | {
@@ -66,6 +73,7 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout);
 };
 
+// eslint-disable-next-line consistent-return
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
@@ -121,6 +129,7 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
+// eslint-disable-next-line no-unused-vars
 const listeners: Array<(state: State) => void> = [];
 
 let memoryState: State = { toasts: [] };

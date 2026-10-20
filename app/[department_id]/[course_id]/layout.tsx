@@ -1,15 +1,16 @@
-import instance from "@/api-client/instance";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+
+const API = process.env.NEXT_PUBLIC_API_ORIGIN;
 
 type Props = { params: Promise<{ course_id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { course_id } = await params;
   try {
-    const data = await instance.get<{ course?: { name?: string } }>(
-      `/courses/${course_id}`,
-    );
+    const res = await fetch(`${API}/courses/${course_id}`);
+    if (!res.ok) return {};
+    const data = await res.json();
     return { title: data.course?.name };
   } catch {
     return {};
