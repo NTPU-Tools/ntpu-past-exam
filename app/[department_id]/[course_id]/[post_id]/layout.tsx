@@ -1,16 +1,13 @@
+import instance from "@/api-client/instance";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-
-const API = process.env.NEXT_PUBLIC_API_ORIGIN;
 
 type Props = { params: Promise<{ post_id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { post_id } = await params;
   try {
-    const res = await fetch(`${API}/posts/${post_id}`);
-    if (!res.ok) return {};
-    const data = await res.json();
+    const data = await instance.get<{ title?: string }>(`/posts/${post_id}`);
     return { title: data.title };
   } catch {
     return {};

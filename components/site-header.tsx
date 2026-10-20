@@ -1,4 +1,5 @@
-import instance from "@/api-client/instance";
+import instance, { logoutSession } from "@/api-client/instance";
+import { hasAccessToken } from "@/api-client/session";
 import { ModeToggle } from "@/components/DarkModeToggle";
 import { MainNav } from "@/components/main-nav";
 import { MobileNav } from "@/components/mobile-nav";
@@ -18,15 +19,15 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import userStore from "@/store/userStore";
-import { eraseCookie, getCookie } from "@/utils/cookie";
 import { isEmpty } from "lodash-es";
 import { Loader2, Plus, SlidersHorizontal, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQueryState } from "@/hooks/useQueryState";
+import { clearSWRCache } from "@/lib/swr-cache";
 import { swrKeys } from "@/lib/swr-keys";
-import useSWR, { mutate } from "swr";
+import useSWR, { mutate, useSWRConfig } from "swr";
 
 function SiteHeader() {
   const { setUserData, userData } = userStore();
@@ -34,14 +35,14 @@ function SiteHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const { cache } = useSWRConfig();
   const { setParams } = useQueryState();
   const [preferenceOpen, setPreferenceOpen] = useState(false);
   const [draftShowEmpty, setDraftShowEmpty] = useState(true);
   const [draftDefaultAnonymous, setDraftDefaultAnonymous] = useState(false);
   const [prefSaving, setPrefSaving] = useState(false);
   const isLoginPage = pathname === "/login";
-  const accessToken = getCookie("ntpu-past-exam-access-token");
-  const shouldFetch = accessToken && !isLoginPage;
+  const shouldFetch = hasAccessToken() && !isLoginPage;
   const { data, isLoading } = useSWR(
     shouldFetch ? swrKeys.userMe() : null,
     () => instance.get("/users/me"),
@@ -61,11 +62,22 @@ function SiteHeader() {
     }
   }, [setUserData, data, toast]);
 
-  const logout = () => {
-    eraseCookie("ntpu-past-exam-access-token");
-    eraseCookie("ntpu-past-exam-refresh-token");
+  const logout = async () => {
+    let didLogout = false;
+
+    try {
+      await logoutSession();
+      didLogout = true;
+    } catch {
+      toast({ title: "登出失敗，請稍後再試", variant: "error" });
+    } finally {
+      setUserData({});
+      clearSWRCache(cache);
+    }
+
+    if (!didLogout) return;
     toast({ title: "已登出" });
-    window.location.href = "/login";
+    router.replace("/login");
   };
 
   const openPreferenceDialog = () => {

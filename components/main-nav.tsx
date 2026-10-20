@@ -1,18 +1,17 @@
 import instance from "@/api-client/instance";
+import { hasAccessToken } from "@/api-client/session";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { swrKeys } from "@/lib/swr-keys";
-import { getCookie } from "@/utils/cookie";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 
 export function MainNav() {
-  const accessToken = getCookie("ntpu-past-exam-access-token");
   const router = useRouter();
   const params = useParams();
-  const { data } = useSWR(accessToken ? swrKeys.visibleDepartments() : null, () =>
+  const { data } = useSWR(hasAccessToken() ? swrKeys.visibleDepartments() : null, () =>
     instance.get("/departments/visible"),
   );
 

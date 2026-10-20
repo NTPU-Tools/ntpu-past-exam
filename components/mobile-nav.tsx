@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { TypographySmall } from "@/components/ui/typography";
 import useDepartmentCourse from "@/hooks/useDepartmentCourse";
 import { cn } from "@/lib/utils";
 import { swrKeys } from "@/lib/swr-keys";
@@ -22,7 +21,6 @@ import * as React from "react";
 import useSWR from "swr";
 
 interface MobileLinkProps extends LinkProps {
-  // eslint-disable-next-line no-unused-vars
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;

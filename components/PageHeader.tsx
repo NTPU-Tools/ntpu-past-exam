@@ -22,7 +22,6 @@ function PageHeaderHeading({
   ...props
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
-    // eslint-disable-next-line jsx-a11y/heading-has-content
     <h1
       className={cn(
         "font-heading text-2xl font-black leading-tight tracking-tighter md:text-3xl border-l-[3px] border-primary pl-4",

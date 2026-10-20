@@ -1,7 +1,7 @@
-/* eslint-disable */
 "use client";
 
 import instance from "@/api-client/instance";
+import { setAccessToken } from "@/api-client/session";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,8 +15,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import ServiceTermDialog from "@/containers/Dialogs/ServiceTermDialog";
 import { loginSchema } from "@/schemas/login";
-import userStore from "@/store/userStore";
-import { setCookie } from "@/utils/cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,6 +26,11 @@ import * as z from "zod";
 
 const googleLoginBlacklist = ["Line", "Instagram", "Facebook"];
 
+interface AuthResponse {
+  access_token: string;
+  token_type: string;
+}
+
 const LoginPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -35,7 +38,6 @@ const LoginPage = () => {
   const { toast } = useToast();
   const [openTerm, setOpenTerm] = useState(false);
   const [adminMode, setAdminMode] = useState(false);
-  const { setUserData } = userStore();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema as any),
   });
@@ -46,14 +48,11 @@ const LoginPage = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
       setIsLoading(true);
-      const data = await instance.postForm("/login", values);
-      setUserData(data);
-      setCookie("ntpu-past-exam-access-token", data.access_token, 30);
-      setCookie("ntpu-past-exam-refresh-token", data.refresh_token, 365);
-      instance.defaults.headers.authorization = `Bearer ${data.access_token}`;
+      const data = await instance.postForm<AuthResponse>("/login", values);
+      setAccessToken(data.access_token);
       toast({ title: "登入成功" });
-      setTimeout(() => { window.location.href = "/"; }, 1000);
-    } catch (e) {
+      router.replace("/");
+    } catch {
       form.setError("root", { message: "帳號或密碼錯誤" });
     } finally {
       setIsLoading(false);
@@ -70,16 +69,14 @@ const LoginPage = () => {
     const code = searchParams.get("code");
     if (code) {
       try {
-        const data = await instance.postForm(`/exchange`, {
+        const data = await instance.postForm<AuthResponse>(`/exchange`, {
           code,
           redirect_uri: `${window.location.origin}/login`,
         });
-        setCookie("ntpu-past-exam-access-token", data.access_token, 30);
-        setCookie("ntpu-past-exam-refresh-token", data.refresh_token, 365);
-        instance.defaults.headers.authorization = `Bearer ${data.access_token}`;
+        setAccessToken(data.access_token);
         toast({ title: "登入成功" });
-        setTimeout(() => { window.location.href = "/"; }, 1000);
-      } catch (e) {
+        router.replace("/");
+      } catch {
         toast({ title: "登入失敗", variant: "error" });
         setIsLoading(false);
       }

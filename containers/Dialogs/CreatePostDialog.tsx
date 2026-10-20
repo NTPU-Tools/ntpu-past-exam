@@ -88,7 +88,7 @@ const CreatePostDialog = () => {
     remove,
   } = useFieldArray({
     control: form.control,
-    // @ts-ignore
+    // @ts-expect-error -- react-hook-form does not model an array of File values
     name: "files",
   });
 
@@ -113,8 +113,7 @@ const CreatePostDialog = () => {
         }-${values.term}`,
       );
       formData.set("department_id", params.department_id as string);
-      // @ts-ignore
-      formData.set("is_anonymous", values.is_anonymous ?? false);
+      formData.set("is_anonymous", String(values.is_anonymous ?? false));
       if (values.content) formData.set("content", values.content);
       formData.set("course_id", values.course_id);
       if (values.files?.length) {
@@ -128,7 +127,7 @@ const CreatePostDialog = () => {
       });
       await mutate(swrKeys.course(values.course_id));
       closeCreatePostDialog();
-    } catch (e) {
+    } catch {
       toast({
         title: "新增失敗",
         variant: "error",
@@ -316,18 +315,17 @@ const CreatePostDialog = () => {
                       <FormField
                         control={form.control}
                         name={`files.${index}`}
-                        render={({ field }) => (
+                        render={({
+                          field: { value: _value, onChange, ...field },
+                        }) => (
                           <FormItem>
                             <FormControl>
-                              {/* @ts-ignore */}
                               <Input
                                 placeholder="請選擇考古題檔案"
                                 {...field}
                                 type="file"
-                                // @ts-ignore
-                                value={field.value?.fileName}
                                 onChange={(event) => {
-                                  field.onChange(event.target.files?.[0]);
+                                  onChange(event.target.files?.[0]);
                                 }}
                               />
                             </FormControl>

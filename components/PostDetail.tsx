@@ -1,7 +1,7 @@
 "use client";
 
 import instance from "@/api-client/instance";
-import PDFViewer from "@/components/PDFViewer";
+import PDFViewer from "@/components/LazyPDFViewer";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/date";
 import { swrKeys } from "@/lib/swr-keys";
 import userStore from "@/store/userStore";
 import { isEmpty } from "lodash-es";

@@ -30,18 +30,16 @@ import { addCourseSchema } from "@/schemas/course";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Loader2 } from "lucide-react";
-import { map, set } from "lodash-es";
+import { map } from "lodash-es";
 import { useParams } from "next/navigation";
 import { useQueryState } from "@/hooks/useQueryState";
 import { swrKeys } from "@/lib/swr-keys";
-import { FC, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
 import * as z from "zod";
 
-interface pageProps {}
-
-const UpdateUserStatusDialog: FC<pageProps> = () => {
+const UpdateUserStatusDialog = () => {
   const [addCourseLoading, setAddCourseLoading] = useState(false);
   const [addCourseOpen, setAddCourseOpen] = useState(false);
   const params = useParams();
@@ -83,7 +81,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
         { revalidate: false },
       );
       setAddCourseOpen(false);
-    } catch (e) {
+    } catch {
       toast({
         title: "操作失敗",
         variant: "error",

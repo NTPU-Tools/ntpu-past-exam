@@ -1,10 +1,9 @@
 "use client";
 
 import instance from "@/api-client/instance";
-import PDFViewer from "@/components/PDFViewer";
+import PDFViewer from "@/components/LazyPDFViewer";
 import {
   PageHeader,
-  PageHeaderDescription,
   PageHeaderHeading,
 } from "@/components/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";

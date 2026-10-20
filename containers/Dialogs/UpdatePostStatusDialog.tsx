@@ -1,6 +1,6 @@
 import instance from "@/api-client/instance";
 import { DataTable } from "@/components/ClientPaginationDataTable";
-import PDFViewer from "@/components/PDFViewer";
+import PDFViewer from "@/components/LazyPDFViewer";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,12 +23,10 @@ import { map } from "lodash-es";
 import { useParams } from "next/navigation";
 import { useQueryState } from "@/hooks/useQueryState";
 import { swrKeys } from "@/lib/swr-keys";
-import { FC, useState } from "react";
+import { useState } from "react";
 import useSWR, { mutate } from "swr";
 
-interface pageProps {}
-
-const UpdatePostStatusDialog: FC<pageProps> = () => {
+const UpdatePostStatusDialog = () => {
   const [isLoading, setIsLoading] = useState(false);
   const params = useParams();
   const { get, setParams, removeParams } = useQueryState();
@@ -125,7 +123,7 @@ const UpdatePostStatusDialog: FC<pageProps> = () => {
         await mutate(swrKeys.course(postData.course_id));
       }
       closePostDetailDialog();
-    } catch (e) {
+    } catch {
       toast({
         title: "操作失敗",
         variant: "error",

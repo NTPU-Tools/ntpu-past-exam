@@ -18,16 +18,17 @@ const VisuallyHidden = VisuallyHiddenPrimitive.Root
 import { Loader2 } from "lucide-react"
 import { Fragment, useCallback, useEffect, useRef, useState } from "react"
 import { Document, Page, pdfjs } from "react-pdf"
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url"
 import "react-pdf/dist/Page/AnnotationLayer.css"
 import "react-pdf/dist/Page/TextLayer.css"
 import { useResizeObserver } from "usehooks-ts"
 
-interface Props {
+export interface PDFViewerProps {
   className?: string
   src: string
 }
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
+pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
 
 const options = {
   cMapUrl: "/cmaps/",
@@ -88,7 +89,7 @@ const getFilenameFromSrc = (fileUrl: string) => {
   }
 }
 
-const PDFViewer = ({ className, src }: Props) => {
+const PDFViewer = ({ className, src }: PDFViewerProps) => {
   const [pageNum, setPageNum] = useState(0)
   const [page, setPage] = useState(1)
   const [error, setError] = useState(false)

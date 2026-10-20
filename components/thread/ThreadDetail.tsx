@@ -22,7 +22,8 @@ import { TypographyBlockquote } from "@/components/ui/typography";
 import { useToast } from "@/components/ui/use-toast";
 import { createCommentSchema } from "@/schemas/thread";
 import userStore from "@/store/userStore";
-import { cn, formatDate, parseUTC } from "@/lib/utils";
+import { formatDate, parseUTC } from "@/lib/date";
+import { cn } from "@/lib/utils";
 import { swrKeys } from "@/lib/swr-keys";
 import { zodResolver } from "@hookform/resolvers/zod";
 import isEmpty from "lodash-es/isEmpty";
@@ -179,7 +180,15 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
     );
   }
 
-  if (isLoadingThread || (!thread && !error)) {
+  if (error) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-muted-foreground">載入失敗，請稍後再試</p>
+      </div>
+    );
+  }
+
+  if (isLoadingThread || !thread) {
     return (
       <div className="p-4 space-y-4">
         <Skeleton className="h-8 w-3/4" />
@@ -187,14 +196,6 @@ const ThreadDetail = ({ threadId, onDeleteSuccess }: ThreadDetailProps) => {
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-3/4" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-8 text-center">
-        <p className="text-muted-foreground">載入失敗，請稍後再試</p>
       </div>
     );
   }

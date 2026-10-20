@@ -26,12 +26,9 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { useParams } from "next/navigation";
 import { useQueryState } from "@/hooks/useQueryState";
 import { swrKeys } from "@/lib/swr-keys";
-import { FC } from "react";
 import useSWR, { mutate } from "swr";
 
-interface pageProps {}
-
-const UpdateUserStatusDialog: FC<pageProps> = () => {
+const UpdateUserStatusDialog = () => {
   const params = useParams();
   const { get, setParams, removeParams } = useQueryState();
   const { toast } = useToast();
@@ -91,7 +88,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       });
       await mutateMembers();
       await mutate(swrKeys.adminDepartments());
-    } catch (e) {
+    } catch {
       toast({
         title: "操作失敗",
         variant: "error",
@@ -109,7 +106,7 @@ const UpdateUserStatusDialog: FC<pageProps> = () => {
       toast({
         title: "操作成功",
       });
-    } catch (e) {
+    } catch {
       toast({
         title: "操作失敗",
         variant: "error",
